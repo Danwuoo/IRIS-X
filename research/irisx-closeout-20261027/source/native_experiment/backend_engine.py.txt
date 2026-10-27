@@ -1,0 +1,596 @@
+"""NEW concrete paired-training engine over the recovered CUDA backend.
+
+This is reconstruction, not historical recovered source. NativeEngine accepts
+only a verified LoadedNativeBackend; _EngineCore is shared arithmetic/state
+logic for separately labelled CPU fixtures, never a native device fallback.
+Teacher forcing is unmasked FP32/full16 with the sole causal shift in torch_ops.
+"""
+from __future__ import annotations
+import hashlib
+from contextlib import nullcontext
+import math
+from pathlib import Path
+import random
+import time
+
+from training.contracts import Response, canonical, digest, need
+from training.torch_ops import finite, query_response_logps, torch_module, matched_ce_parent, dpo_parent, detached_reference, assert_initial_equality
+from .backend_load import (BACKEND_SHA, CONFIG_SHA, DECODER_CONTRACT_SHA,
+                           LoadedNativeBackend, MATERIAL_SHA, ORIGINAL_ROOT_POLICY_SHA,
+                           RAW_TOKENIZER_SHA)
+
+CHECKPOINT_CAP = 780 * 1024**2
+ADAM = dict(lr=1e-5, betas=(.9, .999), eps=1e-8, weight_decay=0, foreach=False)
+
+
+def _tensor_bytes(value):
+    return value.detach().cpu().contiguous().numpy().tobytes()
+
+
+def _tensor_identity(value):
+    return (id(value), value.data_ptr(), tuple(value.shape), tuple(value.stride()),
+            str(value.dtype), str(value.device), value._version)
+
+
+def _hash_tensor(h, value):
+    h.update(canonical([list(value.shape), str(value.dtype)]))
+    h.update(_tensor_bytes(value))
+
+
+def _rng_snapshot(native):
+    import numpy as np
+    t = torch_module()
+    numpy_state = np.random.get_state()
+    return {'python': random.getstate(),
+            'numpy': [numpy_state[0], numpy_state[1].tolist(), int(numpy_state[2]),
+                      int(numpy_state[3]), float(numpy_state[4])],
+            'cpu': t.get_rng_state().clone(),
+            'cuda': t.cuda.get_rng_state(0).cpu().clone() if native else None}
+
+
+def _rng_restore(value, native):
+    import numpy as np
+    t = torch_module()
+    random.setstate(value['python'])
+    n = value['numpy']
+    np.random.set_state((n[0], np.asarray(n[1], dtype=np.uint32), n[2], n[3], n[4]))
+    t.set_rng_state(value['cpu'])
+    if native:
+        t.cuda.set_rng_state(value['cuda'], 0)
+
+
+def _rng_digest(value):
+    h = hashlib.sha256(canonical({'python': value['python'], 'numpy': value['numpy']}))
+    _hash_tensor(h, value['cpu'])
+    if value['cuda'] is not None:
+        _hash_tensor(h, value['cuda'])
+    return h.hexdigest()
+
+
+class _EngineCore:
+    """Internal shared implementation; not a native admission interface.
+
+    Hooks are compulsory and execute fail-closed: before/after/failed(event,
+    fields). Workflow owns budgets, public/private scope and logical CostLedger.
+    Physical root/layer hooks attach to .model before ANY engine model call.
+    .memory(reset_peak=True) and ordinary methods expose the exact operations
+    needed for a separately budgeted public-support/full3072-two-graph stress;
+    that workflow MUST reset afterwards and cannot count it within 18N/8N/8.
+    """
+    def __init__(self, backend, *, hooks, deadline, native, root_identity_document):
+        t = torch_module()
+        need(type(native) is bool, 'explicit execution evidence kind')
+        need(type(deadline) in (int, float) and math.isfinite(deadline) and deadline > time.time(),
+             'finite unexpired engine deadline')
+        need(all(callable(getattr(hooks, name, None)) for name in ('before', 'after', 'failed')),
+             'mandatory operation/deadline/physical hooks')
+        self.b = self.backend = backend
+        self.model = backend.model
+        self.hooks, self.deadline, self.native = hooks, float(deadline), native
+        self.device = next(self.model.parameters()).device
+        need((self.device.type == 'cuda' and self.device.index == 0) if native else self.device.type == 'cpu',
+             'explicit native CUDA0 versus synthetic CPU boundary')
+        self.trainable = dict(backend.trainable_parameters)
+        need(self.trainable and all('lora_' in n and p.requires_grad and p.dtype == t.float32
+                                  for n, p in self.trainable.items()), 'only real FP32 LoRA trainables')
+        all_parameters = dict(self.model.named_parameters())
+        need({n for n, p in all_parameters.items() if p.requires_grad} == set(self.trainable),
+             'complete exact trainable parameter set')
+        need(all(all_parameters[n] is p for n, p in self.trainable.items()), 'same model adapter objects')
+        need(all(p.device == self.device and p.grad is None for p in all_parameters.values()),
+             'all model parameters on exact device without initial gradients')
+        need(all(not isinstance(m, t.nn.Dropout) or m.p == 0 for m in self.model.modules()),
+             'zero dropout for paired training and deterministic probes')
+        need(set(backend.initial_adapter) == set(self.trainable) and
+             all(t.equal(p.detach().cpu(), backend.initial_adapter[n]) for n, p in self.trainable.items()),
+             'actual initial adapter matches backend root')
+        self._backend_bindings_pin = digest(backend.bindings)
+        self._parameters = {n: id(p) for n, p in all_parameters.items()}
+        self._base = {n: _tensor_identity(p) for n, p in all_parameters.items() if not p.requires_grad}
+        self._buffers = {n: _tensor_identity(p) for n, p in self.model.named_buffers()}
+        self._adapter_structure = {n: _tensor_identity(p)[:-1] for n, p in self.trainable.items()}
+        need(self._base and all(p.dtype == t.float32 for p in all_parameters.values()),
+             'full FP32 frozen base and adapter storage')
+        self._root_rng = _rng_snapshot(native)
+        self._root_rng_digest = _rng_digest(self._root_rng)
+        self.root_digest = self.adapter_digest()
+        self.root_identity = hashlib.sha256((BACKEND_SHA + self.root_digest).encode('ascii')).hexdigest()
+        self.root_identity_document = {**root_identity_document, 'root_policy': self.root_identity,
+                                       'initial_adapter': self.root_digest, 'rng': self._root_rng_digest,
+                                       'native_cuda_evidence': native}
+        self.reset_receipts = []
+        self.arm_updates = 0
+        self.arm_update_counts = {}
+        self.active_arm = None
+        self._pending_graphs = 0
+        self._backwards_since_commit = 0
+        self._failed = False
+        self.model.eval()
+        self.check_frozen()
+
+    def _tick(self):
+        need(not self._failed, 'failed/UNKNOWN engine cannot continue or retry')
+        need(time.time() < self.deadline, 'fixed engine deadline expired')
+
+    def _sync(self):
+        self.b.barrier()
+
+    def _operation(self, event, fields, function):
+        fields = dict(fields)
+        fields['native_cuda'] = self.native
+        started = time.monotonic()
+        try:
+            self._tick()
+            self.hooks.before(event, fields)
+            self._sync()
+            self.check_frozen()
+            result = function()
+            self._sync()
+            self.check_frozen()
+            self._tick()
+            self.hooks.after(event, {**fields, 'elapsed_seconds': time.monotonic() - started})
+            return result
+        except BaseException as exc:
+            self._failed = True
+            # Never convert an uncertain physical operation into successful work.
+            try:
+                self.hooks.failed(event, {**fields, 'elapsed_seconds': time.monotonic() - started,
+                                          'status': 'UNKNOWN', 'error_type': type(exc).__name__})
+            except BaseException:
+                pass
+            raise
+
+    def check_frozen(self):
+        need(digest(self.b.bindings) == self._backend_bindings_pin, 'backend material/source bindings changed')
+        current = dict(self.model.named_parameters())
+        need({n: id(p) for n, p in current.items()} == self._parameters, 'parameter identity/set changed')
+        need({n for n, p in current.items() if p.requires_grad} == set(self.trainable),
+             'frozen/trainable membership changed')
+        for name, identity in self._base.items():
+            p = current[name]
+            need(p.grad is None and _tensor_identity(p) == identity, 'frozen base gradient/version/storage mutation')
+        for name, structure in self._adapter_structure.items():
+            need(_tensor_identity(current[name])[:-1] == structure, 'adapter storage/shape/dtype replaced')
+        buffers = dict(self.model.named_buffers())
+        need(set(buffers) == set(self._buffers), 'model buffer set changed')
+        need(all(_tensor_identity(buffers[n]) == value for n, value in self._buffers.items()),
+             'model buffer identity/version changed')
+        return {'status': 'PASS_VERSION_IDENTITY_GUARD', 'native': self.native,
+                'base_bytes_rehashed_each_forward': False,
+                'coverage': 'same-process parameter/buffer identity, storage, dtype, shape, version, no base gradients',
+                'limitation': 'not a malicious .data-write detector; admitted source closure excludes such writes'}
+
+    def adapter_digest(self):
+        # Exact original topic_cuda digest algorithm, not torch_ops' FP32 coercion.
+        h = hashlib.sha256()
+        for name, p in self.trainable.items():
+            finite(p, 'adapter')
+            h.update(name.encode())
+            h.update(_tensor_bytes(p))
+        return h.hexdigest()
+
+    def rng_digest(self):
+        return _rng_digest(_rng_snapshot(self.native))
+
+    def optimizer_digest(self):
+        t = torch_module()
+        self._check_optimizer(self.arm_updates)
+        h = hashlib.sha256(canonical(ADAM))
+        for name, parameter in self.trainable.items():
+            h.update(name.encode())
+            state = self.b.optimizer.state.get(parameter, {})
+            for key in sorted(state):
+                value = state[key]
+                need(t.is_tensor(value), 'Adam tensor state only')
+                h.update(key.encode())
+                _hash_tensor(h, value)
+        return h.hexdigest()
+
+    def _check_optimizer(self, updates):
+        t = torch_module()
+        opt = self.b.optimizer
+        need(type(opt) is t.optim.Adam and len(opt.param_groups) == 1, 'exact fresh Adam optimizer')
+        group = opt.param_groups[0]
+        need(len(group['params']) == len(self.trainable) and
+             all(p is q for p, q in zip(group['params'], self.trainable.values())), 'exact Adam parameter order')
+        need(all(group[k] == v for k, v in ADAM.items()), 'fixed Adam hyperparameters')
+        need(group.get('maximize') is False and group.get('capturable') is False and
+             group.get('differentiable') is False and group.get('fused') in (None, False), 'no Adam variant')
+        need(set(opt.state).issubset(set(self.trainable.values())), 'no extra Adam state')
+        for parameter in self.trainable.values():
+            state = opt.state.get(parameter, {})
+            if updates == 0:
+                need(not state, 'fresh empty Adam state')
+            else:
+                need(set(state) == {'step', 'exp_avg', 'exp_avg_sq'}, 'complete Adam state')
+                need(float(state['step'].item()) == updates, 'exact Adam cursor')
+                for key in ('exp_avg', 'exp_avg_sq'):
+                    value = state[key]
+                    need(value.dtype == t.float32 and value.shape == parameter.shape and value.device == parameter.device,
+                         'actual FP32 Adam state')
+                    finite(value, 'Adam state')
+
+    def reset(self, label):
+        need(type(label) is str and label, 'explicit reset label')
+        need(self._pending_graphs == 0 and self._backwards_since_commit == 0,
+             'reset only at completed clean update boundary')
+        def perform():
+            t = torch_module()
+            receipt = self.b.reset_root()
+            # The recovered backend clears state; create a genuinely new optimizer
+            # too, so no mutable groups/hooks/step counters can cross paired arms.
+            self.b.optimizer = t.optim.Adam(self.trainable.values(), **ADAM)
+            _rng_restore(self._root_rng, self.native)
+            self.model.zero_grad(set_to_none=True)
+            self.model.eval()
+            self.arm_updates = 0
+            self.active_arm = label
+            self._pending_graphs = self._backwards_since_commit = 0
+            need(self.adapter_digest() == self.root_digest, 'exact initial LoRA reset')
+            need(self.rng_digest() == self._root_rng_digest, 'exact Python/NumPy/CPU/CUDA RNG reset')
+            self._check_optimizer(0)
+            record = {'label': label, 'root_identity': self.root_identity,
+                      'adapter_digest': self.root_digest, 'rng_digest': self._root_rng_digest,
+                      'fresh_empty_adam': True, 'native_cuda': self.native, 'backend_reset': receipt}
+            self.reset_receipts.append(record)
+            self.arm_update_counts[label] = 0
+            return record
+        return self._operation('reset', {'label': label}, perform)
+
+    def forward(self, response, grad=False):
+        need(type(response) is Response and type(grad) is bool, 'exact validated Response and grad bool')
+        def perform():
+            t = torch_module()
+            self.model.train(grad)
+            x = t.tensor([response.ids], dtype=t.long, device=self.device)
+            mask = t.tensor([response.attention], dtype=t.long, device=self.device)
+            # Full nonreentrant layer replay is intentional NEW instrumentation
+            # policy. It costs more than Torch's default early-stop replay, but
+            # makes every physical layer completion auditable and prebudgeted.
+            from torch.utils.checkpoint import set_checkpoint_early_stop
+            with t.set_grad_enabled(grad), (set_checkpoint_early_stop(False) if grad else nullcontext()):
+                logits = self.model(input_ids=x, attention_mask=mask, use_cache=False).logits
+                result = query_response_logps(logits, response)
+            need(bool(result.full16.requires_grad) == grad, 'requested real autograd path')
+            if grad:
+                self._pending_graphs += 1
+            return result
+        return self._operation('forward', {'grad': grad, 'input_positions': len(response.ids),
+                                          'response_tokens': len(response.body_eos)}, perform)
+
+    def backward(self, loss):
+        def perform():
+            t = torch_module()
+            need(t.is_tensor(loss) and loss.ndim == 0 and loss.dtype == t.float32 and loss.requires_grad,
+                 'real scalar FP32 autograd objective')
+            finite(loss, 'objective')
+            need(self._pending_graphs > 0, 'no backward without tracked live forward')
+            loss.backward()
+            self._pending_graphs = 0
+            self._backwards_since_commit += 1
+        return self._operation('backward', {'tracked_graphs': self._pending_graphs}, perform)
+
+    def commit(self, update_index):
+        need(type(update_index) is int and 1 <= update_index <= 4, 'exact four optimizer commits per arm')
+        def perform():
+            need(self.active_arm is not None and update_index == self.arm_updates + 1,
+                 'sequential matched-arm update cursor')
+            need(self._pending_graphs == 0 and self._backwards_since_commit > 0,
+                 'complete accumulated backward before Adam commit')
+            self._check_optimizer(self.arm_updates)
+            gradients = self.b.validate_gradients()
+            self._tick()
+            self.b.optimizer.step()
+            self.b.optimizer.zero_grad(set_to_none=True)
+            self.arm_updates = update_index
+            self.arm_update_counts[self.active_arm] = update_index
+            self._backwards_since_commit = 0
+            self._check_optimizer(update_index)
+            self.model.eval()
+            return {'update_index': update_index, 'gradients': gradients, 'native_cuda': self.native}
+        return self._operation('commit', {'update_index': update_index}, perform)
+
+    def memory(self, reset_peak=False):
+        need(type(reset_peak) is bool, 'explicit reset-peak flag')
+        self._tick()
+        self._sync()
+        if not self.native:
+            return {'evidence_kind': 'SYNTHETIC_CPU_ONLY', 'gpu_memory_verified': False}
+        t = torch_module()
+        if reset_peak:
+            t.cuda.reset_peak_memory_stats(0)
+        prop = t.cuda.get_device_properties(0)
+        return {'allocated': t.cuda.memory_allocated(0), 'reserved': t.cuda.memory_reserved(0),
+                'peak_allocated': t.cuda.max_memory_allocated(0), 'peak_reserved': t.cuda.max_memory_reserved(0),
+                'total': prop.total_memory, 'device': prop.name, 'reset_peak': reset_peak,
+                'evidence_kind': 'OBSERVED_NATIVE_CUDA'}
+
+    def checkpoint_roundtrip(self, arm, cursor, identity, probe, output):
+        """Save/reload current policy: two EXTRA physical TF probes, zero updates.
+
+        `probe` MUST be provenance-verified public support supplied by workflow,
+        never selected private pair labels. No hidden temporary optimizer step,
+        root reset or decoding. Current trained state is retained on success.
+        """
+        need(type(probe) is Response, 'fixed public Response checkpoint probe')
+        need(arm in ('baseline', 'ce', 'winner_sft', 'dpo') and type(identity) is dict and identity,
+             'explicit checkpoint scientific identity')
+        need(type(cursor) is dict and cursor.get('optimizer_updates') == self.arm_updates and
+             cursor.get('arm') == {'baseline': 'baseline', 'ce': 'winner_sft', 'winner_sft': 'winner_sft', 'dpo': 'dpo'}[arm] and
+             cursor.get('ttt_episode_updates') == 0, 'exact original backend checkpoint arm/cursor')
+        need(self._pending_graphs == 0 and self._backwards_since_commit == 0 and
+             all(p.grad is None for p in self.model.parameters()), 'checkpoint only at clean update boundary')
+        output = Path(output)
+        if self.native:
+            self._loaded.release.assert_output_path(output, allow_existing=False)
+        need(output.is_absolute() and not output.exists() and not output.is_symlink(), 'new absolute checkpoint directory')
+        def perform():
+            t = torch_module()
+            expected = (self.adapter_digest(), self.rng_digest(), self.optimizer_digest())
+            before = self.forward(probe, grad=False)
+            before_full = before.full16.detach().cpu().clone()
+            need(expected == (self.adapter_digest(), self.rng_digest(), self.optimizer_digest()),
+                 'public probe changed adapter/RNG/Adam')
+            saved = self.b.save_checkpoint(str(output), identity=identity, cursor=cursor,
+                                           max_total_bytes=CHECKPOINT_CAP)
+            actual_bytes = sum(p.stat().st_size for p in output.iterdir() if p.is_file())
+            need(actual_bytes <= CHECKPOINT_CAP, 'actual checkpoint fixed 780MiB cap')
+            restored = self.b.load_checkpoint(str(output), commit_sha256=saved['commit_sha256'],
+                                              identity=identity, cursor=cursor)
+            need(expected == (self.adapter_digest(), self.rng_digest(), self.optimizer_digest()),
+                 'exact adapter/RNG/Adam checkpoint roundtrip')
+            after = self.forward(probe, grad=False)
+            need(t.equal(before_full, after.full16.detach().cpu()), 'bitwise public full16 checkpoint logits')
+            need(expected == (self.adapter_digest(), self.rng_digest(), self.optimizer_digest()),
+                 'second public probe changed current policy/RNG/Adam')
+            self.model.eval()
+            return {'status': 'PASS_NATIVE_ROUNDTRIP' if self.native else 'PASS_SYNTHETIC_CPU_ROUNDTRIP',
+                    'native_cuda': self.native, 'saved': saved, 'restore': restored,
+                    'actual_checkpoint_bytes': actual_bytes, 'extra_public_probe_forwards': 2,
+                    'optimizer_updates': 0, 'trained_policy_unchanged': True,
+                    'adapter_digest': expected[0], 'rng_digest': expected[1], 'optimizer_digest': expected[2]}
+        return self._operation('checkpoint', {'arm': arm, 'extra_public_probe_forwards': 2}, perform)
+
+
+class NativeEngine(_EngineCore):
+    """Only production engine. No backend/device/fixture injection parameter."""
+    def __init__(self, loaded, *, hooks, deadline, generation_output):
+        need(type(loaded) is LoadedNativeBackend, 'verified native loader bundle required')
+        loaded.assert_native()
+        loaded.release.assert_output_path(generation_output, allow_existing=True)
+        need(type(deadline) in (int, float) and deadline <= loaded.release.science_deadline_epoch,
+             'engine cannot extend authenticated science deadline')
+        from .physical_audit import AuditHooks
+        need(type(hooks) is AuditHooks, 'native requires actual physical root/layer AuditHooks')
+        backend = loaded.backend
+        t = torch_module()
+        need(type(backend) is loaded.sources.module('cuda_backend').Backend,
+             'actual pinned Backend class, not duck-typed CUDA fixture')
+        need(t.__version__ == '2.8.0+cu128' and t.version.cuda == '12.8' and
+             t.cuda.is_available() and t.cuda.device_count() == 1, 'unchanged native Torch/CUDA profile')
+        properties = t.cuda.get_device_properties(0)
+        need('RTX PRO 6000' in properties.name.upper() and properties.total_memory >= 80 * 1024**3,
+             'original RTX PRO 6000 >=80GiB requirement')
+        need(sum(p.numel() for p in backend.trainable_parameters.values()) == 66060288,
+             'actual r32 seven-projection LoRA parameter count')
+        need(sum(p.numel() for p in backend.model.parameters() if not p.requires_grad) == 3633593856,
+             'actual material frozen base count')
+        need(backend.model.is_gradient_checkpointing is True, 'native checkpointed training enabled')
+        super().__init__(backend, hooks=hooks, deadline=deadline, native=True,
+                         root_identity_document={'backend_source': BACKEND_SHA, 'material': MATERIAL_SHA,
+                                                 'config': CONFIG_SHA, 'raw_tokenizer': RAW_TOKENIZER_SHA,
+                                                 'decoder_contract': DECODER_CONTRACT_SHA,
+                                                 'source_closure': loaded.sources.manifest_digest,
+                                                 'fresh_material_proof': loaded.proof_sha,
+                                                 'release': loaded.release_pin})
+        module = loaded.sources.module('topic_cuda')
+        self._loaded = loaded
+        self.engineering_receipt = None
+        self._engineering_active = False
+        self._generation = module.Engine(backend, str(generation_output),
+                                         {'max_checkpoint_bytes': CHECKPOINT_CAP, 'response_cap': 512},
+                                         deadline, self._emit_generation)
+        need(self._generation.policy_fingerprint() == self.root_identity == ORIGINAL_ROOT_POLICY_SHA,
+             'actual original root fingerprint mismatch; no identity rewriting')
+
+    def _check_native_policy(self):
+        t = torch_module()
+        need(t.get_float32_matmul_precision() == 'highest' and
+             not t.backends.cuda.matmul.allow_tf32 and not t.backends.cudnn.allow_tf32 and
+             not t.backends.cudnn.benchmark and t.backends.cudnn.deterministic and
+             t.are_deterministic_algorithms_enabled(), 'persistent FP32 no-TF32 deterministic policy')
+        need(t.backends.cuda.math_sdp_enabled() and not t.backends.cuda.flash_sdp_enabled() and
+             not t.backends.cuda.mem_efficient_sdp_enabled() and not t.backends.cuda.cudnn_sdp_enabled(),
+             'persistent original MATH-only SDPA policy')
+        need(self.model.config.use_cache is False and self.model.is_gradient_checkpointing is True,
+             'persistent no-cache checkpointed training policy')
+        configs = self.model.peft_config
+        need(set(configs) == {'default'}, 'single original adapter only')
+        config = configs['default']
+        need(config.r == 32 and config.lora_alpha == 32 and config.lora_dropout == 0 and
+             config.bias == 'none' and config.use_rslora is False and
+             set(config.target_modules) == {'q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj'},
+             'persistent seven-projection r32 alpha32 dropout0 LoRA contract')
+        checkpointed = [module for module in self.model.modules()
+                        if getattr(module, 'gradient_checkpointing', False) is True]
+        need(checkpointed and all(getattr(getattr(module, '_gradient_checkpointing_func', None),
+                                         'keywords', {}).get('use_reentrant') is False
+                                  for module in checkpointed), 'actual nonreentrant checkpoint callable')
+
+    def _assert_physical_hooks(self):
+        self._loaded.assert_native()
+        self._check_native_policy()
+        layers = tuple(self.model.get_base_model().model.layers)
+        need(len(layers) == 36, 'actual 36 decoder layers')
+        self.hooks.assert_installed(self.model, layers)
+
+    @property
+    def native_training_gate_passed(self):
+        return (not self._failed and self.engineering_receipt is not None and
+                self.engineering_receipt.get('status') == 'PASS_OBSERVED_NATIVE_ENGINEERING')
+
+    def forward(self, response, grad=False):
+        self._assert_physical_hooks()
+        need(not grad or self.engineering_receipt is not None or self._engineering_active,
+             'native training blocked until actual engineering gate')
+        return super().forward(response, grad=grad)
+
+    def commit(self, update_index):
+        self._assert_physical_hooks()
+        need(self.engineering_receipt is not None or self._engineering_active,
+             'native Adam blocked until actual engineering gate')
+        return super().commit(update_index)
+
+    def engineering_gate(self, public_probe, output):
+        """Extra paid public/synthetic work, not TRAIN37 work or quality evidence.
+
+        Caller authenticates public-support provenance before this method. The
+        rejected stress response is mechanically synthesized from public tokens,
+        not selected from private data; both live graphs have input shape3072.
+        Physical model/layer hooks remain installed for pinned diagnostic calls.
+        """
+        self._assert_physical_hooks()
+        need(self.engineering_receipt is None and not self._engineering_active,
+             'one native engineering gate, no repeat to rescue failure')
+        need(type(public_probe) is Response and public_probe.right_pad == 0,
+             'complete unpadded public-support probe required')
+        output = Path(output)
+        self._loaded.release.assert_output_path(output, allow_existing=False)
+        need(output.is_absolute() and not output.exists() and not output.is_symlink(),
+             'new absolute engineering directory')
+        self._loaded.sources.verify_assets()
+        output.mkdir(mode=0o700, parents=False, exist_ok=False)
+        self._engineering_active = True
+        try:
+            self.reset('engineering-support')
+            self.memory(reset_peak=True)
+            old_out = self._generation.out
+            self._generation.out = output
+            try:
+                five = self._operation('engineering_p1', {'public_synthetic_only': True},
+                                       lambda: self._loaded.sources.module('p1_gate').gate(self._generation))
+            finally:
+                self._generation.out = old_out
+            self._loaded.sources.verify_assets()
+            before = self.forward(public_probe, grad=False).full16.detach().cpu().clone()
+            support = self.forward(public_probe, grad=True)
+            loss = matched_ce_parent(support.selected, 1)
+            self.backward(loss)
+            self.commit(1)
+            need(self.adapter_digest() != self.root_digest, 'public support update must change adapter')
+            del loss, support
+            self.reset('engineering-two-live-dpo')
+            body = list(public_probe.body_eos)
+            need(0 <= body[0] <= 9, 'public stress grid starts with color')
+            body[0] = (body[0] + 1) % 10
+            chosen = Response(public_probe.prompt, public_probe.body_eos,
+                              3072 - len(public_probe.ids))
+            rejected = Response(public_probe.prompt, tuple(body),
+                                3072 - len(public_probe.ids))
+            rc = detached_reference(self.forward(chosen, grad=False), chosen)
+            rr = detached_reference(self.forward(rejected, grad=False), rejected)
+            live_c = self.forward(chosen, grad=True)
+            live_r = self.forward(rejected, grad=True)
+            assert_initial_equality((live_c, live_r), (rc, rr))
+            loss = dpo_parent(live_c.selected, live_r.selected, rc.selected, rr.selected, 1)
+            self.backward(loss)
+            self.commit(1)
+            need(self.adapter_digest() != self.root_digest, 'two-live DPO stress update must change adapter')
+            del live_c, live_r, loss, rc, rr
+            cursor = {'schema': 1, 'run_id': 'new-ps-public-engineering', 'arm': 'dpo',
+                      'phase': 'engineering_stress_completed', 'optimizer_updates': 1,
+                      'parent_ordinal': None, 'ttt_episode_updates': 0}
+            identity = {'purpose': 'PUBLIC_SYNTHETIC_ENGINEERING_NOT_TRAIN',
+                        'root_identity': self.root_identity, 'public_probe': public_probe.pin,
+                        'chosen_shape': 3072, 'rejected_shape': 3072}
+            restore = self.checkpoint_roundtrip('dpo', cursor, identity, public_probe,
+                                                output / 'stress.checkpoint')
+            measured = self.memory()
+            need(measured['peak_reserved'] <= measured['total'] * .90,
+                 'actual complete engineering peak VRAM <=90 percent')
+            self.reset('engineering-final-root')
+            after = self.forward(public_probe, grad=False).full16.detach().cpu()
+            need(torch_module().equal(before, after), 'engineering final root full16 exactly restored')
+            need(self.rng_digest() == self._root_rng_digest and self.adapter_digest() == self.root_digest,
+                 'engineering final exact root RNG and adapter')
+            self._check_optimizer(0)
+            self.engineering_receipt = {
+                'status': 'PASS_OBSERVED_NATIVE_ENGINEERING', 'native_cuda_executed': True,
+                'p1_original_gate': five, 'p1_native_field_is_legacy_tpu_only': True,
+                'actual_policy': 'FP32_RESIDENT_BASE_LORA_COMPUTE_NO_TF32_MATH_SDPA',
+                'public_probe': public_probe.pin, 'full_context_padded_two_live_graphs': [3072, 3072],
+                'extra_teacher_forced_forwards_excluding_p1': 9,
+                'extra_backwards': 2, 'extra_adam_commits': 2,
+                'checkpoint_recompute_policy': 'NONREENTRANT_FULL_REPLAY_EARLY_STOP_FALSE',
+                'p1_root_forwards': 24, 'p1_root_input_positions': 13150,
+                'checkpoint': restore, 'observed_memory': measured,
+                'root_restored_exactly': True, 'quality_evidence': False,
+                'physical_p1_calls': 'MUST_BE_RECORDED_BY_ATTACHED_ROOT_AND_LAYER_HOOKS'}
+            return self.engineering_receipt
+        except BaseException:
+            self._failed = True
+            raise
+        finally:
+            self._engineering_active = False
+
+    def _emit_generation(self, event, **fields):
+        # Original generate currently does not emit, but fail closed if changed.
+        need(False, 'unexpected original generation callback: ' + event)
+
+    def verify_policy_replay(self, row, deadline):
+        """Original per-parent six-token cache/full replay, explicitly extra work.
+
+        One probe per DEV parent per policy: 96 probes total, each 12 root calls
+        and <=5643 input positions. The sampler's per-EOS replay is additional.
+        """
+        self._assert_physical_hooks()
+        need(self.native_training_gate_passed, 'policy replay blocked until actual engineering gate')
+        need(type(row) is dict and type(row.get('ordinal')) is int and 0 <= row['ordinal'] < 32 and
+             type(row.get('prompt')) in (tuple, list) and 0 < len(row['prompt']) <= 2560 and
+             all(type(token) is int and 0 <= token < 16 and token != 13 for token in row['prompt']),
+             'original bounded public DEV parent replay')
+        need(type(deadline) in (int, float) and math.isfinite(deadline) and deadline <= self.deadline,
+             'policy replay fixed deadline')
+        need(self._pending_graphs == 0 and self._backwards_since_commit == 0,
+             'policy replay at clean completed update boundary')
+        public_row = {**row, 'prompt': list(row['prompt'])}
+        return self._operation('generation_replay', {'prompt_positions': len(row['prompt']),
+                                                    'synthetic_response_tokens': 6,
+                                                    'extra_root_calls': 12},
+                               lambda: self._generation.verify_policy_replay(public_row, deadline, self.deadline))
+
+    def generate(self, prompt, seed, cap, deadline):
+        self._assert_physical_hooks()
+        need(self.engineering_receipt is not None, 'generation blocked until actual engineering gate')
+        need(type(prompt) in (tuple, list) and all(type(x) is int and 0 <= x < 16 for x in prompt),
+             'original integer full16 prompt')
+        need(type(seed) is int and seed >= 0 and type(cap) is int and cap == 512,
+             'unchanged G2 seed/cap contract')
+        need(len(prompt) > 0 and len(prompt) + cap <= 3072 and
+             type(deadline) in (int, float) and math.isfinite(deadline) and deadline <= self.deadline,
+             'unchanged generation context/deadline')
+        need(self._pending_graphs == 0 and self._backwards_since_commit == 0,
+             'generation at clean completed update boundary')
+        return self._operation('generation', {'prompt_positions': len(prompt), 'response_cap': cap},
+                               lambda: self._generation.generate(list(prompt), seed, cap,
+                                                                 deadline, self.deadline))

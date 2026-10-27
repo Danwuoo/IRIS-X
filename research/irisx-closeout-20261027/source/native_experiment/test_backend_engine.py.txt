@@ -1,0 +1,273 @@
+"""CPU/source-only tests; NEVER invoke native loader, GPU, model or private data.
+Fixture checkpoint is memory+disk marker, NOT native serialization evidence.
+"""
+import ast, copy, hashlib, inspect, json, random, tempfile, time, types, unittest
+from pathlib import Path
+import numpy as np
+import torch
+from training.contracts import Response
+from training.fixtures import panel, prompt, tiny_backend
+from training.stage import CpuFixtureEngine
+from training.torch_ops import assert_initial_equality, detached_reference, dpo_parent, matched_ce_parent, query_response_logps
+from native_experiment import backend_load
+from native_experiment.backend_engine import _EngineCore, NativeEngine, ADAM, _rng_snapshot, _rng_restore
+
+class RecordingHooks:
+    def __init__(self): self.events=[]; self.fail_on=None
+    def before(self,event,fields):
+        self.events.append(('before',event,dict(fields)))
+        if self.fail_on==event: raise RuntimeError('synthetic observer failure')
+    def after(self,event,fields): self.events.append(('after',event,dict(fields)))
+    def failed(self,event,fields): self.events.append(('failed',event,dict(fields)))
+
+class SyntheticBackend:
+    """Tiny handwritten CPU algebra; cannot enter NativeEngine."""
+    def __init__(self):
+        random.seed(1729); np.random.seed(1729)
+        self.__dict__.update(vars(tiny_backend())); self.initial_rng=_rng_snapshot(False)
+        self.optimizer=torch.optim.Adam(self.trainable_parameters.values(),**ADAM)
+        self.barriers=0; self.checkpoints={}; self.corrupt_restore=None
+    def reset_root(self):
+        self.model.zero_grad(set_to_none=True)
+        with torch.no_grad():
+            for n,p in self.trainable_parameters.items(): p.copy_(self.initial_adapter[n])
+        self.optimizer.state.clear(); _rng_restore(self.initial_rng,False)
+        return {'fixture_only':True,'not_native_reset_evidence':True}
+    def barrier(self): self.barriers+=1
+    def validate_gradients(self):
+        norm=0.
+        for p in self.trainable_parameters.values():
+            if p.grad is None or not torch.isfinite(p.grad).all(): raise ValueError('missing/nonfinite fixture gradient')
+            norm+=float(p.grad.square().sum())
+        return {'squared_l2':norm,'synthetic_only':True}
+    def save_checkpoint(self,path,*,identity,cursor,max_total_bytes):
+        root=Path(path);root.mkdir(); assert max_total_bytes==780*1024**2
+        raw=json.dumps({'identity':identity,'cursor':cursor},sort_keys=True).encode()
+        (root/'SYNTHETIC-MARKER.json').write_bytes(raw);pin=hashlib.sha256(raw).hexdigest()
+        self.checkpoints[path]=(copy.deepcopy(self.model.state_dict()),copy.deepcopy(self.optimizer.state_dict()),_rng_snapshot(False),copy.deepcopy(identity),copy.deepcopy(cursor),pin)
+        return {'path':path,'commit_sha256':pin,'synthetic_only':True}
+    def load_checkpoint(self,path,*,commit_sha256,identity,cursor):
+        state,opt,rng,expected_identity,expected_cursor,pin=self.checkpoints[path]
+        assert (identity,cursor,commit_sha256)==(expected_identity,expected_cursor,pin)
+        with torch.no_grad():
+            for n,p in self.trainable_parameters.items():p.copy_(state[n])
+        self.optimizer.load_state_dict(copy.deepcopy(opt));_rng_restore(rng,False)
+        if self.corrupt_restore=='adapter':
+            with torch.no_grad():next(iter(self.trainable_parameters.values())).flatten()[0].add_(1)
+        elif self.corrupt_restore=='rng':random.random()
+        elif self.corrupt_restore=='adam':next(iter(self.optimizer.state.values()))['exp_avg'].flatten()[0].add_(1)
+        return {'restored':True,'synthetic_only':True}
+
+class SyntheticEngine(_EngineCore):
+    def __init__(self,backend=None,hooks=None):
+        b=backend or SyntheticBackend()
+        if b.mode!='cpu' or b.bindings.get('tiny_fixture')is not True:raise ValueError('synthetic CPU only')
+        super().__init__(b,hooks=hooks or RecordingHooks(),deadline=time.time()+300,native=False,root_identity_document={'fixture':'HANDWRITTEN_CPU'})
+
+class EngineCpuTests(unittest.TestCase):
+    def setUp(self):
+        self.engine=SyntheticEngine();self.response=Response(prompt(),(1,15));self.engine.reset('ce')
+    def update_once(self,e=None):
+        e=e or self.engine;v=e.forward(self.response,grad=True);e.backward(matched_ce_parent(v.selected,1));e.commit(1)
+    def cursor(self,updates=1):
+        return dict(schema=1,run_id='fixture',arm='winner_sft',phase='complete',optimizer_updates=updates,parent_ordinal=None,ttt_episode_updates=0)
+    def test_one_shift_full16_padding(self):
+        r=Response(prompt(),(1,2,15),7);v=self.engine.forward(r)
+        with torch.no_grad():z=self.engine.model(input_ids=torch.tensor([r.ids]),attention_mask=torch.tensor([r.attention]),use_cache=False).logits
+        direct=query_response_logps(z,r)
+        self.assertTrue(torch.equal(v.full16,direct.full16));self.assertEqual(v.full16.shape,(3,16))
+        self.assertFalse(v.full16.requires_grad);self.assertTrue(torch.isfinite(v.full16[:,11:15]).all())
+    def test_real_autograd_changes_only_adapter(self):
+        frozen={n:p.clone()for n,p in self.engine.model.named_parameters()if not p.requires_grad};self.update_once()
+        self.assertNotEqual(self.engine.adapter_digest(),self.engine.root_digest);self.assertEqual(self.engine.arm_updates,1)
+        for n,p in self.engine.model.named_parameters():
+            if n in frozen:self.assertTrue(torch.equal(p,frozen[n]));self.assertIsNone(p.grad)
+        self.engine.check_frozen()
+    def test_exact_rng_adapter_fresh_adam_reset(self):
+        rng=self.engine.rng_digest();opt=self.engine.b.optimizer;self.update_once()
+        random.random();np.random.random();torch.rand(2);self.engine.reset('dpo')
+        self.assertEqual(self.engine.rng_digest(),rng);self.assertEqual(self.engine.adapter_digest(),self.engine.root_digest)
+        self.assertIsNot(opt,self.engine.b.optimizer);self.assertFalse(self.engine.b.optimizer.state)
+        self.assertEqual(self.engine.arm_updates,0);self.assertFalse(self.engine.reset_receipts[-1]['native_cuda'])
+    def test_two_live_3072_dpo_graphs_initial_equal(self):
+        c=Response(prompt(),(1,15),3072-len(self.response.ids));r=Response(prompt(),(2,15),3072-len(self.response.ids))
+        rc=detached_reference(self.engine.forward(c),c);rr=detached_reference(self.engine.forward(r),r)
+        lc=self.engine.forward(c,grad=True);lr=self.engine.forward(r,grad=True)
+        self.assertEqual(self.engine._pending_graphs,2);self.assertEqual(assert_initial_equality((lc,lr),(rc,rr)),0)
+        self.engine.backward(dpo_parent(lc.selected,lr.selected,rc.selected,rr.selected,1));self.engine.commit(1)
+        self.assertNotEqual(self.engine.adapter_digest(),self.engine.root_digest)
+    def test_frozen_version_denied(self):
+        with torch.no_grad():self.engine.model.embedding.add_(1)
+        with self.assertRaisesRegex(ValueError,'frozen base'):self.engine.forward(self.response)
+        self.assertTrue(self.engine._failed)
+    def test_frozen_gradient_denied(self):
+        self.engine.model.embedding.grad=torch.zeros_like(self.engine.model.embedding)
+        with self.assertRaisesRegex(ValueError,'frozen base'):self.engine.check_frozen()
+    def test_parameter_replacement_denied(self):
+        self.engine.model.head=torch.nn.Parameter(self.engine.model.head.clone(),requires_grad=False)
+        with self.assertRaisesRegex(ValueError,'identity'):self.engine.check_frozen()
+    def test_binding_mutation_denied(self):
+        self.engine.b.bindings['mutated']=True
+        with self.assertRaisesRegex(ValueError,'bindings'):self.engine.check_frozen()
+    def test_base_requires_grad_denied(self):
+        self.engine.model.head.requires_grad_(True)
+        with self.assertRaisesRegex(ValueError,'membership'):self.engine.check_frozen()
+    def test_missing_gradient_denied(self):
+        v=self.engine.forward(self.response,grad=True);self.engine.backward(matched_ce_parent(v.selected,1))
+        next(iter(self.engine.trainable.values())).grad=None
+        with self.assertRaisesRegex(ValueError,'gradient'):self.engine.commit(1)
+    def test_nan_gradient_denied(self):
+        v=self.engine.forward(self.response,grad=True);self.engine.backward(matched_ce_parent(v.selected,1))
+        next(iter(self.engine.trainable.values())).grad.flatten()[0]=float('nan')
+        with self.assertRaisesRegex(ValueError,'gradient'):self.engine.commit(1)
+    def test_adam_tamper_denied(self):
+        v=self.engine.forward(self.response,grad=True);self.engine.backward(matched_ce_parent(v.selected,1));self.engine.b.optimizer.param_groups[0]['lr']=1e-3
+        with self.assertRaisesRegex(ValueError,'hyperparameters'):self.engine.commit(1)
+    def test_duplicate_fifth_commit_denied(self):
+        self.update_once()
+        with self.assertRaisesRegex(ValueError,'cursor'):self.engine.commit(1)
+        with self.assertRaisesRegex(ValueError,'four'):SyntheticEngine().commit(5)
+    def test_no_backward_commit_denied(self):
+        with self.assertRaisesRegex(ValueError,'backward'):self.engine.commit(1)
+    def test_pending_graph_reset_denied(self):
+        self.engine.forward(self.response,grad=True)
+        with self.assertRaisesRegex(ValueError,'clean update'):self.engine.reset('dpo')
+    def test_observer_failure_poison(self):
+        self.engine.hooks.fail_on='forward'
+        with self.assertRaisesRegex(RuntimeError,'observer'):self.engine.forward(self.response)
+        self.engine.hooks.fail_on=None
+        with self.assertRaisesRegex(ValueError,'UNKNOWN'):self.engine.forward(self.response)
+        self.assertTrue(any(e[0]=='failed'for e in self.engine.hooks.events))
+    def test_expired_deadline(self):
+        self.engine.deadline=time.time()-1
+        with self.assertRaisesRegex(ValueError,'deadline'):self.engine.forward(self.response)
+    def test_sync_and_mandatory_hooks(self):
+        n=self.engine.b.barriers;self.engine.forward(self.response);self.assertEqual(self.engine.b.barriers-n,2)
+        self.assertEqual([e[0]for e in self.engine.hooks.events if e[1]=='forward'],['before','after'])
+        with self.assertRaisesRegex(ValueError,'mandatory'):SyntheticEngine(hooks=object())
+    def test_cpu_memory_not_native_evidence(self):
+        self.assertEqual(self.engine.memory()['evidence_kind'],'SYNTHETIC_CPU_ONLY');self.assertFalse(self.engine.memory()['gpu_memory_verified'])
+    def test_checkpoint_preserves_policy_counts_two_probes(self):
+        self.update_once();before=(self.engine.adapter_digest(),self.engine.optimizer_digest(),self.engine.rng_digest());self.engine.hooks.events.clear()
+        with tempfile.TemporaryDirectory()as tmp:receipt=self.engine.checkpoint_roundtrip('ce',self.cursor(),{'fixture':True},self.response,Path(tmp)/'cp')
+        self.assertEqual(receipt['status'],'PASS_SYNTHETIC_CPU_ROUNDTRIP')
+        self.assertEqual(before,(self.engine.adapter_digest(),self.engine.optimizer_digest(),self.engine.rng_digest()))
+        self.assertEqual(sum(e[0]=='before'and e[1]=='forward'for e in self.engine.hooks.events),2);self.assertEqual(self.engine.arm_updates,1)
+    def test_checkpoint_adapter_rng_adam_corruption_denied(self):
+        for case in ('adapter','rng','adam'):
+            with self.subTest(case=case),tempfile.TemporaryDirectory()as tmp:
+                e=SyntheticEngine();e.reset('ce');self.update_once(e);e.b.corrupt_restore=case
+                with self.assertRaisesRegex(ValueError,'roundtrip'):e.checkpoint_roundtrip('ce',self.cursor(),{'fixture':True},self.response,Path(tmp)/'cp')
+                self.assertTrue(e._failed)
+    def test_checkpoint_wrong_cursor_overwrite_denied(self):
+        with tempfile.TemporaryDirectory()as tmp:
+            with self.assertRaisesRegex(ValueError,'cursor'):self.engine.checkpoint_roundtrip('ce',self.cursor(),{'fixture':True},self.response,Path(tmp)/'cp')
+            with self.assertRaisesRegex(ValueError,'new absolute'):self.engine.checkpoint_roundtrip('ce',self.cursor(0),{'fixture':True},self.response,Path(tmp))
+    def test_actual_nonreentrant_checkpoint_full_replay_is_physically_counted(self):
+        from torch.utils.checkpoint import checkpoint
+        from native_experiment.physical_audit import AuditHooks
+        class Block(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.head=torch.nn.Parameter(torch.randn(8,16)*.2,requires_grad=False)
+                self.lora_A=torch.nn.Parameter(torch.randn(8,32)*.03)
+                self.lora_B=torch.nn.Parameter(torch.zeros(32,16))
+            def forward(self,x):return x@self.head+(x@self.lora_A)@self.lora_B
+        class Model(torch.nn.Module):
+            def __init__(self):
+                super().__init__();self.embedding=torch.nn.Parameter(torch.randn(16,8)*.2,requires_grad=False);self.block=Block()
+            def forward(self,input_ids,attention_mask,use_cache=False):
+                x=self.embedding[input_ids]*attention_mask[:,:,None]
+                z=checkpoint(self.block,x,use_reentrant=False)if self.training else self.block(x)
+                return types.SimpleNamespace(logits=z)
+        b=SyntheticBackend();b.model=Model();b.trainable_parameters={n:p for n,p in b.model.named_parameters()if p.requires_grad}
+        b.initial_adapter={n:p.detach().clone()for n,p in b.trainable_parameters.items()}
+        b.optimizer=torch.optim.Adam(b.trainable_parameters.values(),**ADAM)
+        default_backend=copy.deepcopy(b)
+        default=CpuFixtureEngine(default_backend);default.reset('ce')
+        hooks=AuditHooks(science_deadline=time.time()+60,emit=lambda kind,fields:None,max_root_calls=10,max_root_input_positions=10000,max_layer_calls=20)
+        hooks.install(b.model,[b.model.block]);hooks.set_phase('SYNTHETIC_NONREENTRANT_REPLAY')
+        e=SyntheticEngine(b,hooks);e.reset('ce');v=e.forward(self.response,grad=True);e.backward(matched_ce_parent(v.selected,1))
+        other=default.forward(self.response,grad=True);default.backward(matched_ce_parent(other.selected,1))
+        for name,p in e.trainable.items():self.assertTrue(torch.equal(p.grad,default.trainable[name].grad))
+        e.commit(1);default.commit(1)
+        for name,p in e.trainable.items():self.assertTrue(torch.equal(p,default.trainable[name]))
+        snap=hooks.snapshot();self.assertEqual(snap['root_forward_completions'],1)
+        self.assertEqual(snap['decoder_layer_execution_completions'],2)
+        self.assertEqual(snap['decoder_layer_unknown'],0);self.assertEqual(snap['operation_unknown'],0)
+        hooks.close()
+
+    def test_frozen_stage_parity_four_updates_each_arm(self):
+        for arm in ('ce','dpo'):
+            with self.subTest(arm=arm):
+                left=SyntheticEngine();right=CpuFixtureEngine(tiny_backend());left.reset(arm);right.reset(arm)
+                refs=[(detached_reference(left.forward(p.chosen),p.chosen),detached_reference(left.forward(p.rejected),p.rejected))for p in panel().pairs]
+                for update in range(1,5):
+                    for i,p in enumerate(panel().pairs):
+                        losses=[]
+                        for e in (left,right):
+                            c=e.forward(p.chosen,grad=True)
+                            if arm=='ce':loss=matched_ce_parent(c.selected,2)
+                            else:
+                                r=e.forward(p.rejected,grad=True);loss=dpo_parent(c.selected,r.selected,refs[i][0].selected,refs[i][1].selected,2)
+                            losses.append(loss.detach().clone());e.backward(loss)
+                        self.assertTrue(torch.equal(losses[0],losses[1]))
+                    left.commit(update);right.commit(update)
+                    for n in left.trainable:self.assertTrue(torch.equal(left.trainable[n],right.trainable[n]))
+                self.assertEqual(left.arm_updates,4)
+
+class NativeBoundarySourceTests(unittest.TestCase):
+    """No native loader calls: only source inspection and source byte verification."""
+    def test_native_engine_rejects_fake_pass_cpu(self):
+        for v in (SyntheticBackend(),{'status':'PASS','mode':'cuda'},types.SimpleNamespace(mode='cuda',status='PASS')):
+            with self.assertRaisesRegex(ValueError,'verified native'):NativeEngine(v,hooks=RecordingHooks(),deadline=time.time()+1,generation_output='/tmp/not-created')
+    def test_bundle_factory_required(self):
+        with self.assertRaisesRegex(ValueError,'factory'):backend_load.LoadedNativeBackend(object(),None,None,None,None,None)
+    def test_native_hardware_package_gates_retained(self):
+        s=inspect.getsource(NativeEngine)
+        for token in ('2.8.0+cu128','12.8','RTX PRO 6000','80 * 1024**3','66060288','3633593856','ORIGINAL_ROOT_POLICY_SHA','is_gradient_checkpointing'):self.assertIn(token,s)
+        self.assertNotIn('create_tiny_cpu_backend',s)
+    def test_loader_requires_release_twice_before_work(self):
+        s=inspect.getsource(backend_load.load_native_backend);ast.parse(s)
+        self.assertEqual(s.count('release.verify_before_load()'),2)
+        self.assertLess(s.index('release.verify_before_load()'),s.index('_reuse_preflight_sources(device_preflight, runtime_root, release)'))
+        reused=inspect.getsource(backend_load._reuse_preflight_sources);ast.parse(reused)
+        self.assertLess(reused.index('preflight.release is release'),reused.index('verify_source_closure(runtime_root)'))
+        self.assertLess(reused.index('verify_source_closure(runtime_root)'),reused.index('return preflight.sources'))
+        self.assertIn('fresh._blobs == preflight.sources._blobs',reused)
+        for token in ('type(release) is NativeRelease',"mode='cuda'",'enable_cuda_execution=True','module.verify_material(','sys.flags.isolated == 1'):self.assertIn(token,s)
+    def test_verified_source_not_ambient_pycache_path(self):
+        s=inspect.getsource(backend_load.VerifiedSources.module)
+        for token in ('exec(compile(blob, path',"builtins_map['__import__'] = checked_import",'hashlib.sha256(blob)'):self.assertIn(token,s)
+        self.assertNotIn('spec_from_file_location',s);self.assertNotIn('sys.path',s)
+    def test_fixed_closed_source_manifest(self):
+        self.assertEqual(len(backend_load.SOURCE_PINS),22);self.assertEqual(len(backend_load.ASSET_PINS),1)
+        for n,(path,pin)in backend_load.SOURCE_PINS.items():
+            self.assertTrue(path.endswith('.py'));self.assertEqual(len(pin),64);self.assertNotIn('target',path);self.assertNotIn('pairpack',path)
+        with self.assertRaises(TypeError):backend_load.SOURCE_PINS['x']=('x','x')
+    def test_original_source_bytes_verified_no_execution(self):
+        root=Path(__file__).resolve().parents[3]/'recovery-20261026-2212/iris/kaggle-original/supply96/source-recovered-offline/runtime'  # V5 copy adds one directory; original public source stays read-only
+        s=backend_load.verify_source_closure(root);self.assertEqual(s._modules,{});self.assertEqual(len(s._blobs),22);s.verify_assets()
+    def test_source_tamper_before_import(self):
+        with tempfile.TemporaryDirectory()as tmp:
+            p=Path(tmp);(p/'vendor').mkdir();(p/'vendor/active_stage.py').write_text('raise AssertionError("not executed")')
+            with self.assertRaisesRegex(ValueError,'hash mismatch'):backend_load.verify_source_closure(p)
+    def test_symlink_source_denied(self):
+        with tempfile.TemporaryDirectory()as tmp:
+            p=Path(tmp);(p/'vendor').mkdir();(p/'original').write_text('must not execute');(p/'vendor/active_stage.py').symlink_to(p/'original')
+            with self.assertRaisesRegex(ValueError,'symlink'):backend_load.verify_source_closure(p)
+    def test_original_per_parent_and_candidate_replay_are_preserved(self):
+        replay=inspect.getsource(NativeEngine.verify_policy_replay)
+        generate=inspect.getsource(NativeEngine.generate)
+        self.assertIn('self._generation.verify_policy_replay(public_row, deadline, self.deadline)',replay)
+        self.assertIn("'extra_root_calls': 12",replay)
+        self.assertIn('self._generation.generate(list(prompt)',generate)
+        self.assertNotIn('multinomial',generate)
+
+    def test_engineering_actual_checks_not_assumed_pass(self):
+        s=inspect.getsource(NativeEngine.engineering_gate)
+        for token in ('p1_gate','3072','dpo_parent','checkpoint_roundtrip',"['peak_reserved']",'* .90',"reset('engineering-final-root')","'quality_evidence': False"):self.assertIn(token,s)
+        self.assertIn('self.engineering_receipt is not None',inspect.getsource(NativeEngine.generate))
+        self.assertIn('self.engineering_receipt is not None',inspect.getsource(NativeEngine.forward))
+
+if __name__=='__main__':unittest.main()

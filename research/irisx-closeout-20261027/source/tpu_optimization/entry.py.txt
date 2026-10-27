@@ -1,0 +1,246 @@
+"""NEW thin p4 public-SFT entry. DEFAULT DISABLED; never an authorization grant.
+
+Outer owner binds exact config/source and actual allocation/budget/IAM/watchdog.
+This file consumes that immutable config, keeps original device/material guards,
+and runs producer -> true process exit -> cold consumer under the same clock.
+No cloud API, uploader, installer, private target reader or new auth framework.
+"""
+from __future__ import annotations
+import argparse
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import platform
+import stat
+import sys
+import time
+import types
+
+FILES={'entry.py','runtime.py','source_loader.py','portable_adapter.py'}
+FIELDS={'schema','run_id','science_root','schedule_source','zero_demo_source','project_root',
+        'census_path','model_dir','material_receipt','output_root','allocation_epoch',
+        'science_deadline_epoch','hard_deadline_epoch','root_release_sha256',
+        'adapter_manifest_sha256','adapter_manifest_path','expected_accelerator_type',
+        'expected_zone','native_admitted'}
+
+
+def need(ok,message):
+    if not ok:raise ValueError(message)
+
+
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+
+
+def read_exact(path,pin,cap=2*1024**2):
+    p=Path(path)
+    need(p.is_absolute() and not any(q.is_symlink() for q in (p,*p.parents)), 'absolute nonsymlink input')
+    with p.open('rb') as f:
+        a=os.fstat(f.fileno());need(stat.S_ISREG(a.st_mode) and a.st_size<=cap, 'bounded regular input')
+        raw=f.read(cap+1);b=os.fstat(f.fileno())
+    need((a.st_dev,a.st_ino,a.st_size,a.st_mtime_ns,a.st_ctime_ns)==
+         (b.st_dev,b.st_ino,b.st_size,b.st_mtime_ns,b.st_ctime_ns), 'changed input')
+    need(sha(raw)==pin, 'exact source/config pin')
+    return raw
+
+
+def hex64(v):return type(v)is str and len(v)==64 and all(c in '0123456789abcdef' for c in v)
+
+
+def validate_config(c):
+    need(type(c)is dict and set(c)==FIELDS and c['schema']=='new-ps-tpu-public-sft8-run/v1', 'closed new public-only config; no target fields')
+    need(c['native_admitted'] is True, 'root-bound actual run config remains disabled until release')
+    need(type(c['run_id'])is str and c['run_id'].startswith('irisx-ps-public-sft8-') and len(c['run_id'])<=120, 'new public-only run identity')
+    need(c['expected_accelerator_type']=='v5litepod-4' and c['expected_zone']=='us-west4-a', 'exact prospective four-chip profile')
+    need(hex64(c['root_release_sha256']) and hex64(c['adapter_manifest_sha256']), 'outer release/source binding, NOT authentication by this helper')
+    for key in ('allocation_epoch','science_deadline_epoch','hard_deadline_epoch'):
+        need(type(c[key])in(int,float) and math.isfinite(c[key]), 'finite allocation clocks')
+    need(c['science_deadline_epoch']==c['allocation_epoch']+9600 and
+         c['hard_deadline_epoch']==c['allocation_epoch']+10800, 'same 3h allocation clock;1200s cleanup reserve')
+    for key in ('science_root','schedule_source','zero_demo_source','project_root','census_path',
+                'model_dir','material_receipt','output_root','adapter_manifest_path'):
+        need(type(c[key])is str and Path(c[key]).is_absolute(), 'absolute configured path')
+    return c
+
+
+def bootstrap(c):
+    """Verify four NEW executable members before importing either dependency."""
+    root=Path(__file__).absolute().parent
+    manifest=json.loads(read_exact(c['adapter_manifest_path'],c['adapter_manifest_sha256']))
+    need(set(manifest)==FILES, 'exact four executable adapter source members')
+    blobs={}
+    for name,row in manifest.items():
+        need(set(row)=={'sha256','bytes'} and hex64(row['sha256']), 'closed adapter source entry')
+        raw=read_exact(root/name,row['sha256']);need(len(raw)==row['bytes'], 'adapter source length')
+        blobs[name]=raw
+    package='_verified_public_tpu_'+c['adapter_manifest_sha256'][:16]
+    need(package not in sys.modules, 'fresh verified adapter namespace')
+    parent=types.ModuleType(package);parent.__path__=[];sys.modules[package]=parent
+    result={}
+    for stem in ('source_loader','runtime','portable_adapter'):
+        name=package+'.'+stem;m=types.ModuleType(name);m.__file__=str(root/(stem+'.py'))
+        m.__package__=package;m.__cached__=None;sys.modules[name]=m
+        exec(compile(blobs[stem+'.py'],m.__file__,'exec',dont_inherit=True),m.__dict__)
+        result[stem]=m
+    return result
+
+
+def write(path,value):
+    raw=json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()+b'\n'
+    need(len(raw)<1024**2, 'bounded new receipt')
+    with Path(path).open('xb') as f:f.write(raw);f.flush();os.fsync(f.fileno())
+    return sha(raw)
+
+
+def native_host_guard():
+    need(sys.flags.isolated==1 and sys.flags.dont_write_bytecode==1, 'native Python -I -B required')
+    need(platform.python_implementation()=='CPython' and sys.version_info[:2]==(3,12) and platform.machine()=='x86_64', 'original CPython3.12 x86_64 profile')
+    need(os.environ.get('TORCH_DEVICE_BACKEND_AUTOLOAD','1')!='0', 'actual TPU autoload, no CPU fallback')
+
+
+def load_bound_sources(mods,c,config_sha):
+    s=mods['source_loader'].load_sources(c['science_root'],c['schedule_source'],c['zero_demo_source'])
+    s.identity.update(new_adapter_manifest_sha256=c['adapter_manifest_sha256'],
+                      immutable_run_config_sha256=config_sha,outer_root_release_sha256=c['root_release_sha256'])
+    return s
+
+
+def common_args(a,mode,phase=None):
+    args=[sys.executable,'-I','-B',str(Path(__file__).absolute()),'--mode',mode,
+          '--config',a.config,'--config-sha',a.config_sha,'--execute-reviewed-native']
+    if phase:args+=['--phase',phase]
+    if a.material_proof_sha:args+=['--material-proof-sha',a.material_proof_sha]
+    if a.handoff_sha:args+=['--handoff-sha',a.handoff_sha]
+    return args
+
+
+def rank_argv(a):
+    argv=[sys.executable,'-I','-B','-m','torch.distributed.run','--standalone','--nnodes=1',
+          '--nproc-per-node=4','--max-restarts=0','--run-path','--start-method=spawn']
+    return argv+common_args(a,'rank',a.phase)[3:]
+
+
+def launch(a,c,s,mods):
+    clock=mods['runtime'].Clock(c['science_deadline_epoch']);clock.tick()
+    vmem=s.module('launch_four_rank').configure_vmem_environment()
+    os.environ['HF_HUB_OFFLINE']='1';os.environ['OMP_NUM_THREADS']='1'
+    import torch
+    count=int(torch.accelerator.device_count()) if hasattr(torch,'tpu') else 0
+    need(count==4, 'actual parent four physical TPU devices')
+    torch.tpu.distributed.set_tpu_launch_env(nnodes=1,nproc_per_node=4)
+    report=Path(c['output_root'])/('device-'+a.phase);report.mkdir(exist_ok=False)
+    record={'schema':1,'phase':a.phase,'world_size':4,'compiler_environment':vmem,
+            'actual_parent_physical_device_count':count,'expected_accelerator_type':'v5litepod-4',
+            'science_deadline':c['science_deadline_epoch'],'run_id':c['run_id'],
+            'source_sha256':c['adapter_manifest_sha256']}
+    pin=write(report/'launch.json',record)
+    os.environ['IRIS_TPU_DEVICE_REPORT_ROOT']=str(report)
+    os.environ['IRIS_TPU_PARENT_LAUNCH_PATH']=str(report/'launch.json')
+    os.environ['IRIS_TPU_PARENT_LAUNCH_SHA256']=pin
+    clock.tick();os.execv(sys.executable,rank_argv(a))
+
+
+def rank(a,c,s,mods):
+    need(hex64(a.material_proof_sha), 'same actual fresh material-proof SHA')
+    s.module('launch_four_rank').configure_vmem_environment()
+    mb=s.module('model_backend')
+    # Two exact-source loader substitutions only: eliminate original file-loader
+    # pycache/path lookup; original device initialize and SimpleFSDP bytes unchanged.
+    def initialize(mode):
+        need(mode=='tpu', 'native-only original device path');mb.versions()
+        return s.module('device_contract').initialize()
+    mb.initialize_device=initialize
+    mb._load_fsdp=lambda:s.module('simple_fsdp')
+    import random
+    import numpy as np
+    import torch
+    random.seed(1729);np.random.seed(1729);torch.manual_seed(1729)
+    data=mods['runtime'].materialize_public_schedule(s,c['project_root'],c['census_path'])
+    clock=mods['runtime'].Clock(c['science_deadline_epoch']);clock.tick()
+    b=mb.load_backend(c['model_dir'],str(Path(c['output_root'])/'MATERIAL-PROOF.json'),
+                      a.material_proof_sha,mode='tpu',seed=1729)
+    clock.tick()
+    r=mods['runtime'].NativeRuntime(s,data,b,Path(c['output_root'])/'state',c['run_id'],c['science_deadline_epoch'])
+    if a.phase=='produce':return r.produce()
+    need(hex64(a.handoff_sha), 'exact parent-sealed four-rank handoff')
+    handoff=json.loads(read_exact(Path(c['output_root'])/'PRODUCER-RECEIPTS.json',a.handoff_sha))
+    need(set(handoff)=={'0','1','2','3'}, 'four exact producer receipts')
+    return r.consume(handoff[str(b.rank)])
+
+
+def pipeline(a,c,s,mods):
+    clock=mods['runtime'].Clock(c['science_deadline_epoch']);clock.tick()
+    root=Path(c['output_root'])
+    need(not any(p.is_symlink() for p in (root,*root.parents)), 'owned output ancestors')
+    root.mkdir(exist_ok=False);(root/'state').mkdir()
+    import shutil
+    need(shutil.disk_usage(root).free>=4*1024**3, 'reserve four full checkpoints plus receipts before material load')
+    s.module('launch_four_rank').configure_vmem_environment()
+    os.environ['HF_HUB_OFFLINE']='1';os.environ['OMP_NUM_THREADS']='1'
+    import torch
+    need(hasattr(torch,'tpu') and int(torch.accelerator.device_count())==4, 'actual TPU4 before model material bodies')
+    mb=s.module('model_backend');mb.versions();clock.tick()
+    proof=mb.verify_material(c['model_dir'],c['material_receipt'],mb.MATERIAL_RECEIPT_SHA)
+    a.material_proof_sha=mb.exclusive_json(root/'MATERIAL-PROOF.json',proof);clock.tick()
+    supervise=s.module('native_supervisor').supervise
+    phases=[]
+    for phase in ('produce','consume'):
+        clock.tick()
+        seconds=int(min(c['science_deadline_epoch']-time.time(),clock.monotonic_end-time.monotonic()))
+        need(seconds>0, 'no expired phase dispatch')
+        result=supervise(common_args(a,'launch',phase),root/('supervisor-'+phase),max_seconds=seconds,log_cap=8*1024**2)
+        need(result['returncode']==0 and result['reason'] is None, 'native owned phase failed; no retry')
+        phases.append(result);clock.tick()
+        if phase=='produce':
+            handoff={}
+            for i in range(4):
+                p=root/'state'/f'PRODUCER.rank-{i}.json'
+                need(p.is_file() and not p.is_symlink() and p.stat().st_size<1024**2, 'four bounded producer receipts')
+                raw=p.read_bytes();row=json.loads(raw)
+                need(row['rank']==i and row['world']==4 and row['study_updates']==8 and row['native_executed'] is True, 'producer actual native8')
+                handoff[str(i)]=sha(raw)
+            a.handoff_sha=write(root/'PRODUCER-RECEIPTS.json',handoff)
+    commits=set();pids=set()
+    for i in range(4):
+        p=root/'state'/f'CONSUMER.rank-{i}.json'
+        need(p.is_file() and not p.is_symlink() and p.stat().st_size<1024**2, 'four bounded consumer receipts')
+        row=json.loads(p.read_bytes())
+        need(row['rank']==i and row['world']==4 and row['status']=='COMPLETE_SFT8_AND_EXACT_COLD_REPLAY8' and
+             row['native_executed'] is True and row['final_retained_cursor']==8, 'all four actual final cursors')
+        commits.add(row['checkpoint8']['commit_sha256']);pids.add(row['consumer_pid'])
+    need(len(commits)==1 and len(pids)==4, 'same complete checkpoint8 and four actual consumer workers')
+    clock.tick()
+    portable=mods['portable_adapter'].export_checkpoint8(root/'state/checkpoint-8',next(iter(commits)),
+             Path(c['model_dir'])/'config.json',root/'portable-adapter-8',clock)
+    clock.tick()
+    result={'status':'COMPLETE_PUBLIC_SFT8_COLD_REPLAY_NOT_QUALITY_PROOF','run_id':c['run_id'],
+            'config_sha256':a.config_sha,'adapter_manifest_sha256':c['adapter_manifest_sha256'],
+            'root_release_sha256':c['root_release_sha256'],'allocation_epoch':c['allocation_epoch'],
+            'science_deadline_epoch':c['science_deadline_epoch'],'hard_deadline_epoch':c['hard_deadline_epoch'],
+            'phases':phases,'final_checkpoint_commit_sha256':next(iter(commits)),
+            'full_checkpoint_cursors':[2,4,7,8],'portable_adapter':portable,'study_logical_response_tokens':122894,
+            'extra_cold_replay_response_tokens':15675,'monitor_response_tokens':7860,
+            'HF_ready':False,'provider_resources_deleted':False,'automatic_upload':False,'quality_score':None}
+    write(root/'SUMMARY.json',result)
+    return result
+
+
+def main(argv=None):
+    p=argparse.ArgumentParser()
+    p.add_argument('--mode',choices=('pipeline','launch','rank'),required=True)
+    p.add_argument('--phase',choices=('produce','consume'))
+    p.add_argument('--config',required=True);p.add_argument('--config-sha',required=True)
+    p.add_argument('--material-proof-sha');p.add_argument('--handoff-sha')
+    p.add_argument('--execute-reviewed-native',action='store_true');a=p.parse_args(argv)
+    need(a.execute_reviewed_native, 'DEFAULT_DISABLED: explicit root-reviewed native execution only')
+    native_host_guard()
+    c=validate_config(json.loads(read_exact(a.config,a.config_sha)))
+    need(a.mode=='pipeline' or a.phase in ('produce','consume'), 'exact native phase')
+    mods=bootstrap(c);s=load_bound_sources(mods,c,a.config_sha)
+    result={'pipeline':pipeline,'launch':launch,'rank':rank}[a.mode](a,c,s,mods)
+    print(json.dumps({'status':result['status'],'native_executed':True,'cloud_calls':0}))
+    return 0
+
+
+if __name__=='__main__':raise SystemExit(main())

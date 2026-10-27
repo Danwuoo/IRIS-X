@@ -1,0 +1,337 @@
+"""Public synthetic fixtures only; no model/install/provider/real private read."""
+from pathlib import Path
+import base64
+import hashlib
+import io
+import json
+import os
+import tempfile
+import time
+import subprocess
+import sys
+import unittest
+from unittest.mock import patch
+import zipfile
+from publication import controller as C,entry_clock as E,notebook_builder as N,bootstrap as B,disk_admission as D
+
+CLOCK_PINS={'native_source_manifest_sha256':'a'*64,'wrapper_source_manifest_sha256':'b'*64}
+
+class Fixture(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name).resolve()
+    def tearDown(self):self.tmp.cleanup();N._ASSEMBLED_BUNDLES.clear()
+    def test_first_clock_preserved(self):
+        a=time.time()-2;b=time.monotonic()-2
+        E.record_first_cell_clock(self.root,'new-dpo-ce-dev32-fixture',a,b,**CLOCK_PINS)
+        d=json.loads((self.root/'PRE-SETUP-CLOCK.json').read_bytes())
+        self.assertEqual((d['first_epoch'],d['first_monotonic']),(a,b))
+        self.assertEqual((self.root/'PRE-SETUP-CLOCK.json').stat().st_mode&0o777,0o600)
+    def test_clock_exclusive(self):
+        args=(self.root,'new-dpo-ce-dev32-fixture',time.time(),time.monotonic())
+        E.record_first_cell_clock(*args,**CLOCK_PINS)
+        with self.assertRaises(FileExistsError):E.record_first_cell_clock(*args,**CLOCK_PINS)
+    def test_clock_bad_values(self):
+        for x in(True,float('nan'),float('inf'),None):
+            with self.subTest(x=x),self.assertRaises(ValueError):
+                E.record_first_cell_clock(self.root,'new-dpo-ce-dev32-fixture',x,time.monotonic(),**CLOCK_PINS)
+    def test_clock_future_or_old_monotonic(self):
+        for x in(time.monotonic()+20,time.monotonic()-7201):
+            with self.subTest(x=x),self.assertRaises(ValueError):
+                E.record_first_cell_clock(self.root,'new-dpo-ce-dev32-fixture',time.time(),x,**CLOCK_PINS)
+    def test_clock_symlink(self):
+        link=self.root/'link';link.symlink_to(self.root,target_is_directory=True)
+        with self.assertRaises(ValueError):E.record_first_cell_clock(link,'new-dpo-ce-dev32-fixture',time.time(),time.monotonic(),**CLOCK_PINS)
+    def test_clean_environment(self):
+        env=C.clean_host_env(self.root)
+        self.assertEqual(env['HF_HUB_OFFLINE'],'1');self.assertEqual(env['PIP_NO_INDEX'],'1')
+        self.assertFalse(any(x in env for x in('HTTP_PROXY','GOOGLE_APPLICATION_CREDENTIALS','KAGGLE_KEY','PYTHONPATH')))
+    def test_failure_pack_safe_exclusive(self):
+        a=C.failure_pack(self.root,'SYNTHETIC_SETUP',time.time()+20,time.monotonic()+20)
+        b=C.failure_pack(self.root,'DO_NOT_OVERWRITE',time.time()+20,time.monotonic()+20)
+        self.assertEqual(a,b)
+        with zipfile.ZipFile(self.root/'PUBLIC-FAILURE-METADATA.NEW.zip')as z:
+            self.assertEqual(z.namelist(),['FAILURE-SAFE.json'])
+            self.assertEqual(json.loads(z.read('FAILURE-SAFE.json'))['stage'],'SYNTHETIC_SETUP')
+    def test_failure_pack_past_deadline(self):
+        self.assertIsNone(C.failure_pack(self.root,'SETUP',time.time()-1,time.monotonic()+30))
+        self.assertEqual(list(self.root.iterdir()),[])
+    def test_unreleased_wrapper_inert(self):
+        with self.assertRaises(ValueError):C.run_root_authorized(str(self.root),{})
+        self.assertEqual(list(self.root.iterdir()),[])
+    def test_bootstrap_unreleased_inert(self):
+        with self.assertRaises(ValueError):B.admitted_entry(str(self.root),{})
+        self.assertEqual(list(self.root.iterdir()),[])
+    def test_source_call_has_exact_pin_and_marker(self):
+        code,data=C.verified_source_call(self.root/'public.py','a'*64,'go',
+            {'marker':'TEST_PIN','args':['PUBLIC_PATH'], 'kwargs':{}})
+        compile(code,'synthetic-source-call','exec')
+        self.assertIn('compile(b',code);self.assertNotIn('import_module',code)
+        self.assertEqual(json.loads(data)['marker'],'TEST_PIN')
+
+    def bundle(self):
+        blobs={'source/publication/entry_clock.py':b'# synthetic public clock\n',
+               'source/publication/bootstrap.py':b'# synthetic public bootstrap\n'}
+        m={'schema':'new-ps-public-only-notebook-bundle/v1','files':{k:N.pin(v)for k,v in blobs.items()},
+            'private_targets_or_pairpack_included':False,'runtime_or_weights_included':False,'old_study_entry_included':False}
+        f=io.BytesIO()
+        with zipfile.ZipFile(f,'w')as z:
+            for k,v in blobs.items():z.writestr(k,v)
+            z.writestr('PUBLIC-BUNDLE-MANIFEST.json',N.canonical(m))
+        return f.getvalue(),m
+    def build(self,raw,m,**kw):
+        boot=m['files']['source/publication/bootstrap.py']['sha256'];clock=m['files']['source/publication/entry_clock.py']['sha256']
+        args=dict(run_id='new-dpo-ce-dev32-fixture',output_root='/kaggle/working/iris-ps-fixture',
+            root_grant={'run_id':'new-dpo-ce-dev32-fixture','bootstrap_sha256':boot},bootstrap_sha256=boot,clock_sha256=clock)
+        args.update(kw)
+        # Whitebox handwritten fixture only. Production has no synthetic factory;
+        # public assembly is the sole ordinary capability-minting API.
+        capsule=N.VerifiedPublicBundle(raw,N.canonical(m),N.sha(N.canonical(args['root_grant'])),N._BUNDLE_KEY)
+        N._ASSEMBLED_BUNDLES[id(capsule)]=(capsule,N.sha(capsule.payload),N.sha(capsule.manifest_raw),capsule.root_grant_sha256)
+        return N.build_notebook(capsule,**args)
+    def test_notebook_first_code_clock_and_compile_only(self):
+        raw,m=self.bundle();n=json.loads(self.build(raw,m));code=''.join(n['cells'][0]['source'])
+        self.assertEqual(code.splitlines()[0],'import time; _IRIS_CLOCK=(time.time(),time.monotonic())')
+        self.assertEqual(n['cells'][0]['outputs'],[]);self.assertIsNone(n['cells'][0]['execution_count'])
+        self.assertLess(code.index('_IRIS_CLOCK='),code.index('base64.b64decode'))
+        self.assertIn('launch_from_pinned_notebook',code);compile(code,'synthetic-notebook','exec')
+    def test_notebook_bad_output_or_run(self):
+        raw,m=self.bundle()
+        for kw in({'output_root':'/tmp/escape'},{'run_id':'old-supply'},{'bootstrap_sha256':'c'*64}):
+            with self.subTest(kw=kw),self.assertRaises(ValueError):self.build(raw,m,**kw)
+    def test_notebook_private_attestation_rejected(self):
+        raw,m=self.bundle();m['private_targets_or_pairpack_included']=True
+        with self.assertRaises(ValueError):self.build(raw,m)
+    def test_notebook_wrong_member_hash(self):
+        raw,m=self.bundle();m['files']['source/publication/entry_clock.py']['sha256']='0'*64
+        with self.assertRaises(ValueError):self.build(raw,m)
+    def test_notebook_extra_member(self):
+        raw,m=self.bundle();f=io.BytesIO(raw)
+        with zipfile.ZipFile(f,'a')as z:z.writestr('UNREVIEWED.txt',b'fixture')
+        with self.assertRaises(ValueError):self.build(f.getvalue(),m)
+    def test_manifest_hash_fail_before_compile(self):
+        with self.assertRaises(ValueError):B.compile_reviewed_modules(b'{}',manifest_sha256='0'*64,bootstrap_sha256='0'*64)
+    def test_strict_json_rejects_duplicate(self):
+        with self.assertRaises(ValueError):C.strict_json(b'{"x":1,"x":2}')
+    def test_strict_json_rejects_nonfinite(self):
+        for s in(b'{"x":NaN}',b'{"x":Infinity}',b'{"x":-Infinity}'):
+            with self.subTest(s=s),self.assertRaises(ValueError):C.strict_json(s)
+    def valid_native(self):
+        return {'schema':'new-ps-explicit-native-root-grant/v1','run_id':'fixture',
+            'scope':'ONE_CHARGED_ENGINEERING_THEN_FIXED37_DPO_CE_DEV32_EXPERIMENT',
+            'bootstrap_sha256':C.NATIVE_BOOTSTRAP_SHA,'files':{k:C.NATIVE_MANIFEST_SHA if k=='SOURCE-MANIFEST.json'else'a'*64 for k in C.NATIVE_DOCS}}
+    def test_native_grant_valid_closed_schema(self):
+        self.assertEqual(C.validate_native_grant(self.valid_native(),'fixture')['run_id'],'fixture')
+    def test_native_grant_traversal_or_absolute_rejected_before_reads(self):
+        for name in('../PRIVATE.json','/tmp/PRIVATE.json','PRIVATE.json'):
+            d=self.valid_native();d['files'][name]='a'*64
+            with self.subTest(name=name),self.assertRaises(ValueError):C.validate_native_grant(d,'fixture')
+    def test_native_grant_scope_schema_bootstrap_and_pins_rejected(self):
+        for k,v in(('schema','wrong'),('scope','free_probe'),('bootstrap_sha256','f'*64),('run_id','other')):
+            d=self.valid_native();d[k]=v
+            with self.subTest(k=k),self.assertRaises(ValueError):C.validate_native_grant(d,'fixture')
+        d=self.valid_native();d['files']['ROOT-RELEASE.json']='not-a-hash'
+        with self.assertRaises(ValueError):C.validate_native_grant(d,'fixture')
+    def valid_account(self):
+        t=time.time()
+        return {'submission_admission':{'required_stage':'FINAL_PROVIDER_SUBMISSION_IMMEDIATELY_BEFORE_SAVERUN','external_root_ui_check_required':True,'runtime_account_refresh_allowed':False},'run_id':'fixture','observed_epoch':t-10,'valid_until_epoch':t+3590,'setup_anchor_epoch':t-9,
+            'total_cumulative_budget_usd':150,'GPU_quota_remaining_seconds':8000,
+            'platform':'KAGGLE_EXISTING_ACCOUNT_NO_INCREMENTAL_GCP_COST','new_GCP_resources_or_cost':False,
+            'verified_incremental_cash_max_usd':0,'quota_and_no_incremental_charge_basis_verified':True,
+            'provider_denial':False,'actual_accelerator_choice_verified':True,
+            'concurrent_account_capacity_verified':True,'gpu_count':1,'tpu_count':0}
+    def test_start_account_fresh_kaggle(self):
+        self.assertEqual(C.validate_start_account(self.valid_account(),'fixture')['gpu_count'],1)
+    def test_start_account_stale_after_queue(self):
+        d=self.valid_account();d.update(observed_epoch=time.time()-20000,valid_until_epoch=time.time()-16401)
+        self.assertEqual(C.validate_start_account(d,'fixture')['gpu_count'],1)
+    def test_start_account_cannot_fabricate_extended_freshness(self):
+        d=self.valid_account();d['valid_until_epoch']=time.time()+7200
+        with self.assertRaises(ValueError):C.validate_start_account(d,'fixture')
+    def test_start_account_closed_quota_cost_ownership(self):
+        for k,v in(('run_id','other'),('platform','GCP'),('new_GCP_resources_or_cost',True),
+            ('provider_denial',True),('GPU_quota_remaining_seconds',7199),('gpu_count',2),('tpu_count',1),
+            ('gpu_count',True),('verified_incremental_cash_max_usd',1),('concurrent_account_capacity_verified',False)):
+            d=self.valid_account();d[k]=v
+            with self.subTest(k=k),self.assertRaises(ValueError):C.validate_start_account(d,'fixture')
+    def test_clock_member_pin_not_substituted(self):
+        raw,m=self.bundle()
+        with self.assertRaises(ValueError):self.build(raw,m,clock_sha256='0'*64)
+    def test_wrapper_manifest_exact_members_before_reads(self):
+        names={p for _,p in B.MODULES}|B.EXTRA
+        doc={'schema':'new-ps-setup-export-source-manifest/v1','files':{k:{'bytes':1,'sha256':'a'*64}for k in names}}
+        self.assertIs(N.validate_wrapper_manifest(doc),doc)
+        for extra in('publication/PRIVATE-SECRET.json','publication/../PRIVATE.json','/tmp/PRIVATE.json'):
+            bad=json.loads(json.dumps(doc));bad['files'][extra]={'bytes':1,'sha256':'b'*64}
+            with self.subTest(extra=extra),self.assertRaises(ValueError):N.validate_wrapper_manifest(bad)
+    def test_manifest_closed_before_read(self):
+        raw=b'{"schema":"new-ps-setup-export-source-manifest/v1","files":{}}'
+        with self.assertRaises(ValueError):B.compile_reviewed_modules(raw,manifest_sha256=N.sha(raw),bootstrap_sha256='0'*64)
+    def disk(self,**changes):
+        args={'temporary_block':4096,'output_block':4096,'temporary_free':40*D.GiB,
+            'output_free':40*D.GiB,'same_filesystem':True};args.update(changes)
+        wheel={'disk_wheels':[{'member_sizes':[1,8193],'directory_count':2,'compressed_bytes':100}for _ in range(43)]}
+        return D.calculate({'max_install_bytes':16*D.GiB,'max_output_bytes':4*D.GiB},wheel,**args)
+    def test_same_filesystem_reservation_once(self):
+        d=self.disk();self.assertEqual(d['status'],'PASS')
+        self.assertEqual(d['temporary_required_bytes'],d['installation_reservation_bytes']+d['original_combined_output_reservation_bytes']+D.GiB)
+        self.assertEqual(d['temporary_required_bytes'],d['output_required_bytes'])
+    def test_split_filesystem_independent_reservations(self):
+        d=self.disk(same_filesystem=False,output_block=8192)
+        self.assertEqual(d['temporary_required_bytes'],d['installation_reservation_bytes']+512*D.MiB+D.GiB)
+        self.assertEqual(d['output_required_bytes'],3*780*D.MiB+256*D.MiB+D.GiB)
+        self.assertFalse(d['old_same_filesystem_receipt_reused'])
+    def test_split_either_shortfall_blocks(self):
+        for kw in({'temporary_free':0},{'output_free':0}):
+            self.assertEqual(self.disk(same_filesystem=False,**kw)['status'],'BLOCKED')
+    def test_samefs_conflicting_free_does_not_double_count(self):
+        with self.assertRaises(ValueError):self.disk(output_free=41*D.GiB)
+    def test_bad_disk_shape_and_caps(self):
+        for kw in({'temporary_block':True},{'temporary_free':float('inf')},{'same_filesystem':1}):
+            with self.subTest(kw=kw),self.assertRaises(ValueError):self.disk(**kw)
+        wheel={'disk_wheels':[{'member_sizes':[17*D.GiB],'directory_count':1,'compressed_bytes':1}for _ in range(43)]}
+        with self.assertRaises(ValueError):D.calculate({'max_install_bytes':16*D.GiB,'max_output_bytes':4*D.GiB},wheel,
+            temporary_block=4096,output_block=4096,temporary_free=1000*D.GiB,output_free=1000*D.GiB,same_filesystem=True)
+    def test_assemble_exact_real_public_sources_only_no_execution(self):
+        project=Path(__file__).resolve().parents[1]
+        native_project=project.parent/'native-v6-source'
+        original=project.parent.parent/'recovery-20261026-2212/iris/kaggle-original/supply96/source-recovered-offline'
+        config=self.root/'config';config.mkdir()
+        manifest=json.loads((native_project/'native_experiment/SOURCE-MANIFEST.PREPARED.v6.json').read_bytes())
+        wrapper={'schema':'new-ps-setup-export-source-manifest/v1','files':
+            {rel:N.pin((project/rel).read_bytes())for rel in {p for _,p in B.MODULES}|B.EXTRA}}
+        docs={name:N.canonical({'profile':'SYNTHETIC_NOT_AUTHORIZED','name':name})for name in N.CONFIG_NAMES}
+        docs['SOURCE-MANIFEST.json']=(native_project/'native_experiment/SOURCE-MANIFEST.PREPARED.v6.json').read_bytes()
+        docs['WRAPPER-SOURCE-MANIFEST.json']=N.canonical(wrapper)
+        native_names=N.CONFIG_NAMES-{'WRAPPER-CONTRACT.json','WRAPPER-SOURCE-MANIFEST.json','WRAPPER-INDEPENDENT-REVIEW.json','NATIVE-ROOT-GRANT.json'}
+        docs['NATIVE-ROOT-GRANT.json']=N.canonical({'files':{k:N.sha(docs[k])for k in native_names},'profile':'SYNTHETIC_NOT_AUTHORIZED'})
+        for name,raw in docs.items():(config/name).write_bytes(raw)
+        grant={'files':{k:N.sha(docs[k])for k in N.CONFIG_NAMES-native_names}}
+        capsule=N.assemble_public_bundle(project,original,config,grant,native_source_root=native_project);payload,m=capsule.payload,capsule.manifest
+        names=set(m['files']);self.assertLess(len(payload),20_000_000)
+        self.assertEqual({k for k in names if k.startswith('source/native_experiment/')},
+            {'source/'+k for k in manifest['files']if k.startswith('native_experiment/')})
+        self.assertFalse(any('PRIVATE-'in k or 'scorer-only-quarantine'in k or 'site-packages'in k or 'study.py'in k for k in names))
+        self.assertIn('original/runtime/vendor/fixture.json',names)
+        self.assertEqual(sum(k.startswith('original/runtime/')and k.endswith('.py')for k in names),23)
+    def test_raw_payload_not_public_assembly_capability(self):
+        raw,m=self.bundle()
+        args={'run_id':'new-dpo-ce-dev32-fixture','output_root':'/kaggle/working/iris-ps-fixture',
+            'root_grant':{},'bootstrap_sha256':'a'*64,'clock_sha256':'b'*64}
+        for x in(raw,m,{'payload':raw,'manifest':m,'public':True}):
+            with self.subTest(kind=type(x).__name__),self.assertRaises(ValueError):N.build_notebook(x,**args)
+        with self.assertRaises(ValueError):N.VerifiedPublicBundle(raw,N.canonical(m),'a'*64,object())
+    def test_bundle_capability_frozen_and_grant_bound(self):
+        from dataclasses import FrozenInstanceError
+        raw,m=self.bundle();cap=N.VerifiedPublicBundle(raw,N.canonical(m),N.sha(N.canonical({})),N._BUNDLE_KEY)
+        with self.assertRaises(FrozenInstanceError):cap.payload=b'changed'
+        with self.assertRaises(ValueError):N.build_notebook(cap,run_id='new-dpo-ce-dev32-fixture',
+            output_root='/kaggle/working/iris-ps-fixture',root_grant={'changed':True},bootstrap_sha256='a'*64,clock_sha256='b'*64)
+    def test_dataclass_replace_and_copy_do_not_inherit_factory_identity(self):
+        from dataclasses import replace
+        import copy
+        raw,m=self.bundle();cap=N.VerifiedPublicBundle(raw,N.canonical(m),N.sha(N.canonical({})),N._BUNDLE_KEY)
+        N._ASSEMBLED_BUNDLES[id(cap)]=(cap,N.sha(raw),N.sha(cap.manifest_raw),cap.root_grant_sha256)
+        for clone in(replace(cap,payload=b'SYNTHETIC_SENTINEL'),replace(cap),copy.copy(cap),copy.deepcopy(cap)):
+            with self.subTest(kind=id(clone)),self.assertRaises(ValueError):N.build_notebook(clone,
+                run_id='new-dpo-ce-dev32-fixture',output_root='/kaggle/working/iris-ps-fixture',
+                root_grant={},bootstrap_sha256='a'*64,clock_sha256='b'*64)
+    def test_registered_bundle_forced_byte_mutation_detected(self):
+        raw,m=self.bundle();cap=N.VerifiedPublicBundle(raw,N.canonical(m),N.sha(N.canonical({})),N._BUNDLE_KEY)
+        N._ASSEMBLED_BUNDLES[id(cap)]=(cap,N.sha(raw),N.sha(cap.manifest_raw),cap.root_grant_sha256)
+        object.__setattr__(cap,'payload',b'SYNTHETIC_SENTINEL')
+        with self.assertRaises(ValueError):N.build_notebook(cap,run_id='new-dpo-ce-dev32-fixture',
+            output_root='/kaggle/working/iris-ps-fixture',root_grant={},bootstrap_sha256='a'*64,clock_sha256='b'*64)
+    def test_fresh_real_byte_compilation_no_execution(self):
+        project=Path(__file__).resolve().parents[1]
+        raw=N.canonical({'schema':'new-ps-setup-export-source-manifest/v1','files':
+            {rel:N.pin((project/rel).read_bytes())for rel in {p for _,p in B.MODULES}|B.EXTRA}})
+        path=self.root/'public-synthetic-manifest.json';path.write_bytes(raw)
+        code="""from pathlib import Path
+import hashlib,json,sys
+p=Path(sys.argv[1]);b=p.read_bytes();m=Path(sys.argv[2]).read_bytes()
+n={'__name__':'fixture_compile_only','__file__':str(p)};exec(compile(b,str(p),'exec',dont_inherit=True),n)
+e=n['compile_reviewed_modules'](m,manifest_sha256=hashlib.sha256(m).hexdigest(),bootstrap_sha256=hashlib.sha256(b).hexdigest())
+print(json.dumps({'module':e.__name__,'actions':0}))
+"""
+        r=subprocess.run([sys.executable,'-I','-S','-B','-c',code,str(project/'publication/bootstrap.py'),str(path)],
+            capture_output=True,timeout=10,check=True)
+        self.assertEqual(json.loads(r.stdout),{'module':'publication.controller','actions':0})
+    def pipeline(self,*,setup_fail=False,native_fail=False,stop_fail=False,export_fail=False,inner_parent_bad=False):
+        own=self.root/'whole-wrapper-attempt';own.mkdir(mode=0o700)
+        now=time.time();mono=time.monotonic();ctx={'root':self.root,
+          'contract':{'native_source_root':str(self.root/'source'),'original_setup_root':str(self.root/'original'),
+            'runtime_temp_root':str(self.root/'runtime-temp'),'input_root':'/synthetic/input'},
+          'native_grant':{},'native_contract':{'model_dir':'/synthetic/model'},'account':{'setup_anchor_epoch':now},'clock':{'first_epoch':now,'first_monotonic':mono},'clock_raw':b'SYNTHETIC_CLOCK'}
+        seal={'outer_pid':os.getppid()+1 if inner_parent_bad else os.getppid(),'setup_anchor_epoch':now,
+          'whole_deadline_epoch':now+7200,'monotonic_deadline':mono+7200,'first_cell_clock':{'bytes':15,'sha256':C.sha(b'SYNTHETIC_CLOCK')}}
+        calls=[]
+        def setup(*a,**kw):
+            if setup_fail:raise RuntimeError('SYNTHETIC_SETUP_ERROR_NO_PRIVATE_TEXT')
+            return {'no_network':True,'model_loaded':False,'wheel_count':43,'model_root':'/synthetic/model',
+                'python':'/synthetic/python','environment':{'SAFE':'1'},
+                'disk_admission':{'schema':'new-ps-explicit-temp-output-disk-admission/v1','status':'PASS',
+                    'temporary_path':str(self.root/'runtime-temp'),'output_path':str(self.root)}}
+        def stage(argv,out,**kw):
+            calls.append((out.name,kw))
+            if out.name=='native-controller':
+                if native_fail:return {'returncode':2,'reason':'FIXTURE_FAILURE'}
+                d=self.root/'supervisor-attempt';d.mkdir()
+                C.write_json(d/'MODEL-PROCESS-STOPPED.json',{'status':'BROKEN'if stop_fail else
+                    'MODEL_STOPPED_SEALED_PREDICTIONS_AWAIT_SEPARATE_SCORER_ADMISSION',
+                    'model_process_stopped':True,'wait_returned':True,'observed_returncode':0})
+            if out.name=='export-controller' and export_fail:return {'returncode':1,'reason':'FIXTURE_EXPORT_FAILURE'}
+            return {'returncode':0,'reason':None}
+        with patch.object(C,'load_guard',return_value=object()),patch.object(C,'OriginalInstallerSources')as inst,patch.object(C,'run_owned',side_effect=stage):
+            inst.return_value.prepare.side_effect=setup
+            result=C.inner_pipeline(ctx,seal)
+            self.assertEqual(inst.call_args.kwargs['deadline'],now+7020)
+        return result,calls,seal
+    def test_full_fixed_pipeline_calls_model_then_export(self):
+        result,calls,seal=self.pipeline();self.assertEqual(result['status'],'COMPLETE_FIXED37_ALL192_MODEL_STOPPED_SMALL_EXPORTS')
+        self.assertEqual([x[0]for x in calls],['native-controller','export-controller'])
+        self.assertEqual(calls[0][1]['deadline'],seal['whole_deadline_epoch']-150)
+        self.assertEqual(calls[1][1]['monotonic_deadline'],seal['monotonic_deadline'])
+        self.assertFalse(result['correctness_scoring_performed'])
+    def test_setup_failure_never_model(self):
+        result,calls,_=self.pipeline(setup_fail=True);self.assertEqual(calls,[]);self.assertEqual(result['failed_stage'],'SETUP')
+    def test_native_failure_never_export(self):
+        result,calls,_=self.pipeline(native_fail=True);self.assertEqual(len(calls),1);self.assertEqual(result['failed_stage'],'FIXED37_NATIVE_ENGINEERING_TRAINING_ALL192')
+    def test_stop_mismatch_never_export(self):
+        result,calls,_=self.pipeline(stop_fail=True);self.assertEqual(len(calls),1);self.assertTrue(result['status'].startswith('FAILED'))
+    def test_export_failure_never_complete(self):
+        result,calls,_=self.pipeline(export_fail=True);self.assertEqual(len(calls),2);self.assertEqual(result['failed_stage'],'SMALL_POST_STOP_EXPORT')
+    def test_changed_parent_stops_before_setup(self):
+        with self.assertRaises(ValueError):self.pipeline(inner_parent_bad=True)
+
+if __name__=='__main__':unittest.main()
+
+class V3FirstCodeBudgetTests(unittest.TestCase):
+    def clock(self):
+        return {'schema':'new-ps-first-notebook-code-clock/v1','run_id':'new-dpo-ce-dev32-synthetic',
+            'first_epoch':100000.,'first_monotonic':200000.,
+            'capture_scope':'ROOT_PINNED_FIRST_CELL_BEFORE_PAYLOAD_VERIFICATION_EXTRACTION_INSTALL',
+            'clock_reset_allowed':False,'native_source_manifest_sha256':C.NATIVE_MANIFEST_SHA,
+            'wrapper_source_manifest_sha256':'a'*64}
+    def grant(self):return {'run_id':'new-dpo-ce-dev32-synthetic','files':{'WRAPPER-SOURCE-MANIFEST.json':'a'*64}}
+    def test_setup_already_consumed_7000_seconds_leaves20_science200_total(self):
+        with patch.object(C.time,'time',return_value=107000.),patch.object(C.time,'monotonic',return_value=207000.):
+            whole,mono=C.validate_first_clock(self.clock(),self.grant())
+            self.assertEqual((whole,mono),(107200.,207200.))
+    def test_science7020_exact_boundary_denied(self):
+        with patch.object(C.time,'time',return_value=107020.),patch.object(C.time,'monotonic',return_value=207020.):
+            with self.assertRaises(ValueError):C.validate_first_clock(self.clock(),self.grant())
+    def test_monotonic_cutoff_survives_wallclock_backward_adjustment(self):
+        with patch.object(C.time,'time',return_value=100001.),patch.object(C.time,'monotonic',return_value=207020.):
+            with self.assertRaises(ValueError):C.validate_first_clock(self.clock(),self.grant())
+    def test_wrong_run_or_clock_source_rejected(self):
+        with patch.object(C.time,'time',return_value=100001.),patch.object(C.time,'monotonic',return_value=200001.):
+            for k,v in [('run_id','other'),('native_source_manifest_sha256','e'*64),('wrapper_source_manifest_sha256','f'*64),('clock_reset_allowed',True)]:
+                c=self.clock();c[k]=v
+                with self.subTest(k=k),self.assertRaises(ValueError):C.validate_first_clock(c,self.grant())
+    def test_recorder_keeps_original_clocks_sourcepins_and_is_exclusive(self):
+        with tempfile.TemporaryDirectory(prefix='SYNTHETIC_V3_CLOCK_') as td,patch.object(E.time,'monotonic',return_value=200100.):
+            root=Path(td);E.record_first_cell_clock(root,self.grant()['run_id'],100000.,200000.,
+                native_source_manifest_sha256=C.NATIVE_MANIFEST_SHA,wrapper_source_manifest_sha256='a'*64)
+            self.assertEqual(json.loads((root/'PRE-SETUP-CLOCK.json').read_bytes()),self.clock())
+            with self.assertRaises(FileExistsError):E.record_first_cell_clock(root,self.grant()['run_id'],100100.,200100.,
+                native_source_manifest_sha256=C.NATIVE_MANIFEST_SHA,wrapper_source_manifest_sha256='a'*64)

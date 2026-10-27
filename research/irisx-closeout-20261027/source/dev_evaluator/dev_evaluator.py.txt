@@ -1,0 +1,458 @@
+"""NEW reconstructed design-seen DEV32 scorer; source/synthetic readiness ONLY.
+
+No filesystem/target reader, recovered-code import, model/provider/GPU call, or
+native semantic entry exists. Never a fresh-clean holdout or historical scorer.
+"""
+from dataclasses import dataclass, field
+import hashlib
+import json
+import math
+from fractions import Fraction
+
+SOURCE_KIND = "NEW_RECONSTRUCTION_NOT_HISTORICAL_DEV_SCORER"
+ORIGIN = "ORIGINAL_GLOBAL_DESIGN_SEEN_DEV32"
+ARMS = ("fresh_base", "CE", "DPO")
+ORIGINAL_DECODER_CONTRACT_SHA256 = "57f7073cb1c63db816e2b17b9deab323d27834bf663ef5e33e0009e48c293425"
+BINDING_KEYS = frozenset({"stage_source_sha256", "stage_prereg_sha256", "pairpack_sha256",
+    "model_material_sha256", "tokenizer_sha256", "root_policy_sha256", "frozen_reference_sha256",
+    "original_selector_source_sha256", "opaque_dev_goldpack_semantic_sha256"})
+RECEIPT_KEYS = frozenset({"initial_reference", "CE_reset", "CE_updates", "CE_KL", "DPO_reset",
+    "DPO_updates", "DPO_KL", "cost_journal", "fresh_generation_journal", "model_stop_receipt"})
+
+
+class AdmissionError(ValueError):
+    """Fixed safe error codes only; never print private rows or traceback locals."""
+
+
+def need(ok, code):
+    if not ok:
+        raise AdmissionError(code)
+
+
+def closed(obj, keys, code):
+    need(type(obj) is dict and set(obj) == set(keys), code)
+
+
+def canonical(obj):
+    return json.dumps(obj, sort_keys=True, separators=(",", ":"), allow_nan=False, ensure_ascii=True).encode("ascii")
+
+
+def digest(obj):
+    return hashlib.sha256(canonical(obj)).hexdigest()
+
+
+def sha_ok(value):
+    return type(value) is str and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
+
+
+def strict_json(raw):
+    need(type(raw) is bytes and 0 < len(raw) <= 32 * 1024 * 1024, "JSON_BYTE_BOUND")
+    def pairs(items):
+        result = {}
+        for k, v in items:
+            need(k not in result, "JSON_DUPLICATE_KEY")
+            result[k] = v
+        return result
+    def bad(_):
+        raise AdmissionError("JSON_NONFINITE")
+    try:
+        value = json.loads(raw, object_pairs_hook=pairs, parse_constant=bad)
+        def finite(obj):
+            if type(obj) is float:
+                need(math.isfinite(obj), "JSON_NONFINITE")
+            elif type(obj) is list:
+                for item in obj: finite(item)
+            elif type(obj) is dict:
+                for item in obj.values(): finite(item)
+        finite(value)
+        return value
+    except (UnicodeDecodeError, json.JSONDecodeError, RecursionError):
+        raise AdmissionError("JSON_PARSE") from None
+
+
+def grid_body(grid):
+    need(type(grid) is list and 1 <= len(grid) <= 30, "GRID_HEIGHT")
+    need(all(type(row) is list and 1 <= len(row) <= 30 for row in grid), "GRID_WIDTH")
+    need(len({len(row) for row in grid}) == 1, "GRID_RECTANGULAR")
+    need(all(type(x) is int and 0 <= x <= 9 for row in grid for x in row), "GRID_COLORS")
+    return tuple(x for i, row in enumerate(grid) for x in (([10] if i else []) + row))
+
+
+def body_grid(body):
+    need(type(body) in (list, tuple) and bool(body), "BODY_NONEMPTY")
+    rows = [[]]
+    for x in body:
+        need(type(x) is int and 0 <= x <= 10, "BODY_TOKENS")
+        if x == 10: rows.append([])
+        else: rows[-1].append(x)
+    need(grid_body(rows) == tuple(body), "BODY_CANONICAL")
+    return rows
+
+
+def response(grid):
+    return grid_body(grid) + (15,)
+
+
+def parse_prompt(tokens):
+    need(type(tokens) is list and 0 < len(tokens) <= 2560 and all(type(x) is int and 0 <= x < 16 for x in tokens), "PROMPT_TOKENS_CONTEXT")
+    need(tokens[-3:] == [14, 12, 10], "PROMPT_QUERY_HEADER")
+    frames = []
+    at = 0
+    while at < len(tokens) - 3:
+        role = 11 if len(frames) % 2 == 0 else 12
+        need(tokens[at:at + 3] == [14, role, 10], "PROMPT_ALTERNATING_ROLE")
+        end = at + 3
+        while end < len(tokens) and tokens[end] != 15:
+            end += 1
+        need(end < len(tokens), "PROMPT_FRAME_EOS")
+        frames.append(body_grid(tokens[at + 3:end]))
+        at = end + 1
+    need(at == len(tokens) - 3 and len(frames) >= 3 and len(frames) % 2 == 1, "PROMPT_PUBLIC_SUPPORT_QUERY")
+    return frames
+
+
+@dataclass(frozen=True, repr=False)
+class PublicIdentity:
+    profile: str
+    sha256: str
+    assignment_sha256: str
+    public_input_sha256: str
+    selector_source_sha256: str
+    _rows: tuple = field(repr=False)
+
+    def __repr__(self):
+        return "<original design-seen DEV32 public identity; rows redacted>"
+
+
+def validate_identity(data, *, expected_sha256):
+    closed(data, {"schema", "source_kind", "profile", "role", "origin", "clean_holdout",
+        "assignment_sha256", "original_public_input_sha256", "original_roles_sha256",
+        "original_selector_source_sha256", "original_generation_source_sha256", "rows"}, "IDENTITY_SCHEMA")
+    need(data["schema"] == "new-ps-design-seen-dev32-public-identity/v1" and data["source_kind"] == SOURCE_KIND, "IDENTITY_VERSION")
+    need(data["profile"] in ("SYNTHETIC_ONLY", "NATIVE_UNRELEASED") and data["role"] == "DEV" and
+         data["origin"] == ORIGIN and data["clean_holdout"] is False, "ORIGINAL_DESIGN_SEEN_DEV_ONLY")
+    need(sha_ok(expected_sha256) and digest(data) == expected_sha256, "IDENTITY_EXTERNAL_HASH")
+    for key in ("assignment_sha256", "original_public_input_sha256", "original_roles_sha256",
+                "original_selector_source_sha256", "original_generation_source_sha256"):
+        need(sha_ok(data[key]), "IDENTITY_SOURCE_PINS")
+    need(type(data["rows"]) is list and len(data["rows"]) == 32, "EXACT_ORIGINAL_DEV32")
+    seen = set(); rows = []
+    for ordinal, row in enumerate(data["rows"]):
+        closed(row, {"parent_id", "dev_ordinal", "query_demo_ordinal", "canonical_prompt",
+                     "canonical_prompt_sha256", "query_input_sha256"}, "PUBLIC_DEV_ROW_SCHEMA")
+        pid = row["parent_id"]
+        need(type(pid) is str and bool(pid) and pid not in seen, "PUBLIC_PARENT_ID_UNIQUE")
+        need(type(row["dev_ordinal"]) is int and row["dev_ordinal"] == ordinal and
+             type(row["query_demo_ordinal"]) is int and row["query_demo_ordinal"] >= 0, "ORIGINAL_DEV_ORDER_FOLD")
+        if data["profile"] == "SYNTHETIC_ONLY":
+            need(pid.startswith("synthetic-dev-"), "SYNTHETIC_ID_FENCE")
+        else:
+            need(len(pid) == 8 and all(c in "0123456789abcdef" for c in pid), "NATIVE_ORIGINAL_TASK_ID")
+        frames = parse_prompt(row["canonical_prompt"])
+        need(row["query_demo_ordinal"] < (len(frames) - 1) // 2 + 1, "QUERY_FOLD_WITHIN_PUBLIC_DEMONSTRATION_COUNT")
+        need(row["canonical_prompt_sha256"] == digest(row["canonical_prompt"]) and
+             row["query_input_sha256"] == digest(frames[-1]), "PUBLIC_PROMPT_QUERY_HASH")
+        seen.add(pid)
+        rows.append((pid, ordinal, row["query_demo_ordinal"], row["canonical_prompt_sha256"], row["query_input_sha256"]))
+    return PublicIdentity(data["profile"], expected_sha256, data["assignment_sha256"],
+                          data["original_public_input_sha256"], data["original_selector_source_sha256"], tuple(rows))
+
+
+@dataclass(frozen=True, repr=False)
+class _Draw:
+    status: str
+    tokens: tuple | None
+    elapsed: float | None
+    sampled_tokens: int | None
+
+    def __repr__(self):
+        return "<DEV draw redacted>"
+
+
+@dataclass(frozen=True, repr=False)
+class PredictionBundle:
+    identity: PublicIdentity
+    sha256: str
+    closure_sha256: str
+    _binding_pins: tuple = field(repr=False)
+    _draws: tuple = field(repr=False)
+    policy_shas: tuple
+    generation_seconds: tuple
+    whole_wall_seconds: float
+    historical_acquisition_seconds: float
+    extra_probe_counts: tuple
+    engineering_checkpoint_seconds: float
+    complete: bool
+
+    def __repr__(self):
+        return "<three-policy DEV32 predictions; rows redacted>"
+
+    def public_metadata(self):
+        counts = {s: sum(c.status == s for arm in self._draws for row in arm for c in row)
+                  for s in ("VALID_EOS", "KNOWN_INVALID_CAP", "UNKNOWN")}
+        return {"schema": "new-ps-dev32-public-admission/v1", "source_kind": SOURCE_KIND,
+                "origin": ORIGIN, "clean_holdout": False, "parents": 32, "arms": list(ARMS),
+                "reserved_draws": 192, "status_counts": counts, "prediction_bundle_sha256": self.sha256,
+                "identity_sha256": self.identity.sha256, "closure_sha256": self.closure_sha256,
+                "all_predictions_complete": self.complete, "native_target_reads": 0,
+                "correctness_computed": False, "native_semantics_authorized": False,
+                "physical_journal_semantics_verified_by_this_module": False,
+                "receipt_pins_are_structural_not_runtime_proof": True}
+
+
+def _draw(value, name, ordinal, slot):
+    closed(value, {"draw_id", "view_id", "seed", "call_id", "status", "grid", "finished_eos",
+                   "truncated", "sampled_logps", "actual_sampled_tokens", "elapsed_seconds"}, "DRAW_SCHEMA")
+    need(value["draw_id"] == str(slot) and value["view_id"] == "identity" and
+         value["call_id"] == f"{name}:DEV:{ordinal}:{slot}" and type(value["seed"]) is int and
+         value["seed"] == 1729 + ordinal * 4096 + slot, "DRAW_ORIGINAL_SLOT_SEED_VIEW")
+    status = value["status"]
+    need(status in ("VALID_EOS", "KNOWN_INVALID_CAP", "UNKNOWN"), "DRAW_STATUS")
+    if status == "UNKNOWN":
+        need(all(value[k] is None for k in ("grid", "finished_eos", "truncated", "sampled_logps",
+                                            "actual_sampled_tokens", "elapsed_seconds")), "UNKNOWN_NOT_INVALID")
+        return _Draw(status, None, None, None)
+    need(type(value["finished_eos"]) is bool and type(value["truncated"]) is bool, "TERMINATION_TYPES")
+    logps = value["sampled_logps"]
+    need(type(logps) is list and 1 <= len(logps) <= 512 and all(type(v) in (float, int) and math.isfinite(v)
+         and v <= 1e-6 for v in logps), "RAW_MASKED_LOGPS_FINITE_PROVENANCE_ONLY")
+    need(type(value["actual_sampled_tokens"]) is int and value["actual_sampled_tokens"] == len(logps), "SAMPLED_TOKEN_COUNT")
+    elapsed = value["elapsed_seconds"]
+    need(type(elapsed) in (float, int) and math.isfinite(elapsed) and elapsed >= 0, "MEASURED_DRAW_COST")
+    if status == "KNOWN_INVALID_CAP":
+        need(value["finished_eos"] is False and value["truncated"] is True and value["grid"] is None
+             and len(logps) == 512, "KNOWN_COMPLETE_INVALID_CAP")
+        tokens = None
+    else:
+        need(value["finished_eos"] is True and value["truncated"] is False, "VALID_EOS_TERMINATION")
+        tokens = response(value["grid"])
+        need(len(tokens) == len(logps) <= 512, "VALID_GENERATED_BODY_EOS_CAP")
+    return _Draw(status, tokens, float(elapsed), len(logps))
+
+
+def validate_predictions(data, identity, *, expected_sha256, expected_bindings, expected_closure_sha256):
+    need(type(identity) is PublicIdentity, "PUBLIC_IDENTITY_REQUIRED")
+    closed(data, {"schema", "source_kind", "profile", "role", "origin", "run_id", "identity_sha256",
+                  "bindings", "arms", "closure"}, "PREDICTION_BUNDLE_SCHEMA")
+    need(data["schema"] == "new-ps-freshbase-ce-dpo-dev32-predictions/v1" and data["source_kind"] == SOURCE_KIND,
+         "PREDICTION_VERSION")
+    need(data["profile"] == identity.profile and data["role"] == "DEV" and data["origin"] == ORIGIN, "PREDICTION_SCOPE")
+    need(type(data["run_id"]) is str and data["run_id"].startswith("new-dpo-ce-dev32-") and data["identity_sha256"] == identity.sha256,
+         "NEW_JOINT_RUN_IDENTITY")
+    need(sha_ok(expected_sha256) and digest(data) == expected_sha256, "EXTERNAL_PREDICTION_HASH")
+    closed(data["bindings"], BINDING_KEYS, "PREDICTION_BINDING_SCHEMA")
+    closed(expected_bindings, BINDING_KEYS, "EXPECTED_BINDING_SCHEMA")
+    need(all(sha_ok(v) for v in expected_bindings.values()) and data["bindings"] == expected_bindings,
+         "EXTERNAL_POLICY_SOURCE_STAGE_BINDING")
+    need(expected_bindings["original_selector_source_sha256"] == identity.selector_source_sha256, "FROZEN_ORIGINAL_SELECTOR_SOURCE")
+    if identity.profile == "NATIVE_UNRELEASED":
+        need(expected_bindings["tokenizer_sha256"] == ORIGINAL_DECODER_CONTRACT_SHA256, "ORIGINAL_NATIVE_DECODER_CONTRACT")
+    need(type(data["arms"]) is list and len(data["arms"]) == 3, "ALL_THREE_POLICIES_REQUIRED")
+    all_draws = []; policy_shas = []; adapter_shas = []; seals = []; costs = []; unknown_total = 0
+    for name, arm in zip(ARMS, data["arms"]):
+        closed(arm, {"name", "policy_sha256", "adapter_sha256", "reset_receipt_sha256", "prediction_seal_sha256", "rows", "cost"}, "POLICY_SCHEMA")
+        need(arm["name"] == name, "FROZEN_FRESHBASE_CE_DPO_ORDER")
+        for key in ("policy_sha256", "adapter_sha256", "reset_receipt_sha256", "prediction_seal_sha256"):
+            need(sha_ok(arm[key]), "POLICY_ARTIFACT_PIN")
+        need(type(arm["rows"]) is list and len(arm["rows"]) == 32, "ALL32_PER_POLICY")
+        draws = []
+        for ident, row in zip(identity._rows, arm["rows"]):
+            closed(row, {"parent_id", "dev_ordinal", "query_demo_ordinal", "canonical_prompt_sha256", "draws"}, "PREDICTION_ROW_SCHEMA")
+            need(type(row["dev_ordinal"]) is int and type(row["query_demo_ordinal"]) is int and
+                 tuple(row[k] for k in ("parent_id", "dev_ordinal", "query_demo_ordinal", "canonical_prompt_sha256")) == ident[:4],
+                 "PREDICTION_PARENT_ORDER_FOLD_PROMPT")
+            need(type(row["draws"]) is list and len(row["draws"]) == 2, "EXACT_G2_NO_REFILL")
+            draws.append(tuple(_draw(c, name, ident[1], slot) for slot, c in enumerate(row["draws"])))
+        unknown = sum(c.status == "UNKNOWN" for row in draws for c in row)
+        unknown_total += unknown
+        cost = arm["cost"]
+        closed(cost, {"reserved_draws", "completed_draws", "reserved_sampled_tokens", "actual_sampled_tokens",
+                      "reserved_physical_forwards", "completed_physical_forwards", "measured_draw_seconds"}, "POLICY_COST_SCHEMA")
+        for key in set(cost) - {"measured_draw_seconds"}:
+            need(type(cost[key]) is int and cost[key] >= 0, "COST_INTEGER_COUNTERS")
+        need(cost["reserved_draws"] == 64 and cost["completed_draws"] == 64 - unknown and cost["reserved_sampled_tokens"] == 32768,
+             "FIXED_64_DRAW_PER_POLICY_ACCOUNTING")
+        need(cost["actual_sampled_tokens"] == sum(c.sampled_tokens or 0 for row in draws for c in row)
+             and cost["actual_sampled_tokens"] <= 32768, "ACTUAL_SAMPLED_ACCOUNTING")
+        need(0 <= cost["completed_physical_forwards"] <= cost["reserved_physical_forwards"] <= 33152,
+             "BOUNDED_PHYSICAL_FORWARD_ACCOUNTING")
+        if unknown == 0:
+            need(cost["completed_physical_forwards"] == cost["reserved_physical_forwards"] > 0, "ALL_PHYSICAL_INTENTS_TERMINAL")
+        try:
+            measured = math.fsum(c.elapsed for row in draws for c in row if c.elapsed is not None)
+        except OverflowError:
+            raise AdmissionError("PREFLIGHT_SUMMED_COST_FINITE") from None
+        need(type(cost["measured_draw_seconds"]) in (float, int) and math.isfinite(cost["measured_draw_seconds"])
+             and measured == cost["measured_draw_seconds"] and measured > 0, "PREFLIGHT_MEASURED_GENERATION_COST")
+        all_draws.append(tuple(draws)); costs.append(measured)
+        policy_shas.append(arm["policy_sha256"]); adapter_shas.append(arm["adapter_sha256"]); seals.append(arm["prediction_seal_sha256"])
+    need(policy_shas[0] == expected_bindings["root_policy_sha256"] and
+         all(policy_shas[i] != policy_shas[0] and adapter_shas[i] != adapter_shas[0] for i in (1, 2)) and
+         len(set(seals)) == 3, "FRESH_CHANGED_POLICY_INDEPENDENT_ATTEMPT_OUTPUTS")
+    closure = data["closure"]
+    closed(closure, {"schema", "status", "run_id", "all_predictions_sealed_before_correctness_evaluation", "model_author_dev_target_accesses",
+        "dev_correctness_evaluations_before_all_prediction_seals", "opaque_goldpack_materialized_pre_run",
+        "opaque_materialization_receipt_sha256", "model_process_stopped_before_correctness_evaluation",
+        "same_root_reset_reference_verified", "per_arm_optimizer_commits", "training_parent_count",
+        "whole_wall_seconds", "historical_acquisition_seconds", "phase_receipts", "science_non_generation_counts",
+        "engineering_probe_forward_calls", "checkpoint_probe_forward_calls", "total_non_generation_forward_calls",
+        "extra_probe_authority_sha256", "engineering_checkpoint_seconds"}, "JOINT_CLOSURE_SCHEMA")
+    need(sha_ok(expected_closure_sha256) and digest(closure) == expected_closure_sha256, "EXTERNAL_JOINT_CLOSURE_HASH")
+    need(closure["schema"] == "new-ps-three-policy-dev32-closure/v1" and closure["run_id"] == data["run_id"]
+         and closure["status"] in ("COMPLETE_SEALED", "INCOMPLETE"), "JOINT_CLOSURE_VERSION")
+    need(closure["all_predictions_sealed_before_correctness_evaluation"] is True and
+         type(closure["model_author_dev_target_accesses"]) is int and closure["model_author_dev_target_accesses"] == 0 and
+         type(closure["dev_correctness_evaluations_before_all_prediction_seals"]) is int and
+         closure["dev_correctness_evaluations_before_all_prediction_seals"] == 0 and
+         closure["opaque_goldpack_materialized_pre_run"] is True and sha_ok(closure["opaque_materialization_receipt_sha256"]) and
+         closure["model_process_stopped_before_correctness_evaluation"] is True and
+         closure["same_root_reset_reference_verified"] is True,
+         "OPAQUE_PREMATERIALIZATION_NO_MODEL_AUTHOR_ACCESS_OR_EARLY_SCORING")
+    closed(closure["per_arm_optimizer_commits"], ARMS, "OPTIMIZER_COMMIT_KEYS")
+    need(all(type(v) is int for v in closure["per_arm_optimizer_commits"].values()) and
+         closure["per_arm_optimizer_commits"] == {"fresh_base": 0, "CE": 4, "DPO": 4}, "EXACT_FROZEN_FOUR_COMMITS")
+    need(type(closure["training_parent_count"]) is int and closure["training_parent_count"] == 37, "BOUND_VERIFIED_TRAIN_PAIR_PARENT_COUNT")
+    closed(closure["phase_receipts"], RECEIPT_KEYS, "PHASE_RECEIPTS_SCHEMA")
+    need(all(sha_ok(v) for v in closure["phase_receipts"].values()), "PHASE_RECEIPTS_BOUND")
+    expected_counts = {"reference_TF": 74, "CE_training_TF": 148, "DPO_training_TF": 296,
+                       "post_arm_KL_TF": 148, "CE_backward": 148, "DPO_backward": 148}
+    closed(closure["science_non_generation_counts"], expected_counts, "SCIENCE_COUNT_SCHEMA")
+    need(all(type(v) is int for v in closure["science_non_generation_counts"].values()) and
+         closure["science_non_generation_counts"] == expected_counts, "FIXED_666_TF_296_BACKWARD_SCIENCE_COUNTS")
+    extra_keys = ("engineering_probe_forward_calls", "checkpoint_probe_forward_calls")
+    need(all(type(closure[k]) is int and closure[k] >= 0 for k in extra_keys) and
+         type(closure["total_non_generation_forward_calls"]) is int and
+         closure["total_non_generation_forward_calls"] == 666 + sum(closure[k] for k in extra_keys), "EXTRA_PROBES_CHARGED_NOT_ERASED")
+    need((sum(closure[k] for k in extra_keys) == 0 and closure["extra_probe_authority_sha256"] is None) or
+         (sum(closure[k] for k in extra_keys) > 0 and sha_ok(closure["extra_probe_authority_sha256"])), "EXTRA_PROBE_AUTHORITY_REQUIRED")
+    for key in ("whole_wall_seconds", "historical_acquisition_seconds", "engineering_checkpoint_seconds"):
+
+        need(type(closure[key]) in (int, float) and math.isfinite(closure[key]) and closure[key] >= 0, "STAGE_COST_FINITE")
+    try:
+        total_generation = math.fsum(costs)
+    except OverflowError:
+        raise AdmissionError("PREFLIGHT_TOTAL_GENERATION_COST_FINITE") from None
+    need(math.isfinite(total_generation) and closure["whole_wall_seconds"] >= total_generation + closure["engineering_checkpoint_seconds"],
+         "WHOLE_WALL_INCLUDES_GENERATION_AND_PROBES")
+    need(math.isfinite(closure["whole_wall_seconds"] + closure["historical_acquisition_seconds"]), "TOTAL_PIPELINE_COST_FINITE")
+    complete = unknown_total == 0 and closure["status"] == "COMPLETE_SEALED"
+    return PredictionBundle(identity, expected_sha256, expected_closure_sha256, tuple(sorted(expected_bindings.items())), tuple(all_draws), tuple(policy_shas),
+                            tuple(costs), float(closure["whole_wall_seconds"]), float(closure["historical_acquisition_seconds"]),
+                            tuple(closure[k] for k in extra_keys), float(closure["engineering_checkpoint_seconds"]), complete)
+
+
+def frozen_vote_at_one(draws):
+    """Original vote: descending exact-grid alias count, then first draw ordinal.
+
+    With G2 this is earliest valid slot whenever both distinct grids tie. Legal
+    masked likelihood never influences vote. Empty valid pool selects nothing.
+    """
+    groups = {}
+    for ordinal, draw in enumerate(draws):
+        if draw.status == "VALID_EOS":
+            entry = groups.setdefault(draw.tokens, [0, ordinal])
+            entry[0] += 1
+    if not groups:
+        return None
+    return min(groups, key=lambda tokens: (-groups[tokens][0], groups[tokens][1]))
+
+
+@dataclass(frozen=True, repr=False)
+class PrivateEvaluationCase:
+    predictions: PredictionBundle
+    _targets: tuple = field(repr=False)
+
+    def __repr__(self):
+        return "<private DEV evaluation case; targets redacted>"
+
+
+SyntheticEvaluationCase = PrivateEvaluationCase
+
+
+def admit_synthetic_targets(predictions, target, *, expected_target_sha256):
+    need(type(predictions) is PredictionBundle and predictions.identity.profile == "SYNTHETIC_ONLY", "NATIVE_DEV_TARGET_ACCESS_DISABLED")
+    return _admit_private_target_document(predictions, target, expected_target_sha256=expected_target_sha256)
+
+
+def _admit_private_target_document(predictions, target, *, expected_target_sha256):
+    """Private shared parser; future reviewed native wrapper must enforce one-shot authority."""
+    need(type(predictions) is PredictionBundle and predictions.complete, "UNKNOWN_PARTIAL_NO_TARGET_ACCESS")
+    closed(target, {"schema", "source_kind", "profile", "role", "origin", "identity_sha256", "assignment_sha256",
+                   "original_public_input_sha256", "lineage", "rows"}, "NEW_DEV_TARGET_SCHEMA")
+    need(target["schema"] == "new-ps-isolated-design-seen-dev32-targets/v1" and target["source_kind"] == SOURCE_KIND
+         and target["profile"] == predictions.identity.profile and target["role"] == "DEV" and target["origin"] == ORIGIN,
+         "SYNTHETIC_ORIGINAL_DEV_TARGET_SCOPE")
+    need(sha_ok(expected_target_sha256) and digest(target) == expected_target_sha256, "EXTERNAL_DEV_TARGET_HASH")
+    need(expected_target_sha256 == dict(predictions._binding_pins)["opaque_dev_goldpack_semantic_sha256"], "PRE_RUN_OPAQUE_GOLDPACK_PIN_UNCHANGED")
+    identity = predictions.identity
+    need(target["identity_sha256"] == identity.sha256 and target["assignment_sha256"] == identity.assignment_sha256
+         and target["original_public_input_sha256"] == identity.public_input_sha256, "DEV_TARGET_ORIGINAL_ASSIGNMENT_PUBLIC_BINDING")
+    closed(target["lineage"], {"query_source", "original_task_manifest_sha256", "query_binding_receipt_sha256"}, "TARGET_LINEAGE_SCHEMA")
+    need(target["lineage"]["query_source"] == "ORIGINAL_TASK_TRAIN_DEMONSTRATION_AT_QUERY_DEMO_ORDINAL"
+         and sha_ok(target["lineage"]["original_task_manifest_sha256"])
+         and sha_ok(target["lineage"]["query_binding_receipt_sha256"]), "ORIGINAL_TASK_QUERY_LINEAGE_REQUIRED")
+    need(type(target["rows"]) is list and len(target["rows"]) == 32, "EXACT_DEV32_TARGETS")
+    answers = []
+    for row, ident in zip(target["rows"], identity._rows):
+        closed(row, {"parent_id", "dev_ordinal", "query_demo_ordinal", "query_input_sha256", "grid"}, "TARGET_ROW_SCHEMA")
+        need(type(row["dev_ordinal"]) is int and type(row["query_demo_ordinal"]) is int and
+             (row["parent_id"], row["dev_ordinal"], row["query_demo_ordinal"], row["query_input_sha256"]) ==
+             (ident[0], ident[1], ident[2], ident[4]), "TARGET_EXACT_PARENT_ORDER_QUERY_FOLD_INPUT")
+        # Scoring truth is not a generated/training response. No gold512/context
+        # filter: a valid30x30 truth can have930 bodyEOS tokens and score allwrong.
+        answers.append(response(row["grid"]))
+    return PrivateEvaluationCase(predictions, tuple(answers))
+
+
+def evaluate_synthetic(case):
+    need(type(case) is PrivateEvaluationCase and case.predictions.identity.profile == "SYNTHETIC_ONLY"
+         and case.predictions.complete and type(case._targets) is tuple and len(case._targets) == 32, "SYNTHETIC_COMPLETE_DEV_CASE_REQUIRED")
+    return _evaluate_admitted_case(case)
+
+
+def _evaluate_admitted_case(case):
+    """Private frozen math; no target/file reader or public native release entry."""
+    need(type(case) is PrivateEvaluationCase and case.predictions.complete and len(case._targets) == 32, "COMPLETE_PRIVATE_DEV_CASE_REQUIRED")
+    profile = "SYNTHETIC_ONLY" if case.predictions.identity.profile == "SYNTHETIC_ONLY" else "NATIVE_RECONSTRUCTION"
+    policies = {}; bits = {}
+    for name, draws, generation_seconds in zip(ARMS, case.predictions._draws, case.predictions.generation_seconds):
+        correct = []; coverage = 0; empty = 0; invalid = 0
+        for row, truth in zip(draws, case._targets):
+            selected = frozen_vote_at_one(row)
+            correct.append(int(selected == truth))
+            coverage += int(any(c.tokens == truth for c in row if c.status == "VALID_EOS"))
+            empty += int(selected is None)
+            invalid += sum(c.status == "KNOWN_INVALID_CAP" for c in row)
+        bits[name] = correct
+        policies[name] = {"vote_at_one_correct": sum(correct), "parent_denominator": 32,
+            "vote_at_one_accuracy": sum(correct) / 32, "oracle_coverage_descriptive_only": coverage,
+            "empty_valid_pool_parents": empty, "known_invalid_draws": invalid, "unknown_draws": 0,
+            "draw_denominator": 64, "measured_generation_seconds": generation_seconds}
+    paired = {}
+    for comparator in ("CE", "fresh_base"):
+        wins = sum(a > b for a, b in zip(bits["DPO"], bits[comparator]))
+        losses = sum(a < b for a, b in zip(bits["DPO"], bits[comparator]))
+        paired["DPO_vs_" + comparator] = {"wins": wins, "losses": losses, "ties": 32 - wins - losses,
+            "net": wins - losses, "parent_denominator": 32, "delta_vote_at_one": (wins - losses) / 32}
+    positive = all(pair["net"] > 0 for pair in paired.values())
+    return {"schema": "new-ps-design-seen-dev32-aggregate/v1", "source_kind": SOURCE_KIND,
+        "profile": profile, "origin": ORIGIN, "clean_holdout": False, "quality_claim": False,
+        "fixed_metric": "vote@1; distinct-grid vote count descending then earliest draw ordinal",
+        "policies": policies, "paired": paired, "parent_denominator": 32, "total_fresh_draws": 192,
+        "exploratory_positive": positive,
+        "outcome": "EXPLORATORY_POSITIVE_REQUIRES_INDEPENDENT_CONFIRMATION" if positive else "STOP_FIXED_DIAGNOSTIC_NO_TUNING",
+        "significance_gate_applied": False, "supply96_gate_changed": False,
+        "cost": {"new_stage_whole_wall_seconds": case.predictions.whole_wall_seconds,
+                 "historical_acquisition_seconds_sunk_but_reported": case.predictions.historical_acquisition_seconds,
+                 "historical_cost_not_claimed_free": True,
+                 "science_non_generation_TF": 666, "science_backward_calls": 296,
+                 "engineering_probe_forward_calls": case.predictions.extra_probe_counts[0],
+                 "checkpoint_probe_forward_calls": case.predictions.extra_probe_counts[1],
+                 "total_non_generation_forward_calls": 666 + sum(case.predictions.extra_probe_counts),
+                 "engineering_checkpoint_seconds_included_in_wholewall": case.predictions.engineering_checkpoint_seconds,
+                 "total_pipeline_seconds_including_sunk_acquisition": case.predictions.whole_wall_seconds + case.predictions.historical_acquisition_seconds},
+        "native_correctness_computed": profile == "NATIVE_RECONSTRUCTION", "per_parent_correctness_exported": False}
+
+
+def native_dev_target_access_disabled(*_args, **_kwargs):
+    raise AdmissionError("NATIVE_DEV_TARGET_ACCESS_DISABLED_PENDING_OPAQUE_RECOVERY_LINEAGE_AND_ALL192_PREDICTION_SEALS")

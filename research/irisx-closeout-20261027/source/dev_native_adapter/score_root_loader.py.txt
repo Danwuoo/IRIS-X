@@ -1,0 +1,44 @@
+"""NEW public-only root loader; trusted caller SHA-checks THIS exact byte buffer.
+
+Never print exception objects or tracebacks. No default native authority. The
+external root invocation pins manifest + loader bytes, compiles with marker,
+and calls run_with_root_grant under timeout --signal=KILL 60s python -I -S -B.
+"""
+from pathlib import Path
+import hashlib,json,sys,types
+HERE=Path(__file__).resolve().parent
+NAMES={'dev_native_adapter/prediction_join.py','dev_native_adapter/isolated_score.py','dev_native_adapter/score_bootstrap.py',
+ 'dev_native_adapter/score_root_loader.py','dev_native_adapter/test_prediction_join.py','dev_native_adapter/test_isolated_score.py',
+ 'dev_native_adapter/CONTRACT.NEW.md','dev_evaluator/dev_evaluator.py','dev_evaluator/SCORER-MANIFEST.PREPARED.json'}
+
+def need(v):
+    if not v:raise RuntimeError('PUBLIC_SCORE_LOADER_REJECTED')
+def read(p):
+    need(p.is_absolute() and not any(x.is_symlink() for x in(p,*p.parents)))
+    need(p.is_file() and 0<p.stat().st_size<=32*1024**2);return p.read_bytes()
+def sha(b):return hashlib.sha256(b).hexdigest()
+def pairs(values):
+    out={}
+    for k,v in values:need(k not in out);out[k]=v
+    return out
+
+def run_with_root_grant(grant):
+    try:
+        need(sys.flags.isolated==1 and sys.flags.no_site==1 and sys.dont_write_bytecode)
+        need(type(grant) is dict and grant.get('schema')=='new-ps-out-of-band-dev-score-root-grant/v1' and grant.get('authority')=='ROOT_EXPLICIT_POST_MODEL_ONE_SHOT_DEV_SCORE')
+        raw=read(HERE/'score-run/SOURCE-MANIFEST.json');need(sha(raw)==grant['source_manifest_sha256'])
+        m=json.loads(raw,object_pairs_hook=pairs)
+        need(set(m)=={'schema','files'} and m['schema']=='new-ps-native-prediction-transform-source-manifest/v1' and set(m['files'])==NAMES)
+        marker=globals().get('_ROOT_VERIFIED_SCORE_LOADER_SHA256')
+        need(type(marker) is str and marker==m['files']['dev_native_adapter/score_root_loader.py']['sha256'])
+        b=read(HERE/'score_bootstrap.py');p=m['files']['dev_native_adapter/score_bootstrap.py']
+        need(p=={'bytes':len(b),'sha256':sha(b)} and type(p['bytes']) is int)
+        need('_new_dev_score_bootstrap' not in sys.modules)
+        module=types.ModuleType('_new_dev_score_bootstrap');module.__file__=str(HERE/'score_bootstrap.py')
+        module._ROOT_VERIFIED_SCORE_BOOTSTRAP_SHA256=sha(b)
+        exec(compile(b,module.__file__,'exec',dont_inherit=True),module.__dict__)
+        return module.run_with_root_grant(grant)
+    except BaseException:
+        return {'schema':'new-ps-safe-score-loader-result/v1','status':'FAILED_OR_UNKNOWN_NO_RETRY_NO_PRIVATE_ERROR_OUTPUT','model_provider_GPU_calls':0,'quality_GO':False}
+
+if __name__=='__main__':raise SystemExit('DEV_SCORE_ROOT_LOADER_INERT_WITHOUT_ROOT_VERIFIED_BYTES')

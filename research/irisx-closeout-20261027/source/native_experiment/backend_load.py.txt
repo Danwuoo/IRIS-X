@@ -1,0 +1,259 @@
+"""NEW native loader, not recovered historical bytes.
+
+No import-time Torch/model/device work. Native entry is opt-in, release-gated,
+source-closed and CUDA-only. Recovered local modules execute verified source
+bytes in a private import namespace: never a pycache or ambient-path lookup.
+This file does not authorize provider activity, material acquisition or execution.
+"""
+from __future__ import annotations
+import builtins
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import stat
+import sys
+import types
+from types import MappingProxyType
+
+from training.contracts import canonical, digest, need
+
+SOURCE_PINS = MappingProxyType({
+    'active_stage': ('vendor/active_stage.py', '072626ad2f4825564ddbeab1d5fff737a9285e19366a3e82953df6ebdc4b66a1'),
+    'arm_restore': ('vendor/arm_restore.py', '65fb7d5d4873ee4220e029e8c824e52208d1871f25cbb7a4c7f2339a4e7e9f24'),
+    'cached_decode': ('vendor/cached_decode.py', '781b119bd6131545eaa8d3a915e9b8ea23b0398826c2b3936adec3412da30f6f'),
+    'chunked_cache': ('vendor/chunked_cache.py', 'fed4256e7058fecdf4906e92b524328df3dd0ec56f687a4cc7ae536157ef4c39'),
+    'cost_accounting': ('vendor/cost_accounting.py', 'c74787dc7559074106577248a81d43ec7f8eb09f041fb9a164a455c534856681'),
+    'cuda_backend': ('vendor/cuda_backend.py', '320f832cbbbbedab91069b3880127c7a9b34ef66a6c615e61350105ea51e5936'),
+    'diagnose_cache': ('vendor/diagnose_cache.py', 'da358c21bfa0a53beb1567b89d0ab20fb6f37c5607d298fff2829822c606115f'),
+    'hbm_monitor': ('vendor/hbm_monitor.py', '89f48ed5d33d68e5448b691c3b87f80a6884e2b4ca7344603fadbcde427d501b'),
+    'objectives': ('vendor/objectives.py', '320ab4218f7e960af164268840490adf32b95dddafc0895ba4cff813f5be2d15'),
+    'p1_gate': ('vendor/p1_gate.py', 'c88af55a6787fe54a72d130cbd6a1d7902ec8fe7fea9033ec128ada1d875bd3f'),
+    'panel_contract': ('vendor/panel_contract.py', '5fb6b1ba5e646308a34d8b27340535a6275c7c16a3bfd7da20ab97bdaaad760a'),
+    'projection_gate': ('vendor/projection_gate.py', '79f44f595ffddd49e3a503869198d47f9bd5656b7352387aa404b3a1791abbf6'),
+    'query_spans': ('vendor/query_spans.py', 'eb9a368b395c52a209b5e0e32a734ca6ffa2094b8e8487b6ef4a81bf796cc6f7'),
+    'rerank_candidates': ('rerank_candidates.py', '3c8be05c57a1503ada3b1db38892dbc402b373896599a85c5c1748d4422b8a14'),
+    'roundtrip_gate': ('vendor/roundtrip_gate.py', 'c5191a71c3fc0f6e3abcb0d1f2ee7a1ad41b36e6147e3cafe4a9e2355f275284'),
+    'run_stage': ('vendor/run_stage.py', '2ddcfb52aba6214ddf510ea0ed2227b2b1b691695de67f4a4e5248a819d42864'),
+    'runner_cache_adapter': ('vendor/runner_cache_adapter.py', '85a99cc2019edc0dbc07152555dd25d8484088c39ff91bc643b4533d851c2ad4'),
+    'topic_core': ('topic_core.py', 'bf871f38bde02bead38e504471ba21e7c6908371e7de1afe7210a676211b0ed8'),
+    'topic_cuda': ('topic_cuda.py', '12f189db6a437bfecdc65b2efee9b68fb6040fcef7f2893458b4585453efc91f'),
+    'topic_data': ('topic_data.py', '3d4a8401339e9c24d9ef79931dae1e0fef8bb51479559c2bdd385e709e1274a9'),
+    'ttt_paired': ('vendor/ttt_paired.py', 'f7d1c51310094275194fe833b07bda6e53bd525d59e1656830fe84e46ad56c17'),
+    'ttt_profile': ('vendor/ttt_profile.py', '8d05d5c17f95d842bf1d868ec62018a675f37e345c870ce699751ba478897158'),
+})
+ASSET_PINS = MappingProxyType({'vendor/fixture.json': '9f64e5077adf352f408db1945b37682e4c292a5111f9615e25d354dfd988f2fb'})
+BACKEND_SHA = SOURCE_PINS['cuda_backend'][1]
+MATERIAL_SHA = 'ca4299fa4b43a024583858ff6db9695c6c00550ffac79911f436b7d4abf080a2'
+RAW_TOKENIZER_SHA = 'af6b9e855f9db3192bd9152607708ebd7700b40f9fc5f792a26af70150a96cd5'
+DECODER_CONTRACT_SHA = '57f7073cb1c63db816e2b17b9deab323d27834bf663ef5e33e0009e48c293425'
+CONFIG_SHA = '932e9430395ba3eea4087cba1769241bc7d0dc8d574846862d6983659456a2d0'
+ORIGINAL_ROOT_POLICY_SHA = 'eb9ebc364bc4240ec5d50e5e2c1a666df062d4332210ab62cc4ad20858e89fbb'
+_BINDING_SENTINEL = object()
+
+
+def _safe_regular(path):
+    path = Path(path)
+    need(path.is_absolute(), 'absolute source path required')
+    for part in (path, *path.parents):
+        need(not part.is_symlink(), 'no symlink source/path component')
+    st = path.stat()
+    need(stat.S_ISREG(st.st_mode) and st.st_size <= 2 * 1024**2, 'bounded regular source')
+    return path
+
+
+def verify_source_closure(runtime_root):
+    """Read source only. Never traverses inputs, targets or private pairpacks."""
+    root = Path(runtime_root)
+    need(root.is_absolute() and root.is_dir(), 'absolute recovered runtime source root')
+    blobs = {}
+    for name, (relative, expected) in SOURCE_PINS.items():
+        path = _safe_regular(root / relative)
+        with path.open('rb') as stream:
+            before = os.fstat(stream.fileno())
+            data = stream.read(2 * 1024**2 + 1)
+            after = os.fstat(stream.fileno())
+        need((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) ==
+             (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns), 'source changed while verifying')
+        need(hashlib.sha256(data).hexdigest() == expected, 'recovered source hash mismatch: ' + name)
+        blobs[name] = (str(path), data)
+    for relative, expected in ASSET_PINS.items():
+        need(hashlib.sha256(_safe_regular(root / relative).read_bytes()).hexdigest() == expected,
+             'pinned public diagnostic asset mismatch')
+    return VerifiedSources(_BINDING_SENTINEL, blobs, root)
+
+
+class VerifiedSources:
+    """Private, exact-byte source closure. No unchecked caller-supplied manifest."""
+    def __init__(self, sentinel, blobs, root):
+        need(sentinel is _BINDING_SENTINEL, 'verified source factory only')
+        self._blobs = MappingProxyType(dict(blobs))
+        self._modules = {}
+        self.root = root
+        self.manifest_digest = digest({'sources': dict(SOURCE_PINS), 'assets': dict(ASSET_PINS)})
+
+    def verify_assets(self):
+        for relative, expected in ASSET_PINS.items():
+            need(hashlib.sha256(_safe_regular(self.root / relative).read_bytes()).hexdigest() == expected,
+                 'pinned public diagnostic asset changed')
+
+    def module(self, name):
+        need(name in SOURCE_PINS, 'only pinned recovered module')
+        if name in self._modules:
+            return self._modules[name]
+        path, blob = self._blobs[name]
+        need(hashlib.sha256(blob).hexdigest() == SOURCE_PINS[name][1], 'verified bytes still pinned')
+        private_name = '_new_ps_verified_' + self.manifest_digest[:16] + '_' + name
+        need(private_name not in sys.modules, 'private source namespace already occupied')
+        module = types.ModuleType(private_name)
+        module.__file__ = path
+        module.__package__ = ''
+        module.__cached__ = None
+        builtins_map = vars(builtins).copy()
+        ordinary_import = builtins.__import__
+
+        def checked_import(import_name, globals=None, locals=None, fromlist=(), level=0):
+            if level == 0 and import_name in SOURCE_PINS:
+                return self.module(import_name)
+            return ordinary_import(import_name, globals, locals, fromlist, level)
+
+        builtins_map['__import__'] = checked_import
+        module.__dict__['__builtins__'] = builtins_map
+        self._modules[name] = module
+        sys.modules[private_name] = module  # dataclass introspection only, never ambient module names
+        try:
+            exec(compile(blob, path, 'exec', dont_inherit=True), module.__dict__)
+        except BaseException:
+            self._modules.pop(name, None)
+            sys.modules.pop(private_name, None)
+            raise
+        return module
+
+
+_ACTUAL_LOAD_COMPLETED_KEY = object()  # private factory edge after module.load_backend returns
+
+
+class LoadedNativeBackend:
+    """Engine receives only a loader-created instance, never a synthetic backend."""
+    def __init__(self, sentinel, backend, sources, material_proof, proof_sha, release_pin, release=None,
+                 *, activation_key=None, admitted_run_id=None, admitted_science_deadline=None):
+        need(sentinel is _BINDING_SENTINEL, 'native bundle factory only')
+        need(activation_key is _ACTUAL_LOAD_COMPLETED_KEY and type(admitted_run_id) is str and
+             bool(admitted_run_id) and release is not None and
+             admitted_science_deadline == release.science_deadline_epoch,
+             'actual model-load completion activation required')
+        self._continuation_key = activation_key
+        self._admitted_release, self._admitted_backend = release, backend
+        self._admitted_release_pin, self._admitted_run_id = release_pin, admitted_run_id
+        self._admitted_science_deadline = admitted_science_deadline
+        self._admitted_science_monotonic = release.science_deadline_monotonic
+        self._admitted_account_valid_until = release.valid_until_epoch  # immutable evidence, not rolling expiry
+        self._admitted_documents = release.document_paths_and_pins
+        self.backend, self.sources = backend, sources
+        self.material_proof, self.proof_sha = material_proof, proof_sha
+        self.release_pin, self.release = release_pin, release
+        self._seal = _BINDING_SENTINEL
+
+    def assert_native(self):
+        need(type(self) is LoadedNativeBackend and self._seal is _BINDING_SENTINEL, 'native loader capability')
+        from .contracts import NativeRelease
+        need(type(self.release) is NativeRelease and self.release.verify_continuation(self) == self.release_pin,
+             'same activated authenticated native continuation')
+        b = self.backend
+        need(b.mode == 'cuda' and b.rank == 0 and b.world_size == 1, 'native single CUDA rank only')
+        need(b.bindings.get('tiny_fixture') is False, 'no fixture admitted to native engine')
+        need(b.bindings.get('backend_source_sha256') == BACKEND_SHA and
+             b.bindings.get('material') == MATERIAL_SHA and b.bindings.get('config') == CONFIG_SHA and
+             b.bindings.get('tokenizer') == RAW_TOKENIZER_SHA, 'actual material/model/raw-tokenizer/backend identity')
+        return self
+
+
+class NativeDevicePreflight:
+    def __init__(self, sentinel, sources, release, proof):
+        need(sentinel is _BINDING_SENTINEL and type(sources) is VerifiedSources, 'device preflight factory only')
+        self.sources, self.release, self.proof, self._seal = sources, release, proof, sentinel
+
+
+def _reuse_preflight_sources(preflight, runtime_root, release):
+    need(type(preflight) is NativeDevicePreflight and preflight._seal is _BINDING_SENTINEL and
+         preflight.release is release and preflight.proof['release_sha256'] == release.release_pin,
+         'same actual device preflight and release required')
+    # Rehash current files, but NEVER compile a second copy into the already
+    # occupied deterministic private namespace. Preserve the first capability.
+    fresh = verify_source_closure(runtime_root)
+    need(fresh.root == preflight.sources.root and fresh._blobs == preflight.sources._blobs and
+         fresh.manifest_digest == preflight.sources.manifest_digest, 'original source bytes unchanged after device preflight')
+    return preflight.sources
+
+
+def preflight_native_device(*, runtime_root, release, enable_cuda_execution=False):
+    """Charged original package/device check BEFORE any private input/model read.
+
+    Configures the actual single CUDA device with original initialize_device;
+    this is not numerical, full-model memory, checkpoint or quality evidence.
+    """
+    need(enable_cuda_execution is True, 'native device preflight default disabled')
+    from .contracts import NativeRelease
+    need(type(release) is NativeRelease, 'independently verified native release required')
+    release.verify_before_load()
+    need(sys.flags.isolated == 1 and sys.flags.dont_write_bytecode == 1,
+         'native device preflight requires isolated Python -I -B')
+    sources = verify_source_closure(runtime_root)
+    module = sources.module('cuda_backend')
+    device, rank, world, evidence = module.initialize_device('cuda')
+    need(str(device) == 'cuda:0' and rank == 0 and world == 1, 'no CPU or distributed native fallback')
+    proof = {'schema': 'new-ps-pre-private-original-device-preflight/v1',
+            'evidence': evidence, 'model_loaded': False, 'private_pairpack_reads': 0,
+            'DEV_gold_reads': 0, 'full_model_memory_proven': False,
+            'original_backend_sha256': BACKEND_SHA, 'release_sha256': release.release_pin}
+    return NativeDevicePreflight(_BINDING_SENTINEL, sources, release, proof)
+
+
+def load_native_backend(*, runtime_root, model_dir, receipt_path, proof_output,
+                        release, device_preflight=None, enable_cuda_execution=False):
+    """Expensive native load, unavailable without independent upstream admission.
+
+    The release object must come from native_experiment.contracts and authenticate
+    current science/engineering/account/resource/cumulative USD150 authorization.
+    Fresh full material-byte+finite verification is performed in this process;
+    no old proof/stat-only receipt is accepted in lieu of that streaming proof.
+    """
+    need(enable_cuda_execution is True, 'native execution default disabled')
+    # Exact type and authority verification are supplied by the workflow gate,
+    # not a user-provided callback or {'status': 'PASS'} dictionary.
+    from .contracts import NativeRelease
+    need(type(release) is NativeRelease, 'independently verified native release required')
+    release_pin = release.verify_before_load()
+    admitted_contract = release.public_contract()  # still freshness-gated, before material/model load
+    admitted_run_id = admitted_contract.get('run_id')
+    need(type(admitted_run_id) is str and bool(admitted_run_id), 'same admitted nonempty run identity')
+    admitted_science_deadline = release.science_deadline_epoch
+    release.assert_output_path(proof_output, allow_existing=False)
+    need(type(release_pin) is str and len(release_pin) == 64, 'verified release identity')
+    need(sys.flags.isolated == 1 and sys.flags.dont_write_bytecode == 1,
+         'native loader requires isolated Python -I -B')
+    need(os.environ.get('TORCH_DEVICE_BACKEND_AUTOLOAD') == '0' and
+         os.environ.get('CUBLAS_WORKSPACE_CONFIG') == ':4096:8', 'original native environment gates')
+    sources = _reuse_preflight_sources(device_preflight, runtime_root, release)
+    module = sources.module('cuda_backend')
+    module.versions('cuda')  # exact original six dependency pins before material work
+    import random
+    import numpy as np
+    import torch
+    random.seed(1729)
+    np.random.seed(1729)
+    torch.manual_seed(1729)
+    proof = module.verify_material(model_dir, receipt_path, module.MATERIAL_RECEIPT_SHA)
+    need(proof['material_file_records_sha256'] == MATERIAL_SHA, 'fixed actual material record identity')
+    proof_path = Path(proof_output)
+    need(proof_path.is_absolute() and not proof_path.exists(), 'new absolute material proof only')
+    proof_sha = module.exclusive_json(proof_path, proof)
+    release.verify_before_load()  # recheck fixed first-code deadlines and immutable submission evidence
+    backend = module.load_backend(model_dir, str(proof_path), proof_sha,
+                                  mode='cuda', seed=1729, enable_cuda_execution=True)
+    return LoadedNativeBackend(_BINDING_SENTINEL, backend, sources, proof,
+                               proof_sha, release_pin, release,
+                               activation_key=_ACTUAL_LOAD_COMPLETED_KEY,
+                               admitted_run_id=admitted_run_id,
+                               admitted_science_deadline=admitted_science_deadline).assert_native()

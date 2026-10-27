@@ -1,0 +1,57 @@
+"""NEW exact loaded-byte source closure. Public source only; no native work."""
+from pathlib import Path
+import hashlib
+import json
+import sys
+
+MODULE_PATHS = {
+    "training": "training/__init__.py", "training.contracts": "training/contracts.py",
+    "training.torch_ops": "training/torch_ops.py", "native_experiment": "native_experiment/__init__.py",
+    "native_experiment.source_closure": "native_experiment/source_closure.py",
+    "native_experiment.contracts": "native_experiment/contracts.py", "native_experiment.admission": "native_experiment/admission.py",
+    "native_experiment.physical_audit": "native_experiment/physical_audit.py",
+    "native_experiment.backend_load": "native_experiment/backend_load.py",
+    "native_experiment.backend_engine": "native_experiment/backend_engine.py",
+    "native_experiment.workflow": "native_experiment/workflow.py", "native_experiment.native_entry": "native_experiment/native_entry.py"}
+EXTRA_FILES = {"native_experiment/reviewed_bootstrap.py", "native_experiment/test_backend_engine.py",
+    "native_experiment/test_workflow.py", "native_experiment/test_physical_audit.py",
+    "native_experiment/test_admission.py", "native_experiment/test_native_entry_orchestration.py",
+    "native_experiment/NATIVE-EXPERIMENT-README.md",
+    "native_experiment/supervisor.py", "native_experiment/export_results.py",
+    "native_experiment/test_export_results.py", "native_experiment/prepare_public_inputs.py",
+    "native_experiment/NATIVE-PUBLIC-INPUTS.NEW.json", "native_experiment/WHOLE-EXPERIMENT-PHYSICAL-BOUNDS.NEW.json"}
+SOURCE_FILES = set(MODULE_PATHS.values()) | EXTRA_FILES
+
+
+def need(ok, code):
+    if not ok: raise ValueError(code)
+
+
+def sha(raw): return hashlib.sha256(raw).hexdigest()
+
+
+def bounded_public(path):
+    need(path.is_absolute() and not any(p.is_symlink() for p in (path, *path.parents)), "SOURCE_NO_SYMLINK_COMPONENT")
+    need(path.is_file() and 0 < path.stat().st_size <= 2 * 1024 * 1024, "BOUNDED_REGULAR_NEW_SOURCE")
+    return path.read_bytes()
+
+
+def verify_loaded_source_bytes(manifest_raw, expected_manifest_sha, expected_bootstrap_sha):
+    need(sha(manifest_raw) == expected_manifest_sha, "NEW_SOURCE_MANIFEST_PIN")
+    manifest = json.loads(manifest_raw)
+    need(set(manifest) == {"schema", "files"} and manifest["schema"] == "new-ps-native-source-manifest/v1"
+         and type(manifest["files"]) is dict and set(manifest["files"]) == SOURCE_FILES, "NEW_SOURCE_MANIFEST_EXACT_FILES")
+    root = Path(__file__).resolve().parents[1]
+    for rel, pin in manifest["files"].items():
+        raw = bounded_public(root / rel)
+        need(pin == {"bytes": len(raw), "sha256": sha(raw)}, "NEW_SOURCE_FILE_HASH")
+    need(manifest["files"]["native_experiment/reviewed_bootstrap.py"]["sha256"] == expected_bootstrap_sha,
+         "NEW_SOURCE_BOOTSTRAP_PIN")
+    for module_name, rel in MODULE_PATHS.items():
+        module = sys.modules.get(module_name)
+        expected = {"schema": "new-ps-native-reviewed-byte-bootstrap/v1", "mode": "COMPILE_PINNED_BYTES_NO_PYCACHE",
+                    "bootstrap_sha256": expected_bootstrap_sha, "source_manifest_sha256": expected_manifest_sha,
+                    "module_sha256": manifest["files"][rel]["sha256"]}
+        need(module is not None and getattr(module, "__reviewed_byte_bootstrap__", None) == expected
+             and Path(module.__file__) == root / rel, "ACTUAL_LOADED_NEW_MODULE_NOT_REVIEWED_BYTES")
+    return True

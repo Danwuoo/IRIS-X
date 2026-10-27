@@ -1,0 +1,89 @@
+import time
+import unittest
+from types import SimpleNamespace
+import torch
+from torch.utils.checkpoint import checkpoint, set_checkpoint_early_stop
+from .physical_audit import AuditHooks
+
+
+class Model(torch.nn.Module):
+    def __init__(self, full_recompute=True):
+        super().__init__()
+        self.embedding = torch.nn.Embedding(16, 4)
+        self.layer = torch.nn.Linear(4, 16)
+        self.full_recompute = full_recompute
+    def forward(self, input_ids, attention_mask=None, use_cache=False):
+        x = self.embedding(input_ids)
+        with set_checkpoint_early_stop(not self.full_recompute):
+            y = checkpoint(self.layer, x, use_reentrant=False)
+        return SimpleNamespace(logits=y)
+
+
+def make(emit=None, **changes):
+    defaults = dict(science_deadline=time.time() + 60, emit=emit or (lambda *args: None),
+                    max_root_calls=10, max_root_input_positions=100, max_layer_calls=30)
+    defaults.update(changes)
+    h = AuditHooks(**defaults); h.set_phase("synthetic"); return h
+
+
+class PhysicalTests(unittest.TestCase):
+    def test_nonreentrant_full_recompute_counted_separately(self):
+        model = Model(); h = make().install(model, (model.layer,))
+        self.assertTrue(h.assert_installed(model, (model.layer,)))
+        h.before("forward", {})
+        y = model(input_ids=torch.tensor([[1, 2, 3]]), use_cache=False).logits
+        h.after("forward", {})
+        h.before("backward", {}); y.sum().backward(); h.after("backward", {})
+        result = h.snapshot()
+        self.assertEqual(result["root_forward_intents"], 1)
+        self.assertEqual(result["root_forward_completions"], 1)
+        self.assertEqual(result["decoder_layer_execution_intents"], 2)
+        self.assertEqual(result["decoder_layer_execution_completions"], 2)
+        self.assertEqual(result["operation_unknown"], 0)
+        self.assertFalse(result["FLOPs_claimed"])
+        h.close()
+        with self.assertRaises(ValueError): h.assert_installed(model, (model.layer,))
+    def test_default_early_stop_is_not_silently_counted_full_recompute(self):
+        model = Model(False); h = make().install(model, (model.layer,))
+        y = model(input_ids=torch.tensor([[1, 2, 3]]), use_cache=False).logits
+        y.sum().backward()
+        self.assertEqual(h.status, "UNKNOWN")
+        self.assertEqual(h.snapshot()["decoder_layer_unknown"], 1)
+        h.close()
+    def test_wrong_model_layer_or_removed_hook_rejected(self):
+        model, other = Model(), Model(); h = make().install(model, (model.layer,))
+        for m, layers in ((other, (model.layer,)), (model, (other.layer,))):
+            with self.assertRaises(ValueError): h.assert_installed(m, layers)
+        h.handles[-1].remove()
+        with self.assertRaises(ValueError): h.assert_installed(model, (model.layer,))
+        h.close()
+    def test_root_calls_budget_before_call_and_unknown_no_retry(self):
+        model = Model(); h = make(max_root_calls=1).install(model, (model.layer,))
+        model(input_ids=torch.tensor([[1]]), use_cache=False)
+        with self.assertRaises(ValueError): model(input_ids=torch.tensor([[1]]), use_cache=False)
+        self.assertEqual(h.status, "UNKNOWN")
+        with self.assertRaises(ValueError): h.tick()
+        self.assertEqual(h.root_reserved, 1)
+        h.close()
+    def test_failed_durable_intent_remains_reserved(self):
+        def fail(kind, fields):
+            if kind == "physical_forward_intent": raise OSError("synthetic receipt failure")
+        model = Model(); h = make(emit=fail).install(model, (model.layer,))
+        with self.assertRaises(OSError): model(input_ids=torch.tensor([[1, 2]]), use_cache=False)
+        self.assertEqual(h.status, "UNKNOWN")
+        self.assertEqual(h.snapshot()["root_unknown"], 1)
+        self.assertEqual(h.root_positions_reserved, 2)
+        h.close()
+    def test_pending_operation_prevents_phase_change(self):
+        h = make(); h.before("commit", {})
+        with self.assertRaises(ValueError): h.set_phase("next")
+        h.failed("commit", {})
+        self.assertEqual(h.snapshot()["operation_unknown"], 1)
+        with self.assertRaises(ValueError): h.before("commit", {})
+    def test_deadline_not_restartable(self):
+        h = make(science_deadline=101, clock=lambda: 100)
+        h.clock = lambda: 101
+        with self.assertRaises(ValueError): h.tick()
+
+
+if __name__ == "__main__": unittest.main()

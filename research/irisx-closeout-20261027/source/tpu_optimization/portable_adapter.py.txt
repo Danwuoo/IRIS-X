@@ -1,0 +1,198 @@
+"""NEW final8 named-LoRA portability bridge; no model loading or provider calls.
+
+Read a committed original four-rank checkpoint; concatenate only its exact
+Shard(0) named LoRA leaves. No Adam/RNG/base conversion or PEFT key rewriting.
+Native CUDA copy is a separate future-evaluation API, never the fixed37 run.
+"""
+from __future__ import annotations
+from contextlib import ExitStack
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import sys
+import time
+
+from .source_loader import canonical, digest, need, read_source
+
+CAP=384*1024**2
+BASE_SHA='ca4299fa4b43a024583858ff6db9695c6c00550ffac79911f436b7d4abf080a2'
+CONFIG_SHA='932e9430395ba3eea4087cba1769241bc7d0dc8d574846862d6983659456a2d0'
+TOKENIZER_SHA='af6b9e855f9db3192bd9152607708ebd7700b40f9fc5f792a26af70150a96cd5'
+TPU_SHA='40fb3394db33aa6dac0ecaf870bfd23d1dfdcc46393c8f83dc0fe0cd2646095b'
+CUDA_SHA='320f832cbbbbedab91069b3880127c7a9b34ef66a6c615e61350105ea51e5936'
+LORA={'r':32,'alpha':32,'dropout':0,'bias':'none','use_rslora':False,
+      'targets':['q_proj','k_proj','v_proj','o_proj','gate_proj','up_proj','down_proj']}
+
+
+def file_sha(path,cap):
+    p=Path(path)
+    need(p.is_absolute() and not any(q.is_symlink() for q in (p,*p.parents)), 'portable path/ancestor')
+    need(p.is_file() and p.stat().st_size<=cap, 'portable bounded regular file')
+    h=hashlib.sha256()
+    with p.open('rb') as f:
+        before=os.fstat(f.fileno())
+        while raw:=f.read(4*1024**2):h.update(raw)
+        after=os.fstat(f.fileno())
+    need((before.st_ino,before.st_size,before.st_mtime_ns,before.st_ctime_ns)==
+         (after.st_ino,after.st_size,after.st_mtime_ns,after.st_ctime_ns), 'portable file changed')
+    return h.hexdigest()
+
+
+def expected_shapes(config):
+    """Exact Qwen3/PEFT convention, derived from the pinned raw model config."""
+    need(config['model_type']=='qwen3' and config['vocab_size']==16 and
+         config['num_hidden_layers']==36 and config['tie_word_embeddings'] is False, 'fixed SFT139 architecture')
+    h=config['hidden_size'];n=config['num_attention_heads'];kv=config['num_key_value_heads']
+    d=config.get('head_dim',h//n);mid=config['intermediate_size']
+    need(all(type(x)is int and x>0 for x in (h,n,kv,d,mid)), 'positive exact architecture dimensions')
+    dims={'q_proj':(n*d,h),'k_proj':(kv*d,h),'v_proj':(kv*d,h),'o_proj':(h,n*d),
+          'gate_proj':(mid,h),'up_proj':(mid,h),'down_proj':(h,mid)}
+    shapes={}
+    for layer in range(36):
+        for projection,(out_size,in_size) in dims.items():
+            section='self_attn' if projection in ('q_proj','k_proj','v_proj','o_proj') else 'mlp'
+            prefix=f'base_model.model.model.layers.{layer}.{section}.{projection}'
+            shapes[prefix+'.lora_A.default.weight']=[32,in_size]
+            shapes[prefix+'.lora_B.default.weight']=[out_size,32]
+    need(len(shapes)==504 and sum(math.prod(s) for s in shapes.values())==66060288, 'exact SFT139 rank32 named LoRA parameter denominator')
+    return shapes
+
+
+def merge_named_shards(specs,shards,expected):
+    """Pure CPU tensor mapping, shared by native export and synthetic parity."""
+    import torch
+    need(len(specs)==len(shards)==4, 'four ordered rank shards')
+    need(all(set(s)==set(expected) for s in specs) and all(set(s)==set(expected) for s in shards), 'all and only required named leaves')
+    result={}
+    for name,shape in expected.items():
+        rows=[s[name] for s in specs];parts=[s[name] for s in shards]
+        need(all(r['global_shape']==list(shape) and r['dtype']=='torch.float32' and r['mesh_shape']==[4] for r in rows), 'same global shape/FP32/four-mesh')
+        need(all(t.device.type=='cpu' and t.dtype==torch.float32 and list(t.shape)==r['local_shape'] and
+                 bool(torch.isfinite(t).all()) for r,t in zip(rows,parts)), 'finite exact local tensors before merge')
+        if shape[0]>=4:
+            need(shape[0]%4==0 and all(r['placements']==['S(0)'] and r['local_shape']==[shape[0]//4,*shape[1:]] for r in rows), 'original divisible Shard(0), no wrong axis/padding/truncation')
+            value=torch.cat(parts,dim=0).contiguous()
+        else:
+            need(all(r['placements']==['R'] and r['local_shape']==list(shape) for r in rows), 'original small-dimension replication only')
+            need(all(torch.equal(parts[0],p) for p in parts[1:]), 'replicated leaves must agree exactly')
+            value=parts[0].clone().contiguous()
+        need(list(value.shape)==list(shape), 'exact global shape after mapping')
+        result[name]=value
+    return result
+
+
+def copy_named_parameters(parameters,tensors):
+    """No rename/transpose/fallback. Validate every leaf before any mutation."""
+    import torch
+    need(set(parameters)==set(tensors), 'exact named parameter set, no missing/extra leaves')
+    for name,p in parameters.items():
+        t=tensors[name]
+        need(p.dtype==t.dtype==torch.float32 and tuple(p.shape)==tuple(t.shape) and
+             bool(torch.isfinite(t).all()) and p.requires_grad, 'all destination names/shapes/dtypes before copy')
+    with torch.no_grad():
+        for name,p in parameters.items():p.copy_(tensors[name].to(p.device))
+    need(all(torch.equal(p.detach().cpu(),tensors[n]) for n,p in parameters.items()), 'actual postcopy adapter bytes exact')
+
+
+def export_checkpoint8(checkpoint,commit_sha,config_path,output,clock):
+    """CPU serialization only after NEW native cold8 proof and group exit."""
+    import torch
+    from safetensors import safe_open
+    from safetensors.torch import save_file,load_file
+    clock.tick();root=Path(checkpoint);out=Path(output)
+    need(out.is_absolute() and not any(p.is_symlink() for p in (out,*out.parents)), 'new portable output path')
+    commit=json.loads(read_source(root/'COMMITTED.json',commit_sha))
+    need(commit['world_size']==4 and commit['cursor']['optimizer_updates']==8 and
+         commit['cursor']['arm']=='winner_sft' and len(commit['ranks'])==4, 'committed native final8 only')
+    cfg=json.loads(read_source(config_path,CONFIG_SHA));expected=expected_shapes(cfg)
+    metadata=[];paths=[]
+    for rank,row in enumerate(commit['ranks']):
+        clock.tick();need(row['name']==f'rank-{rank}.json', 'ordered checkpoint rank')
+        m=json.loads(read_source(root/row['name'],row['sha256']))
+        need(m['identity']==commit['identity'] and m['cursor']==commit['cursor'], 'same checkpoint identity/cursor')
+        b=m['bindings']
+        need(b['rank']==rank and b['world_size']==4 and b['tiny_fixture'] is False and
+             b['material']==BASE_SHA and b['config']==CONFIG_SHA and b['tokenizer']==TOKENIZER_SHA and
+             b['backend_source_sha256']==TPU_SHA, 'original native material/backend/rank identity')
+        need(set(m['names'])==set(expected) and len(m['names'])==504 and
+             set(b['parameter_specs'])==set(expected), 'exact complete original named LoRA set')
+        payload=m['payload'];need(payload['name']==f'rank-{rank}.safetensors', 'closed rank payload name')
+        p=root/payload['name'];need(p.stat().st_size==payload['bytes'] and file_sha(p,780*1024**2)==payload['sha256'], 'whole native checkpoint payload SHA')
+        metadata.append(m);paths.append(p)
+    tensors={}
+    with ExitStack() as stack:
+        handles=[stack.enter_context(safe_open(str(p),framework='pt',device='cpu')) for p in paths]
+        for name,shape in expected.items():
+            clock.tick();specs=[];parts=[]
+            for m,handle in zip(metadata,handles):
+                idx=m['names'].index(name)
+                specs.append({name:m['bindings']['parameter_specs'][name]})
+                parts.append({name:handle.get_tensor(f'p{idx}')})
+            tensors.update(merge_named_shards(specs,parts,{name:shape}))
+    need(sum(t.numel() for t in tensors.values())==66060288, 'complete portable adapter elements')
+    raw_bytes=sum(t.numel()*t.element_size() for t in tensors.values())
+    need(raw_bytes+1024*len(tensors)+2*1024**2<=CAP, 'portable serializer384MiB prewrite bound')
+    clock.tick();out.mkdir(exist_ok=False);payload=out/'adapter.safetensors'
+    fd=os.open(payload,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600);os.close(fd)
+    save_file(tensors,str(payload))
+    with payload.open('rb') as f:os.fsync(f.fileno())
+    need(payload.stat().st_size<CAP, 'actual portable payload cap')
+    restored=load_file(str(payload),device='cpu')
+    need(set(restored)==set(tensors) and all(torch.equal(tensors[n],restored[n]) for n in tensors), 'actual portable safetensors byte roundtrip')
+    index={'schema':'new-ps-final8-named-lora-portable/v1','checkpoint_commit_sha256':commit_sha,
+           'checkpoint_identity':commit['identity'],'cursor':commit['cursor'],'source_world_size':4,
+           'material_sha256':BASE_SHA,'config_sha256':CONFIG_SHA,'raw_tokenizer_sha256':TOKENIZER_SHA,
+           'LoRA':LORA,'names_and_global_shapes':expected,'parameter_elements':66060288,
+           'mapping':'same PEFT names; concatenate rank0..3 original Shard(0); no renaming/transposition',
+           'payload':{'name':payload.name,'bytes':payload.stat().st_size,'sha256':file_sha(payload,CAP)},
+           'optimizer_RNG_base_included':False,'same_bytes_serializer_roundtrip':True,
+           'strict_cuda_loader_source_sha256':file_sha(Path(__file__).absolute(),2*1024**2),
+           'native_cross_device_logit_parity':'NOT_RUN','HF_auto_model_loading_ready':False,
+           'current_SFT139_backend_loadable_with_strict_bridge':True,'cap_bytes':CAP}
+    raw=canonical(index)+b'\n';need(len(raw)+payload.stat().st_size<=CAP, 'complete portable artifact384MiB')
+    with (out/'PORTABLE-ADAPTER.json').open('xb') as f:f.write(raw);f.flush();os.fsync(f.fileno())
+    clock.tick()
+    return {'path':str(out),'index_sha256':hashlib.sha256(raw).hexdigest(),'cap_bytes':CAP,
+            'actual_bytes':len(raw)+payload.stat().st_size,'optimizer_updates':8,
+            'strict_current_backend_loader_available':True,'cross_device_numeric_parity':'NOT_RUN','HF_ready':False}
+
+
+def load_into_cuda_backend(backend,path,index_sha256):
+    """Future bounded GPU evaluation only. Never called by this TPU pipeline."""
+    module=sys.modules.get(type(backend).__module__)
+    need(module is not None and type(backend)is getattr(module,'Backend',None) and
+         file_sha(Path(module.__file__).absolute(),2*1024**2)==CUDA_SHA, 'exact original CUDA backend class/source')
+    import torch
+    from safetensors.torch import load_file
+    need(backend.mode=='cuda' and backend.rank==0 and backend.world_size==1 and
+         backend.bindings.get('tiny_fixture') is False and not backend.optimizer.state, 'fresh actual single-GPU inference backend, no CPU/training overwrite')
+    need(all(p.device.type=='cuda' and p.dtype==torch.float32 for p in backend.model.parameters()), 'actual original CUDA full model')
+    for k,want in [('material',BASE_SHA),('config',CONFIG_SHA),('tokenizer',TOKENIZER_SHA),('backend_source_sha256',CUDA_SHA)]:
+        need(backend.bindings.get(k)==want, 'same pinned CUDA material/tokenizer/backend')
+    pc=backend.model.peft_config['default']
+    need(pc.r==32 and pc.lora_alpha==32 and pc.lora_dropout==0 and pc.bias=='none' and
+         pc.use_rslora is False and set(pc.target_modules)==set(LORA['targets']) and
+         getattr(pc,'fan_in_fan_out',False) is False and getattr(pc,'use_dora',False) is False and
+         not getattr(pc,'rank_pattern',{}) and not getattr(pc,'alpha_pattern',{}), 'same PEFT rank/alpha/dropout/bias/projection convention')
+    root=Path(path);index=json.loads(read_source(root/'PORTABLE-ADAPTER.json',index_sha256))
+    need(index['schema']=='new-ps-final8-named-lora-portable/v1' and index['source_world_size']==4 and
+         index['cursor']['optimizer_updates']==8 and index['material_sha256']==BASE_SHA and
+         index['config_sha256']==CONFIG_SHA and index['raw_tokenizer_sha256']==TOKENIZER_SHA and index['LoRA']==LORA,
+         'exact trained final8 artifact/base/tokenizer/LoRA identity')
+    need(index['strict_cuda_loader_source_sha256']==file_sha(Path(__file__).absolute(),2*1024**2), 'same exact reviewed portability bridge source')
+    expected=expected_shapes(backend.model.config.to_dict())
+    need(index['names_and_global_shapes']==expected and set(backend.trainable_parameters)==set(expected), 'same exact PEFT parameter names and derived global shapes')
+    p=index['payload'];need(p['name']=='adapter.safetensors', 'single portable payload')
+    payload=root/p['name'];need(payload.stat().st_size==p['bytes'] and file_sha(payload,CAP)==p['sha256'], 'portable payload pin/cap')
+    tensors=load_file(str(payload),device='cpu')
+    before={n:p._version for n,p in backend.model.named_parameters() if not p.requires_grad}
+    need(all(p.grad is None for p in backend.model.parameters()), 'no pending gradients during adapter import')
+    copy_named_parameters(backend.trainable_parameters,tensors)
+    need(all(p._version==before[n] and p.grad is None for n,p in backend.model.named_parameters() if not p.requires_grad), 'frozen base unchanged')
+    need(not backend.optimizer.state, 'no imported TPU Adam/RNG or redefined optimizer root')
+    backend.model.eval()
+    return {'status':'COPIED_EXACT_FINAL8_NAMED_ADAPTER_TO_ORIGINAL_CUDA_BACKEND',
+            'index_sha256':index_sha256,'checkpoint_commit_sha256':index['checkpoint_commit_sha256'],
+            'cross_device_logit_parity':'NOT_RUN','optimizer_RNG_imported':False,'root_reset_semantics':'Original SFT139 root unchanged'}

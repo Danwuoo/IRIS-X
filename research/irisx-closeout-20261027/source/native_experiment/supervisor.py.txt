@@ -1,0 +1,250 @@
+"""NEW bounded native-child supervisor. No direct/default execution or gold.
+
+Parent authenticates this source in the same final reviewed source manifest.
+Only a root-released call can launch the model child. Child stdout/stderr stay
+private. A model-stop receipt is written only AFTER wait() establishes process
+exit, never by the still-running model process itself.
+
+Temporary TERM/HUP/INT handlers request shutdown without raising asynchronous
+exceptions across Popen ownership assignment or cleanup. Communication checks
+those requests at most every second; every post-spawn exit path has finally
+cleanup. Linux child PR_SET_PDEATHSIG(SIGKILL), armed before stdin/bootstrap,
+checks expected parent PID before/after arming and covers parent SIGKILL races.
+This is not a host/provider liveness guarantee: kernel uninterruptible tasks,
+host death, provider billing/resource release and descendants escaping the owned
+process group remain UNKNOWN and bounded only by external provider admission.
+No stopped receipt is fabricated if bounded wait cannot establish child exit.
+"""
+from pathlib import Path
+import hashlib
+import json
+import math
+import os
+import signal
+import subprocess
+import sys
+import time
+
+
+def need(ok, code):
+    if not ok: raise ValueError(code)
+
+
+def sha(raw): return hashlib.sha256(raw).hexdigest()
+
+
+def _read_public(path, cap=2 * 1024**2):
+    need(path.is_absolute() and not any(p.is_symlink() for p in (path, *path.parents)), "SUPERVISOR_PATH")
+    need(path.is_file() and 0 < path.stat().st_size <= cap, "SUPERVISOR_FILE_BOUND")
+    return path.read_bytes()
+
+
+def _write(path, value):
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode() + b"\n"
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, "wb") as stream: stream.write(raw); stream.flush(); os.fsync(stream.fileno())
+    fd = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+    try: os.fsync(fd)
+    finally: os.close(fd)
+    return {"bytes": len(raw), "sha256": sha(raw)}
+
+
+TERM_GRACE_SECONDS = 5
+KILL_GRACE_SECONDS = 5
+COMMUNICATE_SLICE_SECONDS = 1.0
+TERMINATION_SIGNALS = (signal.SIGTERM, signal.SIGHUP, signal.SIGINT)
+
+# Included literally in the reviewed supervisor source/hash. The native child
+# executes this before reading stdin or compiling any bootstrap/model code.
+PARENT_DEATH_GUARD_SOURCE = r"""
+import ctypes,os,signal,sys
+
+def _arm_parent_death_kill(expected_parent_pid):
+    if not sys.platform.startswith('linux') or type(expected_parent_pid) is not int or expected_parent_pid <= 1:
+        raise SystemExit('LINUX_VALID_EXPECTED_PARENT_REQUIRED')
+    if os.getppid() != expected_parent_pid:
+        raise SystemExit('PARENT_CHANGED_BEFORE_PDEATHSIG')
+    libc = ctypes.CDLL(None, use_errno=True)
+    prctl = libc.prctl
+    prctl.argtypes = [ctypes.c_int, ctypes.c_ulong, ctypes.c_ulong, ctypes.c_ulong, ctypes.c_ulong]
+    prctl.restype = ctypes.c_int
+    if prctl(1, signal.SIGKILL, 0, 0, 0) != 0:
+        raise OSError(ctypes.get_errno(), 'PR_SET_PDEATHSIG_FAILED')
+    if os.getppid() != expected_parent_pid:
+        os.kill(os.getpid(), signal.SIGKILL)
+        raise SystemExit('PARENT_CHANGED_DURING_PDEATHSIG')
+"""
+
+
+def _stop_owned_child(process):
+    """Only our still-owned process group; finite waits, no false stop claim."""
+    if process.poll() is None:
+        try: os.killpg(process.pid, signal.SIGTERM)
+        except ProcessLookupError: pass
+        try: process.wait(timeout=TERM_GRACE_SECONDS)
+        except subprocess.TimeoutExpired:
+            try: os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError: pass
+            try: process.wait(timeout=KILL_GRACE_SECONDS)
+            except subprocess.TimeoutExpired as error:
+                raise RuntimeError('OWNED_CHILD_EXIT_UNOBSERVED_PROVIDER_STATE_UNKNOWN') from error
+    else:
+        process.wait(timeout=KILL_GRACE_SECONDS)
+    need(process.poll() is not None, "OWNED_CHILD_EXIT_REQUIRED")
+
+
+class _OwnedChildScope:
+    """Main-thread signal ownership and unconditional post-spawn cleanup.
+
+    Signal handlers only set a flag: they cannot strand a just-created child
+    between Popen returning and assignment. Repeated signals during cleanup are
+    ignored, then all prior handlers are restored even when cleanup fails.
+    """
+    def __init__(self):
+        self.process = None
+        self.termination_signal = None
+        self.cleaning = False
+        self.previous_handlers = {}
+
+    def _handle(self, signum, frame):
+        if self.termination_signal is None:
+            self.termination_signal = signum
+
+    def __enter__(self):
+        try:
+            for signum in TERMINATION_SIGNALS:
+                self.previous_handlers[signum] = signal.getsignal(signum)
+                signal.signal(signum, self._handle)
+        except BaseException:
+            self._restore_handlers()
+            raise
+        return self
+
+    def _restore_handlers(self):
+        for signum, handler in self.previous_handlers.items():
+            signal.signal(signum, handler)
+        self.previous_handlers.clear()
+
+    def spawn(self, *args, **kwargs):
+        need(self.process is None and self.termination_signal is None, 'NO_SPAWN_AFTER_TERMINATION_REQUEST')
+        self.process = subprocess.Popen(*args, **kwargs)
+        return self.process
+
+    def __exit__(self, exc_type, exc, traceback):
+        self.cleaning = True
+        try:
+            if self.process is not None:
+                _stop_owned_child(self.process)
+        finally:
+            self._restore_handlers()
+        return False
+
+
+def _communicate_until_exit(process, data, *, deadline, scope, clock=None):
+    """Polling is only IPC supervision, never model retry or new generation."""
+    clock = time.time if clock is None else clock
+    while True:
+        if scope.termination_signal is not None:
+            return 'TERMINATION_REQUESTED'
+        remaining = deadline - clock()
+        if remaining <= 0:
+            return 'SCIENCE_DEADLINE'
+        try:
+            process.communicate(data, timeout=min(COMMUNICATE_SLICE_SECONDS, remaining))
+            return 'EXITED'
+        except subprocess.TimeoutExpired:
+            data = None  # communicate resumes its buffered input, never resends
+
+
+def _first_clock(directory, root_grant, run_id):
+    raw = _read_public(directory / "PRE-SETUP-CLOCK.json", 4096); c = json.loads(raw)
+    release_raw = _read_public(directory / "ROOT-RELEASE.json")
+    need(sha(release_raw) == root_grant["files"]["ROOT-RELEASE.json"], "SUPERVISOR_ROOT_RELEASE_PIN")
+    release = json.loads(release_raw)
+    need(set(c) == {"schema", "run_id", "first_epoch", "first_monotonic", "capture_scope", "clock_reset_allowed",
+                   "native_source_manifest_sha256", "wrapper_source_manifest_sha256"} and
+         c["schema"] == "new-ps-first-notebook-code-clock/v1" and c["run_id"] == run_id and
+         c["capture_scope"] == "ROOT_PINNED_FIRST_CELL_BEFORE_PAYLOAD_VERIFICATION_EXTRACTION_INSTALL" and
+         c["clock_reset_allowed"] is False and c["native_source_manifest_sha256"] == root_grant["files"]["SOURCE-MANIFEST.json"] and
+         c["wrapper_source_manifest_sha256"] == release.get("wrapper_source_manifest_sha256"), "SUPERVISOR_CLOCK_RUN_SOURCE")
+    need(all(type(c[k]) in (int, float) and math.isfinite(c[k]) and c[k] >= 0 for k in ("first_epoch", "first_monotonic")) and
+         0 <= time.time()-c["first_epoch"] < 7020 and 0 <= time.monotonic()-c["first_monotonic"] < 7020,
+         "SUPERVISOR_ORIGINAL_SETUP_CLOCK")
+    return c, {"bytes": len(raw), "sha256": sha(raw)}
+
+
+def supervise_root_authorized(directory, root_grant, *, python_executable):
+    """Future explicit paid/quota action, not called in development tests."""
+    need(globals().get("_ROOT_VERIFIED_SUPERVISOR_SHA256") == sha(_read_public(Path(__file__))) and
+         sys.flags.isolated == 1, "ROOT_VERIFIED_SUPERVISOR_ENTRY_REQUIRED")
+    directory = Path(directory)
+    manifest_raw = _read_public(directory / "SOURCE-MANIFEST.json")
+    need(sha(manifest_raw) == root_grant["files"]["SOURCE-MANIFEST.json"], "SUPERVISOR_ROOT_SOURCE_MANIFEST")
+    manifest = json.loads(manifest_raw)
+    need(manifest["files"]["native_experiment/supervisor.py"]["sha256"] == globals()["_ROOT_VERIFIED_SUPERVISOR_SHA256"],
+         "ACTUAL_SUPERVISOR_SOURCE_IN_ROOT_MANIFEST")
+    need(Path(python_executable).resolve() == Path(sys.executable).resolve(), "SAME_REVIEWED_PARENT_INTERPRETER_ONLY")
+    contract_raw = _read_public(directory / "EXPERIMENT-CONTRACT.json")
+    need(sha(contract_raw) == root_grant["files"]["EXPERIMENT-CONTRACT.json"], "SUPERVISOR_ROOT_CONTRACT_PIN")
+    contract = json.loads(contract_raw)
+    account_raw = _read_public(directory / "ACCOUNT-AND-BUDGET.json")
+    need(sha(account_raw) == root_grant["files"]["ACCOUNT-AND-BUDGET.json"], "SUPERVISOR_ACCOUNT_PIN")
+    account = json.loads(account_raw)
+    clock, clock_pin = _first_clock(directory, root_grant, contract["run_id"])
+    anchor = clock["first_epoch"]; science_mono = clock["first_monotonic"] + 7020
+    os.umask(0o077)
+    own = directory / "supervisor-attempt"; own.mkdir(mode=0o700)
+    _write(own / "LEASE.json", {"attempt_consumed": True, "retry_allowed": False,
+        "run_id": contract["run_id"], "setup_anchor_epoch": anchor, "science_deadline_epoch": anchor + 7020,
+        "whole_deadline_epoch": anchor + 7200, "science_deadline_monotonic": science_mono,
+        "whole_deadline_monotonic": clock["first_monotonic"] + 7200, "pre_setup_clock": clock_pin})
+    bootstrap = Path(__file__).parent / "reviewed_bootstrap.py"
+    raw = _read_public(bootstrap)
+    need(sha(raw) == root_grant["bootstrap_sha256"], "SUPERVISOR_REVIEWED_BOOTSTRAP_PIN")
+    # The child receives only public authority pins and file locations, never
+    # source task/DEV gold values. It verifies/compiles its own source bytes.
+    code = PARENT_DEATH_GUARD_SOURCE + "\n_arm_parent_death_kill(int(sys.argv[1]))\n" + """import hashlib,json,os,sys\nfrom pathlib import Path\nx=json.loads(sys.stdin.read())\np=Path(x['bootstrap'])\nif any(q.is_symlink()for q in(p,*p.parents)):raise SystemExit('BOOTSTRAP_SYMLINK')\nb=p.read_bytes()\nif hashlib.sha256(b).hexdigest()!=x['grant']['bootstrap_sha256']:raise SystemExit('BOOTSTRAP_HASH')\nn={'__name__':'new_ps_root_verified_native_bootstrap','__file__':str(p),'_ROOT_VERIFIED_BOOTSTRAP_SHA256':x['grant']['bootstrap_sha256']}\nexec(compile(b,str(p),'exec',dont_inherit=True),n)\nr=n['run_with_root_grant'](x['directory'],x['grant'])\nprint(json.dumps(r,sort_keys=True,separators=(',',':')))\nraise SystemExit(0 if r.get('status')=='COMPLETE_PREDICTIONS_SEALED_WAIT_PROCESS_EXIT' else 2)\n"""
+    env = os.environ.copy()
+    env["TORCH_DEVICE_BACKEND_AUTOLOAD"] = "0"
+    env["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+    timed_out = supervisor_failure = False
+    process = None
+    scope = _OwnedChildScope()
+    # Scope encloses fdopen/flush/fsync/close as well as communication: an I/O or
+    # serialization failure anywhere after spawn still terminates our child.
+    with scope:
+        try:
+            log_fd = os.open(own / "PRIVATE-CHILD.log", os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+            with os.fdopen(log_fd, "wb") as log:
+                process = scope.spawn([str(python_executable), "-I", "-B", "-c", code, str(os.getpid())],
+                    stdin=subprocess.PIPE, stdout=log, stderr=subprocess.STDOUT, env=env, start_new_session=True)
+                data = json.dumps({"bootstrap": str(bootstrap), "directory": str(directory), "grant": root_grant}).encode()
+                outcome = _communicate_until_exit(process, data, deadline=science_mono, scope=scope, clock=time.monotonic)
+                timed_out = outcome == 'SCIENCE_DEADLINE'
+                supervisor_failure = outcome == 'TERMINATION_REQUESTED'
+                log.flush(); os.fsync(log.fileno())
+        except BaseException:
+            supervisor_failure = True
+    need(process is not None, "NO_CHILD_CREATED_ATTEMPT_CONSUMED")
+    supervisor_failure = supervisor_failure or scope.termination_signal is not None
+    need(process.poll() is not None, "MODEL_PROCESS_EXIT_OBSERVED")
+    receipt = {"schema": "new-ps-native-model-process-stopped/v1", "run_id": contract["run_id"],
+        "child_pid": process.pid, "observed_returncode": process.returncode, "wait_returned": True,
+        "deadline_termination": timed_out, "model_process_stopped": True, "observed_epoch": time.time(),
+        "supervisor_communication_failure": supervisor_failure,
+        "supervisor_termination_signal": scope.termination_signal,
+        "parent_death_guard": "LINUX_PR_SET_PDEATHSIG_SIGKILL_EXPECTED_PARENT_RACECHECK",
+        "host_or_provider_failure_is_unknown": True,
+        "contract_sha256": root_grant["files"]["EXPERIMENT-CONTRACT.json"], "DEV_target_reads_by_supervisor": 0,
+        "retry_allowed": False, "scoring_admitted": False, "pre_setup_clock": clock_pin}
+    if process.returncode == 0 and not timed_out and not supervisor_failure:
+        sealed = _read_public(directory / "attempt/PREDICTIONS-SEALED.json")
+        receipt["predictions_seal"] = {"bytes": len(sealed), "sha256": sha(sealed)}
+        receipt["status"] = "MODEL_STOPPED_SEALED_PREDICTIONS_AWAIT_SEPARATE_SCORER_ADMISSION"
+    else:
+        receipt["status"] = "FAILED_OR_UNKNOWN_MODEL_STOPPED_NO_RETRY_NO_SCORING"
+    _write(own / "MODEL-PROCESS-STOPPED.json", receipt)
+    return receipt
+
+
+if __name__ == "__main__": raise SystemExit("NATIVE_SUPERVISOR_INERT_EXPLICIT_ROOT_REQUIRED")

@@ -1,0 +1,51 @@
+"""NEW root-byte-verified native DEV score bootstrap; default/CLI inert.
+
+Use fresh python-I-S-B under outer60s KILL timeout. No unreviewed import/pycache.
+Bootstrap lease and scorer lease are distinct, both exclusive and no retries.
+"""
+from pathlib import Path
+import hashlib,json,os,sys,types
+HERE=Path(__file__).resolve().parent
+WORK=HERE.parent
+
+def need(x):
+    if not x:raise RuntimeError('SCORING_BOOTSTRAP_REJECTED')
+def sha(b):return hashlib.sha256(b).hexdigest()
+def read(p):
+    need(p.is_absolute() and not any(x.is_symlink() for x in(p,*p.parents)))
+    need(p.is_file() and 0<p.stat().st_size<=32*1024**2);return p.read_bytes()
+def claim():
+    parent=HERE/'score-run';need(parent.is_dir() and not any(x.is_symlink() for x in(parent,*parent.parents)))
+    p=parent/'bootstrap-attempt';p.mkdir(mode=0o700)
+    fd=os.open(p/'LEASE.json',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    with os.fdopen(fd,'wb') as f:f.write(b'{"consumed":true,"retry_allowed":false,"goldpack_open_attempts":0}\n');f.flush();os.fsync(f.fileno())
+    for d in(p,parent):
+        fd=os.open(d,os.O_RDONLY|os.O_DIRECTORY);os.fsync(fd);os.close(fd)
+def compile_modules(sources,manifest_sha):
+    out=[]
+    for name,rel in [('dev_evaluator','dev_evaluator/dev_evaluator.py'),('prediction_join','dev_native_adapter/prediction_join.py'),('isolated_score','dev_native_adapter/isolated_score.py')]:
+        need(name not in sys.modules)
+        m=types.ModuleType(name);m.__file__=str(WORK/rel);m.__package__='';sys.modules[name]=m
+        exec(compile(sources[rel],m.__file__,'exec',dont_inherit=True),m.__dict__)
+        m._REVIEWED_TRANSFORM_MANIFEST_SHA256=manifest_sha;out.append(m)
+    return out
+
+def run_with_root_grant(grant):
+    trusted=globals().get('_ROOT_VERIFIED_SCORE_BOOTSTRAP_SHA256')
+    need(type(trusted) is str and len(trusted)==64 and sys.flags.isolated==1 and sys.flags.no_site==1 and sys.dont_write_bytecode)
+    need(type(grant) is dict and grant.get('schema')=='new-ps-out-of-band-dev-score-root-grant/v1' and grant.get('authority')=='ROOT_EXPLICIT_POST_MODEL_ONE_SHOT_DEV_SCORE')
+    claim()
+    raw=read(HERE/'score-run/SOURCE-MANIFEST.json');need(sha(raw)==grant['source_manifest_sha256'])
+    m=json.loads(raw)
+    names={'dev_native_adapter/prediction_join.py','dev_native_adapter/isolated_score.py','dev_native_adapter/score_bootstrap.py',
+      'dev_native_adapter/score_root_loader.py','dev_native_adapter/test_prediction_join.py','dev_native_adapter/test_isolated_score.py','dev_native_adapter/CONTRACT.NEW.md',
+      'dev_evaluator/dev_evaluator.py','dev_evaluator/SCORER-MANIFEST.PREPARED.json'}
+    need(set(m)=={'schema','files'} and m['schema']=='new-ps-native-prediction-transform-source-manifest/v1' and set(m['files'])==names)
+    need(m['files']['dev_native_adapter/score_bootstrap.py']['sha256']==trusted)
+    sources={}
+    for n in names:
+        b=read(WORK/n);need(m['files'][n]=={'bytes':len(b),'sha256':sha(b)});sources[n]=b
+    _,_,runner=compile_modules(sources,sha(raw))
+    return runner.score_native_once(grant)
+
+if __name__=='__main__':raise SystemExit('DEV_SCORE_BOOTSTRAP_INERT_WITHOUT_ROOT_VERIFIED_BYTES')

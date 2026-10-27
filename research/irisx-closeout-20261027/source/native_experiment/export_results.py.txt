@@ -1,0 +1,169 @@
+"""NEW post-stop small result exporter. No default execution or target access.
+
+The root-verified entry is part of the same7200s run, not a new model/scoring
+grant. Public aggregate and PRIVATE evaluator-input archives are distinct;
+neither contains model/checkpoint/runtime/TRAIN-pairpack/DEV-gold bytes.
+"""
+from pathlib import Path
+import hashlib
+import json
+import math
+import os
+import stat
+import time
+import zipfile
+
+CAP = 20_000_000  # Strictly less than20MB for each output archive.
+PRIVATE_NAMES = {"PRIVATE-PREDICTIONS-192.json": "private_predictions",
+                 "PRIVATE-OPERATIONS-AND-PREDICTIONS.jsonl": "private_journal",
+                 "PRIVATE-RESET-RECEIPTS.json": "private_resets"}
+DOCUMENTS = ("EXPERIMENT-CONTRACT.json", "SOURCE-MANIFEST.json", "INDEPENDENT-REVIEW.json",
+             "ACCOUNT-AND-BUDGET.json", "DEV-SCORER-ADMISSION.json", "ROOT-RELEASE.json")
+
+
+def need(ok, code):
+    if not ok: raise ValueError(code)
+
+
+def sha(raw): return hashlib.sha256(raw).hexdigest()
+
+
+def pin(raw): return {"bytes": len(raw), "sha256": sha(raw)}
+
+
+def regular(path, cap):
+    path = Path(path)
+    need(path.is_absolute() and not any(p.is_symlink() for p in (path, *path.parents)), "EXPORT_NO_SYMLINK_COMPONENT")
+    st = path.stat()
+    need(stat.S_ISREG(st.st_mode) and 0 < st.st_size <= cap, "EXPORT_REGULAR_BOUND")
+    return st
+
+
+def read(path, cap=4*1024**2):
+    regular(path, cap)
+    with open(path, "rb") as stream: raw = stream.read(cap+1)
+    need(0 < len(raw) <= cap, "EXPORT_READ_BOUND")
+    return raw
+
+
+def write(path, obj):
+    raw = json.dumps(obj, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()+b"\n"
+    fd = os.open(path, os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, "wb") as out: out.write(raw); out.flush(); os.fsync(out.fileno())
+    fd = os.open(path.parent, os.O_RDONLY|os.O_DIRECTORY)
+    try: os.fsync(fd)
+    finally: os.close(fd)
+    return pin(raw)
+
+
+def _zip_verified(path, members, *, deadline, clock=time.time):
+    """Generic source-reviewed helper; tests provide ONLY synthetic files."""
+    need(path.is_absolute() and not any(p.is_symlink() for p in (path,*path.parents)), "EXPORT_OUTPUT_PATH")
+    need(path.parent.is_dir() and (path.parent.stat().st_mode & 0o777) == 0o700, "PRIVATE_EXPORT_DIRECTORY0700")
+    need(type(members) is list and members and len({x[0] for x in members}) == len(members), "EXPORT_EXACT_UNIQUE_MEMBERS")
+    fd = os.open(path, os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, "wb") as sink:
+        with zipfile.ZipFile(sink, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6, allowZip64=False) as archive:
+            for name, source, expected in members:
+                need(type(name) is str and "/" not in name and "\\" not in name and name not in ("", ".", ".."), "EXPORT_MEMBER_BASENAME")
+                before = regular(source, 256*1024**2)
+                need(before.st_size == expected["bytes"], "EXPORT_MEMBER_SIZE_PIN")
+                h, n = hashlib.sha256(), 0
+                with open(source, "rb") as inp, archive.open(name, "w") as out:
+                    while True:
+                        need(clock() < deadline, "EXPORT_ORIGINAL7200_DEADLINE")
+                        chunk = inp.read(1024**2)
+                        if not chunk: break
+                        n += len(chunk); h.update(chunk); out.write(chunk)
+                        need(sink.tell() < CAP, "EXPORT_STRICT_UNDER20MB")
+                after = source.stat()
+                need((before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns,before.st_ctime_ns) ==
+                     (after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns,after.st_ctime_ns), "EXPORT_SOURCE_UNCHANGED")
+                need({"bytes":n,"sha256":h.hexdigest()} == expected, "EXPORT_EXACT_MEMBER_HASH")
+        sink.flush(); os.fsync(sink.fileno())
+        need(sink.tell() < CAP and clock() < deadline, "EXPORT_FINAL_SIZE_AND_WALL_BOUND")
+    h, n = hashlib.sha256(), 0
+    with open(path,"rb") as stream:
+        for chunk in iter(lambda:stream.read(1024**2), b""):
+            need(clock() < deadline, "EXPORT_HASH_WITHIN_ORIGINAL_CLOCK")
+            n += len(chunk); h.update(chunk)
+    return {"bytes":n,"sha256":h.hexdigest(),"members":[{"name":name,**expected} for name,_,expected in members]}
+
+
+def _export_deadlines(clock, preload):
+    need(all(type(clock.get(k)) in (int, float) and math.isfinite(clock[k]) for k in ("first_epoch", "first_monotonic")),
+         "EXPORT_FINITE_ORIGINAL_CLOCK")
+    deadline = clock["first_epoch"] + 7200; mono_deadline = clock["first_monotonic"] + 7200
+    need(0 <= time.time()-clock["first_epoch"] < 7200 and 0 <= time.monotonic()-clock["first_monotonic"] < 7200 and
+         preload.get("whole_deadline_epoch") == deadline and preload.get("whole_deadline_monotonic") == mono_deadline,
+         "EXPORT_ORIGINAL_WHOLEWALL")
+    def bounded_clock():
+        need(time.monotonic() < mono_deadline, "EXPORT_ORIGINAL_MONOTONIC7200")
+        return time.time()
+    return deadline, mono_deadline, bounded_clock
+
+
+def export_root_authorized(directory, root_grant):
+    """Future explicit root-verified entry. NEVER used by development tests."""
+    import sys
+    need(sys.flags.isolated == 1 and globals().get("_ROOT_VERIFIED_EXPORT_SOURCE_SHA256") == sha(read(Path(__file__))),
+         "ROOT_VERIFIED_ISOLATED_EXPORT_REQUIRED")
+    root = Path(directory)
+    need(root.is_absolute() and root.is_dir() and not any(p.is_symlink() for p in(root,*root.parents)), "EXPORT_ROOT")
+    docs = {}
+    for name in DOCUMENTS:
+        raw = read(root/name)
+        need(sha(raw) == root_grant["files"][name], "EXPORT_ROOT_PUBLIC_DOC_PIN")
+        docs[name] = json.loads(raw)
+    need(docs["SOURCE-MANIFEST.json"]["files"]["native_experiment/export_results.py"]["sha256"] ==
+         globals()["_ROOT_VERIFIED_EXPORT_SOURCE_SHA256"], "EXPORT_SOURCE_IN_FINAL_ROOT_MANIFEST")
+    clock_raw = read(root / "PRE-SETUP-CLOCK.json"); clock = json.loads(clock_raw)
+    preload = json.loads(read(root / "attempt/PRELOAD-SEAL.json"))
+    need(clock.get("run_id") == docs["EXPERIMENT-CONTRACT.json"]["run_id"] == preload.get("run_id") and
+         clock.get("native_source_manifest_sha256") == root_grant["files"]["SOURCE-MANIFEST.json"] and
+         clock.get("wrapper_source_manifest_sha256") == docs["ROOT-RELEASE.json"].get("wrapper_source_manifest_sha256") and
+         preload.get("pre_setup_clock") == pin(clock_raw), "EXPORT_SAME_SEALED_FIRST_CLOCK")
+    deadline, mono_deadline, bounded_clock = _export_deadlines(clock, preload)
+    attempt = root/"attempt"; stop_path = root/"supervisor-attempt/MODEL-PROCESS-STOPPED.json"
+    stop = json.loads(read(stop_path)); seal_path = attempt/"PREDICTIONS-SEALED.json"; seal_raw = read(seal_path); seal=json.loads(seal_raw)
+    need(stop.get("status") == "MODEL_STOPPED_SEALED_PREDICTIONS_AWAIT_SEPARATE_SCORER_ADMISSION" and
+         stop.get("wait_returned") is True and stop.get("model_process_stopped") is True and
+         stop.get("observed_returncode") == 0 and stop.get("predictions_seal") == pin(seal_raw) and stop.get("pre_setup_clock") == pin(clock_raw), "EXPORT_ACTUAL_MODEL_STOP_AND_SEAL")
+    need(stop["contract_sha256"] == seal["contract_sha256"] == root_grant["files"]["EXPERIMENT-CONTRACT.json"] and
+         seal["source_manifest_sha256"] == root_grant["files"]["SOURCE-MANIFEST.json"] and seal["draws"] == 192 and
+         seal["all_physical_intents_terminal"] is True and seal["DEV_target_reads"] == 0, "EXPORT_COMPLETE_SAME_ATTEMPT192")
+    need(pin(read(attempt/"AGGREGATE-MODEL-STAGE.json")) == seal["aggregate"], "EXPORT_SEALED_AGGREGATE")
+    for arm in ("fresh_base","CE","DPO"):
+        raw = read(attempt/("PREDICTIONS-"+arm+"-SEALED.json")); arm_seal=json.loads(raw)
+        need(pin(raw) == seal["distinct_arm_seals"][arm] and arm_seal["arm"] == arm and arm_seal["draws"] == 64 and
+             arm_seal["joint_private_prediction_file"] == seal["private_predictions"] and
+             arm_seal["private_journal"] == seal["private_journal"] and arm_seal["private_resets"] == seal["private_resets"],
+             "EXPORT_EXACT_ARM_SEAL_CLOSURE")
+    out = root/"small-export-attempt"; out.mkdir(mode=0o700)
+    write(out/"LEASE.json", {"attempt_consumed":True,"retry_allowed":False,"scoring_admitted":False,"deadline_epoch":deadline})
+    public_names = ["AGGREGATE-MODEL-STAGE.json","MODEL-STAGE-TERMINAL.json","PREDICTIONS-SEALED.json",
+                    "PRELOAD-SEAL.json","PRE-PRIVATE-PAIRPACK-SEAL.json","PRE-PRIVATE-DEVICE-PROOF.json","MATERIAL-PROOF.json"]
+    public_names += ["PREDICTIONS-"+arm+"-SEALED.json" for arm in("fresh_base","CE","DPO")]
+    public = [(name,attempt/name,pin(read(attempt/name))) for name in public_names]
+    public += [("MODEL-PROCESS-STOPPED.json",stop_path,pin(read(stop_path)))]
+    public += [(name,root/name,pin(read(root/name))) for name in DOCUMENTS]
+    private = [(name,attempt/name,seal[key]) for name,key in PRIVATE_NAMES.items()]
+    private += [(name,path,p) for name,path,p in public if name.startswith("PREDICTIONS-") or name=="MODEL-PROCESS-STOPPED.json"]
+    try:
+        public_pin = _zip_verified(out/"PUBLIC-AGGREGATES-AND-SEALS.NEW.zip",public,deadline=deadline,clock=bounded_clock)
+        private_pin = _zip_verified(out/"PRIVATE-EVALUATOR-INPUTS.NEW.zip",private,deadline=deadline,clock=bounded_clock)
+        receipt = {"schema":"new-ps-small-post-stop-exports/v1","status":"PASS_NEW_EXPORTS_NOT_ORIGINAL_RECOVERY_ZIP",
+                   "public_aggregate_archive":public_pin,"PRIVATE_evaluator_archive":private_pin,
+                   "checkpoint_weight_archives_created":0,"TRAIN_pairpack_included":False,"DEV_gold_included":False,
+                   "raw_private_logs_exposed_to_author":False,"scoring_admitted":False,"retry_allowed":False,
+                   "pre_setup_clock":pin(clock_raw)}
+        need(bounded_clock() < deadline, "EXPORT_RECEIPT_WITHIN_FIRST7200")
+        write(out/"EXPORT-RECEIPT.json",receipt)
+        need(bounded_clock() < deadline, "EXPORT_DURABLE_RECEIPT_WITHIN_FIRST7200")
+        return receipt
+    except BaseException:
+        write(out/"FAILED-UNKNOWN.json",{"status":"FAILED_OR_UNKNOWN_EXPORT_ATTEMPT_CONSUMED","retry_allowed":False,"scoring_admitted":False})
+        raise ValueError("EXPORT_FAILED_OR_UNKNOWN_RETAIN_PRIVATE_PARTIALS_NO_RETRY") from None
+
+
+if __name__ == "__main__": raise SystemExit("EXPORT_INERT_WITHOUT_REVIEWED_ROOT_RELEASE")

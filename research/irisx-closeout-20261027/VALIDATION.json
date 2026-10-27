@@ -1,0 +1,51 @@
+{
+  "schema": "irisx-closeout-validation/v1",
+  "recorded_utc": "2026-10-27T10:18:10Z",
+  "source_integrity": {
+    "files": 49,
+    "sha256_and_size": "PASS",
+    "ast_parse": "PASS",
+    "byte_transformation": "none; filenames gained .txt suffix for inert preservation"
+  },
+  "self_contained_synthetic_tests": {
+    "command": "python -m unittest native_experiment.test_export_results tpu_optimization.test_entry",
+    "cwd": "source",
+    "tests": 20,
+    "result": "PASS",
+    "note": "Performed on byte-identical files before inert suffix was added."
+  },
+  "broader_snapshot_test_attempt": {
+    "tests": 97,
+    "errors": 28,
+    "result": "FAIL",
+    "limitations": [
+      "Optional torch absent for two imports.",
+      "External frozen source layout/material fixtures deliberately not included in this public source snapshot."
+    ],
+    "source_modified_to_hide_failures": false
+  },
+  "repository_aggregate": {
+    "command": "PYTHONHASHSEED=0 python tools/repository_check.py --all",
+    "tests": 2725,
+    "failures": 3,
+    "errors": 13,
+    "skipped": 539,
+    "elapsed_seconds": 247.452,
+    "result": "FAIL_BEFORE_INERT_SUFFIX_PACKAGING_CORRECTION; full suite not rerun",
+    "environment_note": "This closeout attempt did not set the separately required workspace TMPDIR/offline flags for historical Stage 4 acceptance; it is not a full acceptance result. No dependency install or historical-fixture synthesis performed.",
+    "packaging_correction": "Initial .py snapshot under research violated active-executable layout. Corrected to inert .py.txt documents without changing source bytes or repository validation rules."
+  },
+  "git_diff_check": "PASS",
+  "native_execution": false,
+  "quality_claim": false,
+  "final_repository_invariants": {
+    "command": "PYTHONHASHSEED=0 python tools/repository_check.py",
+    "result": "PASS",
+    "archive_representative_recovery_checks": 8
+  },
+  "final_repository_unit_tests": {
+    "command": "PYTHONHASHSEED=0 python -m unittest discover -s tests -p test_repository_check.py",
+    "result": "PASS",
+    "tests": 19
+  }
+}

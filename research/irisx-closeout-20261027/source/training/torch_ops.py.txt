@@ -1,0 +1,191 @@
+"""NEW Torch mathematical implementation. Lazy import, never acquires material.
+
+CPU autograd is separate evidence from native numerical/material/memory gates.
+All distributions are unmasked FP32 full16 at temperature 1.0.
+"""
+from __future__ import annotations
+from dataclasses import dataclass
+import hashlib
+import importlib
+import math
+from .contracts import BETA, Panel, Response, need, response_span
+
+
+def torch_module():
+    return importlib.import_module("torch")
+
+
+def finite(tensor, label):
+    t = torch_module()
+    need(t.is_tensor(tensor) and bool(t.isfinite(tensor).all()), "finite " + label)
+
+
+@dataclass(frozen=True)
+class ResponseLogps:
+    full16: object
+    selected: object
+    response_pin: str
+
+
+def validate_logps(value: ResponseLogps, response: Response, *, detached=False):
+    t = torch_module()
+    full, chosen = value.full16, value.selected
+    finite(full, "full16 log probabilities")
+    finite(chosen, "selected log probabilities")
+    need(full.ndim == 2 and tuple(full.shape) == (len(response.body_eos), 16), "exact response full16 shape")
+    need(chosen.ndim == 1 and chosen.numel() == len(response.body_eos), "exact response selected shape")
+    need(full.dtype == chosen.dtype == t.float32 and full.device == chosen.device, "FP32 aligned full16 and selected")
+    need(value.response_pin == response.pin, "canonical prompt/bodyEOS binding")
+    need(bool((full.logsumexp(-1).abs() <= 1e-6).all()), "normalized full16 distributions")
+    target = t.tensor(response.body_eos, dtype=t.long, device=full.device)
+    need(t.equal(full.gather(-1, target[:, None]).squeeze(-1), chosen), "selected values agree with full16")
+    if detached:
+        need(not full.requires_grad and not chosen.requires_grad and full.grad_fn is None and chosen.grad_fn is None,
+             "reference detached from any source graph")
+    return value
+
+
+def query_response_logps(logits, response: Response):
+    """Use raw model logits. No legal-mask parameter; no second causal shift."""
+    t = torch_module()
+    need(t.is_tensor(logits) and logits.ndim == 3 and tuple(logits.shape) == (1, len(response.ids), 16), "batch1 complete16 logits")
+    need(logits.dtype == t.float32, "actual FP32 logits; no dtype fallback")
+    positions, targets = response_span(response.ids, response.attention, response.prompt)
+    pos = t.tensor(positions, dtype=t.long, device=logits.device)
+    ids = t.tensor(targets, dtype=t.long, device=logits.device)
+    z = logits[0, pos, :]
+    finite(z, "unmasked response logits")
+    full = t.nn.functional.log_softmax(z, dim=-1)
+    selected = full.gather(-1, ids[:, None]).squeeze(-1)
+    return validate_logps(ResponseLogps(full, selected, response.pin), response)
+
+
+def detached_reference(value: ResponseLogps, response: Response):
+    """Clone both arrays: even a requires_grad source cannot backprop or alias."""
+    t = torch_module()
+    with t.no_grad():
+        full = value.full16.detach().to(device="cpu", dtype=t.float32).clone().contiguous()
+        selected = value.selected.detach().to(device="cpu", dtype=t.float32).clone().contiguous()
+    return validate_logps(ResponseLogps(full, selected, value.response_pin), response, detached=True)
+
+
+def tensor_digest(value):
+    t = torch_module()
+    finite(value, "digest tensor")
+    raw = value.detach().to(device="cpu", dtype=t.float32).contiguous().numpy().tobytes()
+    return hashlib.sha256(raw).hexdigest()
+
+
+@dataclass(frozen=True)
+class ReferenceCache:
+    """Detached FP32 cache bound to model/material/tokenizer/root/source/pairpack."""
+    panel_binding: str
+    runtime_policy_pin: str
+    values: tuple[tuple[ResponseLogps, ResponseLogps], ...]
+    original_digest: str
+
+    @classmethod
+    def create(cls, panel: Panel, values, runtime_policy_pin):
+        need(type(runtime_policy_pin) is str and len(runtime_policy_pin) == 64 and all(c in "0123456789abcdef" for c in runtime_policy_pin), "actual runtime root identity SHA256")
+        need(len(values) == panel.n, "reference complete parent panel")
+        rows = tuple(tuple(detached_reference(v, r) for v, r in zip(row, (pair.chosen, pair.rejected)))
+                     for pair, row in zip(panel.pairs, values) if len(row) == 2)
+        need(len(rows) == panel.n, "exact two references per parent")
+        obj = cls(panel.binding, runtime_policy_pin, rows, "")
+        return cls(panel.binding, runtime_policy_pin, rows, obj.content_digest())
+
+    def content_digest(self):
+        h = hashlib.sha256((self.panel_binding + self.runtime_policy_pin).encode("ascii"))
+        for row in self.values:
+            for value in row:
+                h.update(value.response_pin.encode("ascii"))
+                h.update(tensor_digest(value.full16).encode("ascii"))
+                h.update(tensor_digest(value.selected).encode("ascii"))
+        return h.hexdigest()
+
+    def assert_intact(self, panel, runtime_policy_pin):
+        need(self.runtime_policy_pin == runtime_policy_pin, "reference actual runtime root identity")
+        need(self.panel_binding == panel.binding and len(self.values) == panel.n, "reference panel/material/root identity")
+        for pair, row in zip(panel.pairs, self.values):
+            need(len(row) == 2, "chosen and rejected references")
+            for value, response in zip(row, (pair.chosen, pair.rejected)):
+                validate_logps(value, response, detached=True)
+        need(self.content_digest() == self.original_digest, "frozen reference bytes unchanged")
+
+
+def _vector(value, label):
+    t = torch_module()
+    need(t.is_tensor(value) and value.ndim == 1 and value.numel() > 0, "nonempty " + label)
+    finite(value, label)
+    need(value.dtype == t.float32, "FP32 objective vectors")
+
+
+def matched_ce_parent(chosen, n):
+    _vector(chosen, "chosen vector")
+    need(type(n) is int and n > 0, "positive exact parent denominator")
+    loss = -chosen.mean() / n
+    finite(loss, "CE loss")
+    return loss
+
+
+def dpo_parent(chosen, rejected, ref_chosen, ref_rejected, n):
+    """Standard beta=.1 sequence sums, each parent's contribution divided by N."""
+    t = torch_module()
+    need(type(n) is int and n > 0, "positive exact parent denominator")
+    for value in (chosen, rejected, ref_chosen, ref_rejected):
+        _vector(value, "DPO vector")
+    need(chosen.shape == ref_chosen.shape and rejected.shape == ref_rejected.shape, "exact reference sequence lengths")
+    need(not ref_chosen.requires_grad and not ref_rejected.requires_grad and ref_chosen.grad_fn is None and ref_rejected.grad_fn is None, "only detached references")
+    rc, rr = ref_chosen.to(chosen.device), ref_rejected.to(rejected.device)
+    margin = (chosen.sum() - rc.sum()) - (rejected.sum() - rr.sum())
+    finite(margin, "unscaled DPO margin")
+    loss = t.nn.functional.softplus(-BETA * margin) / n
+    finite(loss, "DPO loss")
+    return loss
+
+
+def assert_initial_equality(live, reference, tolerance=1e-5):
+    """No hidden forwards: call on existing first-update forwards only."""
+    t = torch_module()
+    need(len(live) == len(reference) in (1, 2), "one CE or two DPO responses")
+    errors, deltas = [], []
+    for value, ref in zip(live, reference):
+        need(value.response_pin == ref.response_pin and value.full16.shape == ref.full16.shape, "init fixed prefixes")
+        full_ref = ref.full16.to(value.full16.device)
+        maximum = float((value.full16.detach() - full_ref).abs().max())
+        need(math.isfinite(maximum) and maximum <= tolerance, "initial live/reference full16 mismatch")
+        errors.append(maximum)
+        delta = float(value.selected.detach().sum() - ref.selected.to(value.selected.device).sum())
+        need(math.isfinite(delta), "finite initial response sum difference")
+        deltas.append(delta)
+    if len(live) == 2:
+        bound = sum(v.selected.numel() for v in live) * tolerance
+        need(abs(deltas[0] - deltas[1]) <= bound, "initial unscaled pair margin outside proposed tolerance")
+    return max(errors)
+
+
+def response_kl(live, reference):
+    """Exact full16 KL(live||base), token mean; preserve tiny negative roundoff."""
+    t = torch_module()
+    need(live.response_pin == reference.response_pin and live.full16.shape == reference.full16.shape, "KL fixed-prefix binding")
+    p, q = live.full16, reference.full16.to(live.full16.device)
+    need(p.dtype == q.dtype == t.float32, "FP32 KL distributions")
+    need(not reference.full16.requires_grad and reference.full16.grad_fn is None, "detached KL reference")
+    finite(p, "live KL log distribution")
+    finite(q, "reference KL log distribution")
+    need(p.ndim == 2 and p.shape[1] == 16 and p.shape[0] > 0, "KL exact full16 nonempty response")
+    need(bool((p.logsumexp(-1).abs() <= 1e-6).all()) and bool((q.logsumexp(-1).abs() <= 1e-6).all()), "normalized KL distributions")
+    values = (p.exp() * (p - q)).sum(-1)
+    finite(values, "full16 KL")
+    need(bool((values >= -1e-6).all()), "negative KL beyond roundoff")
+    return values.mean()
+
+
+def paired_prefix_kl(live, reference):
+    """Mean parents of half chosen + half rejected response-token mean KL."""
+    need(len(live) > 0 and len(live) == len(reference), "complete fixed-prefix parent panel")
+    parents = []
+    for row, refs in zip(live, reference):
+        need(len(row) == len(refs) == 2, "chosen and rejected KL responses")
+        parents.append((response_kl(row[0], refs[0]) + response_kl(row[1], refs[1])) / 2)
+    return torch_module().stack(parents).mean()

@@ -1,0 +1,38 @@
+"""NEW clock recorder. The pinned notebook FIRST code line captures both clocks.
+
+It must capture BEFORE payload verification/extraction/install and pass those
+unchanged values here after the public source bundle is checked. No model work.
+Queue/local packaging are not notebook runtime. Both immutable clocks start at first code.
+"""
+from pathlib import Path
+import json
+import math
+import os
+import time
+
+
+def record_first_cell_clock(root,run_id,first_epoch,first_monotonic,*,native_source_manifest_sha256,wrapper_source_manifest_sha256):
+    if not all(type(v)in(int,float) and math.isfinite(v) for v in(first_epoch,first_monotonic)):
+        raise ValueError('FINITE_FIRST_CELL_CLOCKS')
+    if not (0<=time.monotonic()-first_monotonic<7200 and type(run_id)is str and run_id.startswith('new-dpo-ce-dev32-')):
+        raise ValueError('ORIGINAL_FIRST_CELL_MONOTONIC_ANCHOR')
+    if not all(type(v)is str and len(v)==64 and all(c in '0123456789abcdef'for c in v)
+               for v in(native_source_manifest_sha256,wrapper_source_manifest_sha256)):
+        raise ValueError('VALIDATED_FIRST_CLOCK_SOURCE_PINS')
+    root=Path(root)
+    if not root.is_absolute() or not root.is_dir() or any(p.is_symlink()for p in(root,*root.parents)):
+        raise ValueError('OWNED_CLOCK_DIRECTORY')
+    raw=json.dumps({'schema':'new-ps-first-notebook-code-clock/v1','run_id':run_id,
+        'first_epoch':first_epoch,'first_monotonic':first_monotonic,
+        'capture_scope':'ROOT_PINNED_FIRST_CELL_BEFORE_PAYLOAD_VERIFICATION_EXTRACTION_INSTALL',
+        'clock_reset_allowed':False,'native_source_manifest_sha256':native_source_manifest_sha256,
+        'wrapper_source_manifest_sha256':wrapper_source_manifest_sha256},sort_keys=True,separators=(',',':'),allow_nan=False).encode()+b'\n'
+    fd=os.open(root/'PRE-SETUP-CLOCK.json',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    with os.fdopen(fd,'wb')as out:out.write(raw);out.flush();os.fsync(out.fileno())
+    fd=os.open(root,os.O_RDONLY|os.O_DIRECTORY)
+    try:os.fsync(fd)
+    finally:os.close(fd)
+    return {'status':'FIRST_CELL_CLOCK_RECORDED_NOT_RUN_AUTHORITY'}
+
+
+if __name__=='__main__':raise SystemExit('CLOCK_RECORDER_LIBRARY_ONLY')

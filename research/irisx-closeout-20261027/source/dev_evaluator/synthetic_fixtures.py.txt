@@ -1,0 +1,82 @@
+"""Synthetic DEV32 fixtures only; no files/real labels/model calls."""
+import copy
+import math
+import dev_evaluator as de
+
+
+def draw(name, ordinal, slot, grid):
+    tokens = de.response(grid)
+    return {"draw_id": str(slot), "view_id": "identity", "seed": 1729 + ordinal * 4096 + slot,
+            "call_id": f"{name}:DEV:{ordinal}:{slot}", "status": "VALID_EOS", "grid": copy.deepcopy(grid),
+            "finished_eos": True, "truncated": False, "sampled_logps": [-.5] * len(tokens),
+            "actual_sampled_tokens": len(tokens), "elapsed_seconds": 1.0}
+
+
+def recost(data):
+    for arm in data["arms"]:
+        draws = [c for row in arm["rows"] for c in row["draws"]]
+        known = [c for c in draws if c["status"] != "UNKNOWN"]
+        arm["cost"] = {"reserved_draws": 64, "completed_draws": len(known), "reserved_sampled_tokens": 32768,
+            "actual_sampled_tokens": sum(c["actual_sampled_tokens"] for c in known),
+            "reserved_physical_forwards": sum(c["actual_sampled_tokens"] + (6 if c["status"] == "VALID_EOS" else 5) for c in known) + 8 * (64 - len(known)),
+            "completed_physical_forwards": sum(c["actual_sampled_tokens"] + (6 if c["status"] == "VALID_EOS" else 5) for c in known),
+            "measured_draw_seconds": math.fsum(c["elapsed_seconds"] for c in known)}
+
+
+def documents():
+    prompt = [14, 11, 10, 0, 15, 14, 12, 10, 1, 15, 14, 11, 10, 2, 15, 14, 12, 10]
+    identity = {"schema": "new-ps-design-seen-dev32-public-identity/v1", "source_kind": de.SOURCE_KIND,
+        "profile": "SYNTHETIC_ONLY", "role": "DEV", "origin": de.ORIGIN, "clean_holdout": False,
+        "assignment_sha256": de.digest("synthetic-assignment"), "original_public_input_sha256": de.digest("synthetic-public-input"),
+        "original_roles_sha256": de.digest("synthetic-public-roles"), "original_selector_source_sha256": de.digest("synthetic-selector"),
+        "original_generation_source_sha256": de.digest("synthetic-generation"), "rows": []}
+    for ordinal in range(32):
+        identity["rows"].append({"parent_id": f"synthetic-dev-{ordinal:02d}", "dev_ordinal": ordinal,
+            "query_demo_ordinal": 1, "canonical_prompt": prompt[:], "canonical_prompt_sha256": de.digest(prompt),
+            "query_input_sha256": de.digest([[2]])})
+    bindings = {key: de.digest("synthetic-binding:" + key) for key in de.BINDING_KEYS}
+    bindings["original_selector_source_sha256"] = identity["original_selector_source_sha256"]
+    data = {"schema": "new-ps-freshbase-ce-dpo-dev32-predictions/v1", "source_kind": de.SOURCE_KIND,
+        "profile": "SYNTHETIC_ONLY", "role": "DEV", "origin": de.ORIGIN, "run_id": "new-dpo-ce-dev32-synthetic",
+        "identity_sha256": de.digest(identity), "bindings": bindings, "arms": [],
+        "closure": {"schema": "new-ps-three-policy-dev32-closure/v1", "status": "COMPLETE_SEALED",
+            "run_id": "new-dpo-ce-dev32-synthetic", "all_predictions_sealed_before_correctness_evaluation": True, "model_author_dev_target_accesses": 0,
+            "dev_correctness_evaluations_before_all_prediction_seals": 0, "opaque_goldpack_materialized_pre_run": True,
+            "opaque_materialization_receipt_sha256": de.digest("synthetic-materialization-receipt"),
+            "model_process_stopped_before_correctness_evaluation": True,
+            "same_root_reset_reference_verified": True, "per_arm_optimizer_commits": {"fresh_base": 0, "CE": 4, "DPO": 4},
+            "training_parent_count": 37, "whole_wall_seconds": 1000.0, "historical_acquisition_seconds": 100.0,
+            "phase_receipts": {key: de.digest("synthetic-receipt:" + key) for key in de.RECEIPT_KEYS},
+            "science_non_generation_counts": {"reference_TF": 74, "CE_training_TF": 148, "DPO_training_TF": 296,
+                "post_arm_KL_TF": 148, "CE_backward": 148, "DPO_backward": 148},
+            "engineering_probe_forward_calls": 0, "checkpoint_probe_forward_calls": 0,
+            "total_non_generation_forward_calls": 666, "extra_probe_authority_sha256": None,
+            "engineering_checkpoint_seconds": 0.0}}
+    for name in de.ARMS:
+        arm = {"name": name, "policy_sha256": bindings["root_policy_sha256"] if name == "fresh_base" else de.digest(name + ":policy"),
+            "adapter_sha256": de.digest(name + ":adapter"), "reset_receipt_sha256": de.digest(name + ":reset"),
+            "prediction_seal_sha256": de.digest(name + ":seal"), "rows": [], "cost": {}}
+        for row in identity["rows"]:
+            arm["rows"].append({k: row[k] for k in ("parent_id", "dev_ordinal", "query_demo_ordinal", "canonical_prompt_sha256")} |
+                               {"draws": [draw(name, row["dev_ordinal"], slot, [[1]]) for slot in (0, 1)]})
+        data["arms"].append(arm)
+    recost(data)
+    targets = {"schema": "new-ps-isolated-design-seen-dev32-targets/v1", "source_kind": de.SOURCE_KIND,
+        "profile": "SYNTHETIC_ONLY", "role": "DEV", "origin": de.ORIGIN, "identity_sha256": de.digest(identity),
+        "assignment_sha256": identity["assignment_sha256"], "original_public_input_sha256": identity["original_public_input_sha256"],
+        "lineage": {"query_source": "ORIGINAL_TASK_TRAIN_DEMONSTRATION_AT_QUERY_DEMO_ORDINAL",
+            "original_task_manifest_sha256": de.digest("synthetic-task-manifest"), "query_binding_receipt_sha256": de.digest("synthetic-query-binding")},
+        "rows": [{k: row[k] for k in ("parent_id", "dev_ordinal", "query_demo_ordinal", "query_input_sha256")} | {"grid": [[1]]}
+                 for row in identity["rows"]]}
+    data["bindings"]["opaque_dev_goldpack_semantic_sha256"] = de.digest(targets)
+    return identity, data, targets
+
+
+def validate(identity, data):
+    ident = de.validate_identity(identity, expected_sha256=de.digest(identity))
+    return de.validate_predictions(data, ident, expected_sha256=de.digest(data), expected_bindings=data["bindings"],
+                                    expected_closure_sha256=de.digest(data["closure"]))
+
+
+def case(identity, data, targets):
+    return de.admit_synthetic_targets(validate(identity, data), targets, expected_target_sha256=de.digest(targets))

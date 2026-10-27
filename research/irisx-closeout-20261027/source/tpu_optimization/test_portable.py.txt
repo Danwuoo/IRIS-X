@@ -1,0 +1,79 @@
+"""Small handwritten CPU shard/name/load/logit parity. No real adapter read."""
+import copy
+import unittest
+from types import SimpleNamespace
+import torch
+from tpu_optimization.portable_adapter import (expected_shapes,merge_named_shards,
+    copy_named_parameters,load_into_cuda_backend)
+
+
+def tiny():
+    torch.manual_seed(33)
+    names=['base_model.model.model.layers.0.self_attn.q_proj.lora_A.default.weight',
+           'base_model.model.model.layers.0.self_attn.q_proj.lora_B.default.weight']
+    tensors={names[0]:torch.randn(32,12),names[1]:torch.randn(8,32)}
+    shards=[{} for _ in range(4)];specs=[{} for _ in range(4)]
+    for n,t in tensors.items():
+        for rank,part in enumerate(t.chunk(4,dim=0)):
+            shards[rank][n]=part.clone()
+            specs[rank][n]={'global_shape':list(t.shape),'local_shape':list(part.shape),
+                            'dtype':'torch.float32','mesh_shape':[4],'placements':['S(0)']}
+    return tensors,specs,shards
+
+
+class PortableTests(unittest.TestCase):
+    def test_actual_fixed_architecture_parameter_name_shape_contract(self):
+        cfg={'model_type':'qwen3','vocab_size':16,'num_hidden_layers':36,'tie_word_embeddings':False,
+             'hidden_size':2560,'num_attention_heads':32,'num_key_value_heads':8,'head_dim':128,'intermediate_size':9728}
+        s=expected_shapes(cfg)
+        self.assertEqual(len(s),504)
+        self.assertEqual(sum(a*b for a,b in s.values()),66060288)
+        self.assertEqual(s['base_model.model.model.layers.35.self_attn.q_proj.lora_B.default.weight'],[4096,32])
+        for field in ('head_dim','num_hidden_layers','intermediate_size'):
+            with self.assertRaises(ValueError):expected_shapes({**cfg,field:cfg[field]+1})
+
+    def test_named_shard_roundtrip_and_synthetic_forward_parity(self):
+        original,specs,shards=tiny();shapes={n:list(t.shape) for n,t in original.items()}
+        merged=merge_named_shards(specs,shards,shapes)
+        dest={n:torch.nn.Parameter(torch.zeros_like(t)) for n,t in original.items()}
+        copy_named_parameters(dest,merged)
+        a,b=list(original);x=torch.randn(5,12);base=torch.randn(8,12)
+        before=x@base.T+(x@original[a].T)@original[b].T  # alpha/rank =32/32
+        after=x@base.T+(x@dest[a].T)@dest[b].T
+        self.assertTrue(torch.equal(before,after))
+        self.assertTrue(all(torch.equal(original[n],dest[n]) for n in original))
+
+    def test_missing_extra_wrong_axis_shape_dtype_and_nonfinite_rejected(self):
+        original,specs,shards=tiny();shapes={n:list(t.shape) for n,t in original.items()};key=next(iter(original))
+        mutations=[]
+        a=copy.deepcopy(shards);del a[2][key];mutations.append((specs,a))
+        a=copy.deepcopy(shards);a[2]['unexpected']=torch.zeros(1);mutations.append((specs,a))
+        a=copy.deepcopy(specs);a[2][key]['placements']=['S(1)'];mutations.append((a,shards))
+        a=copy.deepcopy(specs);a[2][key]['global_shape'][0]+=1;mutations.append((a,shards))
+        a=copy.deepcopy(shards);a[2][key]=a[2][key].double();mutations.append((specs,a))
+        a=copy.deepcopy(shards);a[2][key][0,0]=float('nan');mutations.append((specs,a))
+        for a,b in mutations:
+            with self.assertRaises(ValueError):merge_named_shards(a,b,shapes)
+
+    def test_small_replication_requires_all_rank_byte_agreement(self):
+        x=torch.tensor([[1.,2.]])
+        specs=[{'small':{'global_shape':[1,2],'local_shape':[1,2],
+                         'dtype':'torch.float32','mesh_shape':[4],'placements':['R']}} for _ in range(4)]
+        shards=[{'small':x.clone()} for _ in range(4)]
+        self.assertTrue(torch.equal(merge_named_shards(specs,shards,{'small':[1,2]})['small'],x))
+        shards[3]['small'][0,0]=9
+        with self.assertRaises(ValueError):merge_named_shards(specs,shards,{'small':[1,2]})
+
+    def test_destination_all_validated_before_any_copy(self):
+        tensors,_,_=tiny();dest={n:torch.nn.Parameter(torch.zeros_like(t)) for n,t in tensors.items()}
+        bad={n:t.clone() for n,t in tensors.items()};bad[list(bad)[-1]]=torch.zeros(1)
+        with self.assertRaises(ValueError):copy_named_parameters(dest,bad)
+        self.assertTrue(all(torch.count_nonzero(p)==0 for p in dest.values()))
+        with self.assertRaises(ValueError):copy_named_parameters(dest,{})
+
+    def test_no_cpu_backend_native_loader_bypass(self):
+        with self.assertRaises(ValueError):
+            load_into_cuda_backend(SimpleNamespace(mode='cpu'),'/NEVER_READ','0'*64)
+
+
+if __name__=='__main__':unittest.main()

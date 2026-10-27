@@ -1,0 +1,158 @@
+"""NEW root-forward/decoder-layer execution accounting, never a FLOP claim.
+
+Intents debit before operations. Hook/receipt failures are UNKNOWN and prohibit
+continuation. Layer counters include checkpoint replays during backward; they
+are not mislabeled as extra top-level model calls. A durable operation intent
+plus a bounded reservation survives abrupt process death as UNKNOWN work.
+"""
+from collections import Counter
+import math
+import time
+from training.contracts import need
+
+
+class AuditHooks:
+    def __init__(self, *, science_deadline, emit, max_root_calls, max_root_input_positions,
+                 max_layer_calls, clock=time.time):
+        need(type(science_deadline) in (int, float) and math.isfinite(science_deadline), "FINITE_SCIENCE_DEADLINE")
+        for n in (max_root_calls, max_root_input_positions, max_layer_calls):
+            need(type(n) is int and n > 0, "FINITE_PHYSICAL_RESERVATIONS")
+        self.deadline, self.emit, self.clock = science_deadline, emit, clock
+        self.limits = (max_root_calls, max_root_input_positions, max_layer_calls)
+        self.phase, self.status, self.handles = None, "READY", []
+        self.operations, self.operation_completions, self.pending_ops = 0, 0, []
+        self.root_reserved = self.root_completed = self.root_positions_reserved = self.root_positions_completed = 0
+        self.root_pending = None
+        self.layer_reserved = self.layer_completed = 0
+        self.layer_pending, self.phase_counts = {}, {}
+        self.installed_model_id, self.installed_decoder_layer_ids, self._coverage = None, (), []
+
+    def _emit(self, kind, fields):
+        try:
+            self.emit(kind, fields)
+        except BaseException:
+            self.status = "UNKNOWN"
+            raise
+
+    def tick(self):
+        need(self.status != "UNKNOWN" and self.clock() < self.deadline, "PHYSICAL_UNKNOWN_OR_DEADLINE_NO_RETRY")
+
+    def set_phase(self, name):
+        self.tick()
+        need(type(name) is str and name and not self.pending_ops and self.root_pending is None and
+             all(not p for p in self.layer_pending.values()), "CLOSED_OPERATION_BEFORE_PHASE_CHANGE")
+        self.phase = name
+        self.phase_counts.setdefault(name, Counter())
+
+    def before(self, event, fields):
+        self.tick()
+        need(self.phase is not None and type(event) is str and type(fields) is dict, "DECLARED_OPERATION_PHASE")
+        self.operations += 1
+        self.pending_ops.append((self.operations, event))
+        self.status = "RUNNING"
+        self._emit("operation_intent", {"id": self.operations, "phase": self.phase, "event": event, **fields})
+
+    def after(self, event, fields):
+        need(self.status != "UNKNOWN" and self.pending_ops and self.pending_ops[-1][1] == event, "EXACT_OPERATION_COMPLETION")
+        ident, _ = self.pending_ops[-1]
+        self._emit("operation_complete", {"id": ident, "phase": self.phase, "event": event, **fields})
+        self.pending_ops.pop()
+        self.operation_completions += 1
+
+    def failed(self, event, fields):
+        self.status = "UNKNOWN"
+        self._emit("operation_unknown", {"phase": self.phase, "event": event, "retry_allowed": False,
+                                         "pending_operations": len(self.pending_ops)})
+
+    def _root_before(self, module, args, kwargs):
+        self.tick()
+        need(self.phase is not None and self.root_pending is None, "ROOT_PHYSICAL_CONTEXT")
+        ids = kwargs.get("input_ids")
+        need(ids is not None and ids.ndim == 2 and ids.shape[0] == 1 and 0 < ids.shape[1] <= 3072, "PHYSICAL_BATCH1_CONTEXT")
+        n = int(ids.shape[1])
+        need(self.root_reserved < self.limits[0] and self.root_positions_reserved + n <= self.limits[1], "PHYSICAL_FORWARD_BUDGET")
+        self.root_reserved += 1
+        self.root_positions_reserved += n
+        self.root_pending = (self.root_reserved, n)
+        self.phase_counts[self.phase]["root_reserved"] += 1
+        self.phase_counts[self.phase]["root_input_positions_reserved"] += n
+        self._emit("physical_forward_intent", {"id": self.root_reserved, "phase": self.phase,
+            "input_positions": n, "model_training": bool(module.training), "use_cache": kwargs.get("use_cache", False)})
+
+    def _root_after(self, module, args, kwargs, output):
+        if output is None:
+            self.status = "UNKNOWN"
+            return
+        need(self.root_pending is not None, "PHYSICAL_POST_REQUIRES_INTENT")
+        ident, n = self.root_pending
+        need(str(output.logits.dtype) == "torch.float32", "ACTUAL_PHYSICAL_LOGITS_FP32")
+        self._emit("physical_forward_complete", {"id": ident, "phase": self.phase, "input_positions": n})
+        self.root_completed += 1
+        self.root_positions_completed += n
+        self.phase_counts[self.phase]["root_completed"] += 1
+        self.phase_counts[self.phase]["root_input_positions_completed"] += n
+        self.root_pending = None
+
+    def _layer_before(self, index):
+        def before(module, args, kwargs):
+            self.tick()
+            need(self.phase is not None and self.layer_reserved < self.limits[2], "CHECKPOINT_LAYER_EXECUTION_BUDGET")
+            self.layer_reserved += 1
+            self.layer_pending[index].append(self.layer_reserved)
+            self.phase_counts[self.phase]["decoder_layer_executions_reserved"] += 1
+        return before
+
+    def _layer_after(self, index):
+        def after(module, args, kwargs, output):
+            if output is None:
+                self.status = "UNKNOWN"
+                return
+            need(bool(self.layer_pending[index]), "LAYER_POST_REQUIRES_INTENT")
+            self.layer_pending[index].pop()
+            self.layer_completed += 1
+            self.phase_counts[self.phase]["decoder_layer_executions_completed"] += 1
+        return after
+
+    def install(self, model, decoder_layers):
+        need(not self.handles and type(decoder_layers) in (list, tuple) and bool(decoder_layers), "PHYSICAL_HOOKS_INSTALL_ONCE")
+        need(len({id(m) for m in decoder_layers}) == len(decoder_layers), "UNIQUE_DECODER_LAYERS")
+        def attach(module, before, after):
+            h1 = module.register_forward_pre_hook(before, with_kwargs=True)
+            h2 = module.register_forward_hook(after, with_kwargs=True, always_call=True)
+            self.handles.extend((h1, h2))
+            self._coverage.extend(((module, h1, "_forward_pre_hooks"), (module, h2, "_forward_hooks")))
+        attach(model, self._root_before, self._root_after)
+        for i, layer in enumerate(decoder_layers):
+            self.layer_pending[i] = []
+            attach(layer, self._layer_before(i), self._layer_after(i))
+        self.installed_model_id = id(model)
+        self.installed_decoder_layer_ids = tuple(id(x) for x in decoder_layers)
+        return self
+
+    def assert_installed(self, model, decoder_layers):
+        need(self.installed_model_id == id(model) and self.installed_decoder_layer_ids == tuple(id(x) for x in decoder_layers)
+             and len(self.handles) == 2 + 2 * len(decoder_layers) and
+             all(handle.id in getattr(module, where) for module, handle, where in self._coverage), "ACTUAL_ROOT_ALL_DECODER_HOOKS_REQUIRED")
+        return True
+
+    def close(self):
+        for handle in self.handles:
+            handle.remove()
+        self.handles = []
+        self._coverage = []
+        self.installed_model_id, self.installed_decoder_layer_ids = None, ()
+
+    def snapshot(self):
+        return {"schema": "new-ps-root-and-layer-physical-accounting/v1", "status": self.status,
+            "root_forward_intents": self.root_reserved, "root_forward_completions": self.root_completed,
+            "root_unknown": self.root_reserved - self.root_completed,
+            "root_input_positions_reserved": self.root_positions_reserved,
+            "root_input_positions_completed": self.root_positions_completed,
+            "decoder_layer_execution_intents": self.layer_reserved, "decoder_layer_execution_completions": self.layer_completed,
+            "decoder_layer_unknown": self.layer_reserved - self.layer_completed,
+            "operation_intents": self.operations, "operation_completions": self.operation_completions,
+            "operation_unknown": self.operations - self.operation_completions,
+            "by_phase": {k: dict(v) for k, v in self.phase_counts.items()},
+            "checkpoint_recomputation": "included in decoder-layer execution counts, not relabeled root forwards",
+            "FLOPs_claimed": False, "retry_allowed": False,
+            "abrupt_process_death": "durable inflight operation reservation remains UNKNOWN; never refunded"}

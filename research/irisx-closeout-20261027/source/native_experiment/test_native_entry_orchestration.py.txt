@@ -1,0 +1,180 @@
+"""Synthetic mocked orchestration only; no release, private input or model I/O."""
+import hashlib
+import json
+from pathlib import Path
+import tempfile
+import time
+import unittest
+import sys
+from unittest import mock
+from training import fixtures
+from training.contracts import digest
+from . import native_entry as entry
+from . import backend_load
+from .test_workflow import dev_rows
+
+
+class FakeHooks:
+    def __init__(self, **kwargs): self.closed = False
+    def set_phase(self, name): pass
+    def install(self, *args): pass
+    def close(self): self.closed = True
+    def snapshot(self):
+        return {"status": "RUNNING", "root_unknown": 0, "decoder_layer_unknown": 0,
+                "operation_unknown": 0, "root_forward_intents": 0,
+                "decoder_layer_execution_intents": 0, "synthetic_no_physical_claim": True}
+
+
+class FakeEngine:
+    native_training_gate_passed = True
+    def __init__(self):
+        self.model = mock.Mock()
+        self.model.get_base_model.return_value.model.layers = ()
+        self.reset_receipts = [{"label": "SYNTHETIC_ONLY_NO_REAL_RESET"}]
+    def engineering_gate(self, *args): return {"status": "SYNTHETIC_ONLY"}
+
+
+class NativeEntryOrchestrationTests(unittest.TestCase):
+    def invoke_fixture(self, *, mutation=None, workflow_failure=False, gate=True, device_failure=False):
+        with tempfile.TemporaryDirectory(prefix="SYNTHETIC_NATIVE_ORCHESTRATION_") as temp:
+            root = Path(temp); root.chmod(0o700)
+            attempt = root / "attempt"; attempt.mkdir(mode=0o700)
+            response = fixtures.panel().pairs[0].chosen
+            public = {"target_reads": 0, "private_pairpack_reads": 0, "clean_holdout": False,
+                      "dev_rows": dev_rows(), "train_identity": [], "private_source_bindings": {},
+                      "engineering_public_probe": {"prompt": list(response.prompt),
+                      "body_EOS": list(response.body_eos), "response_pin": response.pin,
+                      "query_gold_used": False, "private_pairpack_used": False}}
+            contract = {"public_inputs": entry.PUBLIC_INPUT_PIN, "physical_limits": entry.LIMITS,
+                        "public_inputs_path": "SYNTHETIC_PUBLIC_INPUT_NO_READ",
+                        "private_pairpack_path": "SYNTHETIC_PRIVATE_SENTINEL_NO_READ",
+                        "dev_public_panel_semantic_sha256": digest(public["dev_rows"]),
+                        "engineering_public_probe_sha256": response.pin,
+                        "source_manifest_sha256": "1"*64, "run_id": "SYNTHETIC_NOT_A_NATIVE_RUN",
+                        "recovered_runtime_root": "SYNTHETIC_RUNTIME_NO_READ",
+                        "model_dir": "SYNTHETIC_MODEL_NO_READ", "material_receipt_path": "SYNTHETIC_NO_READ"}
+            if mutation: mutation(public, contract)
+            release = mock.Mock(attempt_root=attempt, release_pin="2"*64, science_deadline_epoch=time.time()+10)
+            release.public_contract.return_value = contract
+            engine = FakeEngine(); engine.native_training_gate_passed = gate
+            reads = []
+            def read_pin(path, pin, cap):
+                reads.append(path)
+                if path == contract["public_inputs_path"]: return json.dumps(public).encode()
+                if path == contract["private_pairpack_path"]:
+                    self.assertTrue((attempt / "PRE-PRIVATE-PAIRPACK-SEAL.json").is_file())
+                    self.assertEqual(len(reads), 2)
+                    return b"SYNTHETIC_SENTINEL_NOT_A_PAIRPACK"
+                self.fail("Unrecognized input: no real file may be read")
+            def workflow(*args, **kwargs):
+                kwargs["emit"]("SYNTHETIC_WORKFLOW_COMPLETE", {"fixture": True})
+                if workflow_failure: raise RuntimeError("SYNTHETIC_FAIL_NO_RETRY")
+                predictions = tuple({"arm": arm, "synthetic_ordinal": i}
+                    for arm in ("fresh_base", "CE", "DPO") for i in range(64))
+                return {"synthetic_fixture_only": True}, predictions
+            with mock.patch.dict(entry.__dict__, {"__reviewed_byte_bootstrap__": {
+                    "schema": "new-ps-native-reviewed-byte-bootstrap/v1"}}), \
+                 mock.patch.object(entry, "issue_native_release", return_value=release) as issuer, \
+                 mock.patch.object(entry, "_read_pin", side_effect=read_pin), \
+                 mock.patch.object(entry, "parse_bound_private_pack", return_value=object()) as parser, \
+                 mock.patch.object(entry, "load_native_backend", return_value=object()) as loader, \
+                 mock.patch.object(entry, "preflight_native_device", return_value=mock.Mock(proof={"synthetic_device_only": True}),
+                                   side_effect=RuntimeError("SYNTHETIC_WRONG_DEVICE") if device_failure else None), \
+                 mock.patch.object(entry, "NativeEngine", return_value=engine), \
+                 mock.patch.object(entry, "AuditHooks", FakeHooks), \
+                 mock.patch.object(entry, "run_native_workflow", side_effect=workflow) as loop, \
+                 mock.patch.object(entry.shutil, "disk_usage", return_value=mock.Mock(free=10**12)):
+                status = entry.run_root_authorized(root, {"files": {"EXPERIMENT-CONTRACT.json": "3"*64}})
+            files = {p.name: p.read_bytes() for p in attempt.iterdir() if p.is_file()}
+            modes = {p.name: p.stat().st_mode & 0o777 for p in attempt.iterdir() if p.is_file()}
+            return status, reads, files, modes, parser.call_count, loader.call_count, loop.call_count
+
+    def test_all192_three_seals_journal_resets_and_private_permissions(self):
+        status, reads, files, modes, parser, loader, loop = self.invoke_fixture()
+        self.assertEqual(status["status"], "COMPLETE_PREDICTIONS_SEALED_WAIT_PROCESS_EXIT")
+        self.assertEqual((len(reads), parser, loader, loop), (2,1,1,1))
+        self.assertTrue(all(v == 0o600 for v in modes.values()))
+        seal = json.loads(files["PREDICTIONS-SEALED.json"])
+        self.assertTrue(seal["model_process_exit_still_required"])
+        self.assertEqual(set(seal["distinct_arm_seals"]), {"fresh_base","CE","DPO"})
+        self.assertEqual(len({v["sha256"] for v in seal["distinct_arm_seals"].values()}), 3)
+        for key, name in (("private_journal", "PRIVATE-OPERATIONS-AND-PREDICTIONS.jsonl"),
+                          ("private_resets", "PRIVATE-RESET-RECEIPTS.json"),
+                          ("private_predictions", "PRIVATE-PREDICTIONS-192.json")):
+            self.assertEqual(seal[key], {"bytes": len(files[name]), "sha256": hashlib.sha256(files[name]).hexdigest()})
+        self.assertNotIn("MODEL-PROCESS-STOPPED.json", files)
+
+    def test_bad_public_binding_stops_before_private_model_or_workflow(self):
+        status, reads, files, modes, parser, loader, loop = self.invoke_fixture(
+            mutation=lambda p,c: c.update(dev_public_panel_semantic_sha256="0"*64))
+        self.assertEqual(status["private_pairpack_reads"], 0)
+        self.assertEqual((len(reads), parser, loader, loop), (1,0,0,0))
+        self.assertNotIn("PRIVATE-PREDICTIONS-192.json", files)
+
+    def test_failed_engineering_blocks_workflow_after_one_private_fixture_read(self):
+        status, reads, files, modes, parser, loader, loop = self.invoke_fixture(gate=False)
+        self.assertEqual(status["status"], "FAILED_OR_UNKNOWN_ATTEMPT_CONSUMED")
+        self.assertEqual((status["private_pairpack_reads"], parser, loader, loop), (1,1,1,0))
+        self.assertNotIn("PREDICTIONS-SEALED.json", files)
+
+    def test_wrong_device_stops_before_private_input_or_model_load(self):
+        status, reads, files, modes, parser, loader, loop = self.invoke_fixture(device_failure=True)
+        self.assertEqual(status["private_pairpack_reads"], 0)
+        self.assertEqual((len(reads), parser, loader, loop), (1,0,0,0))
+        self.assertNotIn("PRE-PRIVATE-PAIRPACK-SEAL.json", files)
+
+    def test_workflow_failure_never_retries_or_seals_partial_predictions(self):
+        status, reads, files, modes, parser, loader, loop = self.invoke_fixture(workflow_failure=True)
+        self.assertEqual((len(reads), parser, loader, loop), (2,1,1,1))
+        self.assertFalse(status["retry_allowed"])
+        self.assertNotIn("PREDICTIONS-SEALED.json", files)
+        self.assertNotIn("SYNTHETIC_FAIL_NO_RETRY", json.dumps(status))
+
+
+class PreflightSourceReuseTests(unittest.TestCase):
+    def exercise(self, callback):
+        with tempfile.TemporaryDirectory(prefix="SYNTHETIC_TWO_STAGE_SOURCE_ONLY_") as tmp:
+            root=Path(tmp); source=root/"fixture.py"; raw=b"SYNTHETIC_COMPILED_ONCE = object()\n"
+            source.write_bytes(raw); pins={"cuda_backend":("fixture.py",hashlib.sha256(raw).hexdigest())}
+            before=set(sys.modules)
+            try:
+                with mock.patch.object(backend_load,"SOURCE_PINS",pins),mock.patch.object(backend_load,"ASSET_PINS",{}):
+                    sources=backend_load.verify_source_closure(root)
+                    first=sources.module("cuda_backend")
+                    release=mock.Mock(release_pin="7"*64)
+                    cap=backend_load.NativeDevicePreflight(backend_load._BINDING_SENTINEL,sources,release,
+                                                          {"release_sha256":release.release_pin})
+                    callback(root,source,sources,first,release,cap)
+            finally:
+                for name in set(sys.modules)-before:
+                    if name.startswith("_new_ps_verified_"):sys.modules.pop(name,None)
+
+    def test_second_stage_rehash_reuses_exact_compiled_module_without_namespace_collision(self):
+        def check(root,source,sources,first,release,cap):
+            reused=backend_load._reuse_preflight_sources(cap,root,release)
+            self.assertIs(reused,sources);self.assertIs(reused.module("cuda_backend"),first)
+            self.assertIs(reused.module("cuda_backend").SYNTHETIC_COMPILED_ONCE,first.SYNTHETIC_COMPILED_ONCE)
+        self.exercise(check)
+
+    def test_source_changed_between_device_and_model_stages_denied(self):
+        def check(root,source,sources,first,release,cap):
+            source.write_bytes(b"SYNTHETIC_CHANGED=True\n")
+            with self.assertRaisesRegex(ValueError,"source hash mismatch"):
+                backend_load._reuse_preflight_sources(cap,root,release)
+        self.exercise(check)
+
+    def test_other_release_cannot_reuse_capability(self):
+        def check(root,source,sources,first,release,cap):
+            with self.assertRaisesRegex(ValueError,"same actual device"):
+                backend_load._reuse_preflight_sources(cap,root,mock.Mock(release_pin=release.release_pin))
+        self.exercise(check)
+
+    def test_real_preflight_default_or_fake_release_denied_before_sources(self):
+        with mock.patch.object(backend_load,"verify_source_closure",side_effect=AssertionError("no sources")):
+            with self.assertRaisesRegex(ValueError,"default disabled"):
+                backend_load.preflight_native_device(runtime_root="SYNTHETIC_NO_READ",release=object())
+            with self.assertRaisesRegex(ValueError,"verified native release"):
+                backend_load.preflight_native_device(runtime_root="SYNTHETIC_NO_READ",release=object(),enable_cuda_execution=True)
+
+
+if __name__ == "__main__": unittest.main()

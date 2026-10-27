@@ -1,0 +1,77 @@
+"""NEW wrapper bootstrap. Root hashes these bytes before compile; never pycache.
+
+No model, installer, subprocess, filesystem claim or action at import time.
+Only a separately reviewed out-of-band grant admits a future full experiment.
+"""
+from pathlib import Path
+import hashlib
+import json
+import os
+import sys
+import types
+
+ROOT=Path(__file__).resolve().parents[1]
+MODULES=(("publication","publication/__init__.py"),
+ ("publication.owned_process","publication/owned_process.py"),
+ ("publication.disk_admission","publication/disk_admission.py"),
+ ("publication.installer_sources","publication/installer_sources.py"),
+ ("publication.entry_clock","publication/entry_clock.py"),
+ ("publication.controller","publication/controller.py"))
+EXTRA={"publication/bootstrap.py","publication/notebook_builder.py",
+ "publication/PUBLICATION-README.NEW.md","publication/ORIGINAL-OFFLINE-DEPENDENCIES.NEW.json",
+ "publication/test_owned_process.py","publication/test_publication.py"}
+
+def need(ok,code):
+    if not ok:raise ValueError(code)
+
+def read(path):
+    need(path.is_absolute() and not any(x.is_symlink()for x in(path,*path.parents)),"WRAPPER_BOOTSTRAP_PATH")
+    need(path.is_file() and 0<path.stat().st_size<=4*1024**2,"WRAPPER_BOOTSTRAP_PUBLIC_BOUND")
+    return path.read_bytes()
+
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+
+def compile_reviewed_modules(raw,*,manifest_sha256,bootstrap_sha256):
+    need(sha(raw)==manifest_sha256,"WRAPPER_MANIFEST_HASH")
+    manifest=json.loads(raw);paths={p for _,p in MODULES}|EXTRA
+    need(set(manifest)=={'schema','files'} and manifest['schema']=='new-ps-setup-export-source-manifest/v1' and
+         set(manifest['files'])==paths,"WRAPPER_CLOSED_SOURCE_MEMBERS")
+    need(not any(n in sys.modules for n,_ in MODULES),"WRAPPER_FRESH_NAMESPACE")
+    blobs={}
+    for rel in sorted(paths):
+        blob=read(ROOT/rel)
+        need(manifest['files'][rel]=={'bytes':len(blob),'sha256':sha(blob)},"WRAPPER_EXACT_SOURCE_BYTES")
+        blobs[rel]=blob
+    need(sha(blobs['publication/bootstrap.py'])==bootstrap_sha256,"WRAPPER_SELF_PIN")
+    for name,rel in MODULES:
+        m=types.ModuleType(name);m.__file__=str(ROOT/rel);m.__cached__=None
+        m.__package__=name if rel.endswith('/__init__.py')else name.rpartition('.')[0]
+        if rel.endswith('/__init__.py'):m.__path__=[str((ROOT/rel).parent)]
+        m.__reviewed_publication_bytes__={'bootstrap_sha256':bootstrap_sha256,
+          'source_manifest_sha256':manifest_sha256,'module_sha256':sha(blobs[rel])}
+        sys.modules[name]=m
+        if '.'in name:
+            parent,_,child=name.rpartition('.');setattr(sys.modules[parent],child,m)
+        exec(compile(blobs[rel],m.__file__,'exec',dont_inherit=True),m.__dict__)
+    return sys.modules['publication.controller']
+
+def admitted_entry(directory,grant):
+    trusted=globals().get('_ROOT_VERIFIED_PUBLICATION_BOOTSTRAP_SHA256')
+    need(type(trusted)is str and len(trusted)==64 and grant.get('bootstrap_sha256')==trusted,
+         'ACTUAL_EXTERNAL_WRAPPER_ROOT_PIN')
+    root=Path(directory)
+    need(root.is_absolute() and root.is_dir() and not any(x.is_symlink()for x in(root,*root.parents)),
+         'EXISTING_PUBLIC_CONFIG_DIRECTORY')
+    raw=read(root/'WRAPPER-SOURCE-MANIFEST.json')
+    return compile_reviewed_modules(raw,manifest_sha256=grant['files']['WRAPPER-SOURCE-MANIFEST.json'],bootstrap_sha256=trusted)
+
+def run_with_root_grant(directory,grant,*,inner=False,outer_seal_pin=None):
+    need(sys.flags.isolated==1 and sys.flags.dont_write_bytecode==1,'ISOLATED_FRESH_WRAPPER_CHILD')
+    os.umask(0o077)
+    return admitted_entry(directory,grant).run_root_authorized(directory,grant,inner=inner,outer_seal_pin=outer_seal_pin)
+
+def launch_from_pinned_notebook(directory,grant):
+    os.umask(0o077)
+    return admitted_entry(directory,grant).launch_from_pinned_notebook(directory,grant)
+
+if __name__=='__main__':raise SystemExit('PUBLICATION_BOOTSTRAP_INERT_EXPLICIT_ROOT_GRANT_REQUIRED')

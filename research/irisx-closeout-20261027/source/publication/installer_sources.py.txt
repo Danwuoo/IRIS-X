@@ -1,0 +1,96 @@
+"""NEW exact-byte reuse of original offline installer, never old study entry.
+
+Prospective behavioral adapters replace process containment with the NEW
+owned/PDEATHSIG watchdog, byte-compile the portable-Python child entry, and
+explicitly reserve same/split-filesystem runtime/output capacity.
+Wheel/interpreter/model identity,43-wheel selection and offline flags unchanged.
+"""
+import builtins
+import hashlib
+import os
+from pathlib import Path
+import sys
+import types
+from .owned_process import run_owned
+from .disk_admission import admit_disk
+
+PINS={
+ 'offline_bootstrap.py':'17b2a3d5550ece6b4d6503dd999e730baeb36bef6ad793fb5fc9049959b42a31',
+ 'mounted_materials.py':'c6c24b7339dda65f45b0e299d4273557b8d29a769922f486553a1688829ae473',
+ 'portable_interpreter.py':'575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9',
+ 'prepare_python_child.py':'b675422ecc1840ad4c543fd3e5918904f67978bfbd6a4a6bc0462e81a4964415',
+ 'runtime/mount_resolver.py':'644b360636ad10b3530f183038545aa0ce080ff609cc92d2373207270fd60b37',
+ 'MOUNTED-MATERIALS.json':'703ea855c776c5e789fb709a9bacd3bd652360609f6dff935ad1cf3c740fa92c',
+ 'runtime/vendor/MODEL-ACQUISITION-RECEIPT.json':'050a956d650ecb8530740cfc8002120c62c9724f20048462393c3e1dd3b48f06'}
+MODULES={'offline_bootstrap':'offline_bootstrap.py','mounted_materials':'mounted_materials.py',
+         'portable_interpreter':'portable_interpreter.py','mount_resolver':'runtime/mount_resolver.py'}
+
+
+def need(ok,code):
+    if not ok:raise ValueError(code)
+
+
+class OriginalInstallerSources:
+    def __init__(self,root,*,guard,deadline,monotonic_deadline,output_root=None):
+        self.root=Path(root);self.guard=guard;self.deadline=deadline;self.mono=monotonic_deadline
+        self.output_root=None if output_root is None else Path(output_root)
+        need(self.root.is_absolute() and not any(x.is_symlink()for x in(self.root,*self.root.parents)),"INSTALLER_SOURCE_ROOT")
+        self.blobs={};self.modules={}
+        for rel,expected in PINS.items():
+            path=self.root/rel
+            need(not any(x.is_symlink()for x in(path,*path.parents)) and path.is_file() and path.stat().st_size<65536,
+                 "INSTALLER_BOUNDED_SOURCE")
+            raw=path.read_bytes();need(hashlib.sha256(raw).hexdigest()==expected,"INSTALLER_EXACT_ORIGINAL_BYTES")
+            self.blobs[rel]=raw
+        supervisor=types.ModuleType("new_ps_offline_local_supervisor_adapter")
+        supervisor.supervise=self.supervise
+        self.modules['local_supervisor']=supervisor
+
+    def module(self,name):
+        if name in self.modules:return self.modules[name]
+        need(name in MODULES,"INSTALLER_CLOSED_MODULES")
+        rel=MODULES[name];private="_new_ps_offline_"+PINS[rel][:16]+"_"+name
+        need(private not in sys.modules,"INSTALLER_FRESH_PRIVATE_NAMESPACE")
+        m=types.ModuleType(private);m.__file__=str(self.root/rel);m.__package__='';m.__cached__=None
+        original_import=builtins.__import__;b=vars(builtins).copy()
+        def checked_import(import_name,globals=None,locals=None,fromlist=(),level=0):
+            if level==0 and (import_name in MODULES or import_name=='local_supervisor'):return self.module(import_name)
+            return original_import(import_name,globals,locals,fromlist,level)
+        b['__import__']=checked_import;m.__dict__['__builtins__']=b
+        self.modules[name]=m;sys.modules[private]=m
+        exec(compile(self.blobs[rel],m.__file__,'exec',dont_inherit=True),m.__dict__)
+        if name=='mounted_materials':
+            # Explicit NEW disk geometry adapter, not an original receipt claim.
+            m.disk_admission=lambda spec,wheel,work:admit_disk(spec,wheel,work,self.output_root)
+        return m
+
+    def guarded_interpreter_entry(self,argv):
+        """Original archive preparation, but no ambient portable module/pycache."""
+        script=str(self.root/'prepare_python_child.py')
+        if len(argv)>2 and argv[1:3]==['-I',script]:
+            code=("import hashlib,sys,types\nfrom pathlib import Path\n"
+                  "root=Path("+repr(str(self.root))+")\n"
+                  "def read(name,pin):\n p=root/name\n if any(x.is_symlink()for x in(p,*p.parents)):raise SystemExit('SOURCE_SYMLINK')\n b=p.read_bytes()\n if hashlib.sha256(b).hexdigest()!=pin:raise SystemExit('SOURCE_HASH')\n return b\n"
+                  "b=read('portable_interpreter.py',"+repr(PINS['portable_interpreter.py'])+")\n"
+                  "m=types.ModuleType('portable_interpreter');m.__file__=str(root/'portable_interpreter.py');sys.modules['portable_interpreter']=m\n"
+                  "exec(compile(b,m.__file__,'exec',dont_inherit=True),m.__dict__)\n"
+                  "b=read('prepare_python_child.py',"+repr(PINS['prepare_python_child.py'])+")\n"
+                  "sys.argv=[str(root/'prepare_python_child.py'),*sys.argv[1:]]\n"
+                  "exec(compile(b,sys.argv[0],'exec',dont_inherit=True),{'__name__':'__main__','__file__':sys.argv[0]})\n")
+            return [argv[0],'-I','-S','-B','-c',code,*argv[3:]]
+        need(len(argv)>3 and argv[1:3]==['-I','-m'] and argv[3]in('venv','pip'),"INSTALLER_ONLY_REVIEWED_PYTHON_COMMANDS")
+        return [argv[0],'-B',*argv[1:]]
+
+    def supervise(self,argv,output_root,max_seconds=7200,log_cap=8*1024**2,child_env=None):
+        need(type(max_seconds)is int and 1<=max_seconds<=7200,"INSTALLER_NO_NEW_TIME_ALLOWANCE")
+        return run_owned(self.guarded_interpreter_entry(argv),Path(output_root),deadline=self.deadline,
+            monotonic_deadline=self.mono,child_env=child_env,guard=self.guard,log_cap=log_cap)
+
+    def prepare(self,input_root,work,*,execute=False):
+        need(execute is True,"INSTALLER_DEFAULT_OFF")
+        need(self.output_root is not None,'EXPLICIT_WORKING_OUTPUT_FILESYSTEM_REQUIRED')
+        return self.module('offline_bootstrap').prepare(self.root/'MOUNTED-MATERIALS.json',
+            PINS['MOUNTED-MATERIALS.json'],input_root,work,self.deadline,execute=True)
+
+
+if __name__=='__main__':raise SystemExit('INSTALLER_SOURCE_LIBRARY_ONLY')

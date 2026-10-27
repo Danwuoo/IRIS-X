@@ -1,0 +1,360 @@
+{
+  "schema": "irisx-stopped-source-checkpoint/v1",
+  "status": "STOPPED_BY_OWNER",
+  "source_files": [
+    {
+      "path": "source/native_experiment/__init__.py.txt",
+      "bytes": 82,
+      "sha256": "e019e038c1e66b086f4a55fcd26a561c80553cdf39c5da4b3ac0e639e944eca0",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/admission.py.txt",
+      "bytes": 10607,
+      "sha256": "ca600db38b84be99e9bc2fa88fb6553cb4d61db9dd58f687318d20b2cf8a6a07",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/backend_engine.py.txt",
+      "bytes": 34672,
+      "sha256": "bd8d261d1cf1747fe05d8091ddb0f7f865af50a93a31e6922f245dc22e0f3c36",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/backend_load.py.txt",
+      "bytes": 15596,
+      "sha256": "dc48109c7457bbe60a2f8b481e21d652c34cb730c4451f0a8f82b47b5736378c",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/contracts.py.txt",
+      "bytes": 14990,
+      "sha256": "8d304a39d59f1c552410754d582501e0c9d855c858f2bc8bba17cbbe4f12c081",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/export_results.py.txt",
+      "bytes": 10506,
+      "sha256": "74deb8281a1bdb4c9122fb6aab3f05aae9367d663d1c4313d95cfce3ba071c19",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/native_entry.py.txt",
+      "bytes": 13175,
+      "sha256": "c0aadd3b7e166cdb487fa17df91419f64c6034eb72d7619bc408822b35aeaaae",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/physical_audit.py.txt",
+      "bytes": 8618,
+      "sha256": "c762b3d3c67badef219a09bf4f451d3ebf386fc8229f2cbe5d628d43cb422179",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/prepare_public_inputs.py.txt",
+      "bytes": 4083,
+      "sha256": "24d4908c8363ae8af36f9f61677b30e2082078b6d7c7ddeb8867ed870cb11662",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/reviewed_bootstrap.py.txt",
+      "bytes": 5588,
+      "sha256": "1b853f396e63bd63b0b0796073a39a9084575ff49a9e0655ed8d2320a047d1bf",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/source_closure.py.txt",
+      "bytes": 3441,
+      "sha256": "21ee36d37fb68c87cab73c0a95c988d7c5919d5d6798a166206d672122aae936",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/supervisor.py.txt",
+      "bytes": 13587,
+      "sha256": "8fe82a26c79c681fc1a249195a31f4a06c4c8dfd04856c089325a6d5623b5813",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/test_admission.py.txt",
+      "bytes": 77540,
+      "sha256": "8c50902249bfc5c37b1af5663abc3a2a348e3be0bb3b323858d1218f5fab1072",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/test_backend_engine.py.txt",
+      "bytes": 20660,
+      "sha256": "ea92672afa04eae43a6e06bdacf55eaa1226670d3a3add82213fe7c30c5ea0b9",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/test_export_results.py.txt",
+      "bytes": 4948,
+      "sha256": "43fbb396087431a4b1c53d254cb5801b15846696fa6cab1664709b3ff6516543",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/test_native_entry_orchestration.py.txt",
+      "bytes": 11318,
+      "sha256": "ead9ec3cc02bb240c2e443f56569bef19df07913d170db46e9941241101631ad",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/test_physical_audit.py.txt",
+      "bytes": 4386,
+      "sha256": "b4850e1580d75ba0cebf8ad70a1a9090cb7f27c636ebc4a151db4691a5db0649",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/test_workflow.py.txt",
+      "bytes": 8342,
+      "sha256": "eded2d5b3d9622549ff76125dd3a14218fbece75b987121c743a2b6507704093",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/native_experiment/workflow.py.txt",
+      "bytes": 11279,
+      "sha256": "bcffc932c3e70c1e1f0b4a9aafb058e0cec92f0f66e29f5b8cfed94ba4fd04ff",
+      "source_group": "native-v6-source/native_experiment",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/training/__init__.py.txt",
+      "bytes": 92,
+      "sha256": "43fdf1c660b7ad78cf6923c194d4e72f741f574c7cb2dba3e9dab84680ecbcc7",
+      "source_group": "native-v6-source/training",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/training/contracts.py.txt",
+      "bytes": 10626,
+      "sha256": "dd5000496e49b32ac088b835821fb1b153d26ef51b687ca76751a734d37a99f1",
+      "source_group": "native-v6-source/training",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/training/fixtures.py.txt",
+      "bytes": 2085,
+      "sha256": "fc829f9dac8df7adaddeddd4e0da16ffdfbb932ac4713d909d26ae7b04286e07",
+      "source_group": "native-v6-source/training",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/training/stage.py.txt",
+      "bytes": 13992,
+      "sha256": "3f597e963a4927c2c461a50aa8cd20b2e916f73c863305eb72e6dc1977ace734",
+      "source_group": "native-v6-source/training",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/training/torch_ops.py.txt",
+      "bytes": 9450,
+      "sha256": "6ed0b98e192b807ca6949d2d50d2fc3effc6e40d8431037990b4792e7168d609",
+      "source_group": "native-v6-source/training",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/publication/__init__.py.txt",
+      "bytes": 77,
+      "sha256": "790315992d3e4d20dedad9fe550c3a14ed52776515e3785b9c87f01a241b4faf",
+      "source_group": "publication-v3-source/publication",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/publication/bootstrap.py.txt",
+      "bytes": 3958,
+      "sha256": "9dae35dd637a8ad19834da20ba40fffa625e96b2d7ce1924e8576d2fc624b0be",
+      "source_group": "publication-v3-source/publication",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/publication/controller.py.txt",
+      "bytes": 23557,
+      "sha256": "ddaf0b43cefc81fd2e69848bcd0d0968f6d127d43965445f8c0667c5d1ae72b9",
+      "source_group": "publication-v3-source/publication",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/publication/disk_admission.py.txt",
+      "bytes": 4462,
+      "sha256": "a613dc1f5c76a8f7748d6640746ced7714b630a7021482b16dbfd159f12c35b7",
+      "source_group": "publication-v3-source/publication",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/publication/entry_clock.py.txt",
+      "bytes": 2194,
+      "sha256": "130b450807e607b7227a618b9103988225a29ab3d49062f5eeb8af63b826cf02",
+      "source_group": "publication-v3-source/publication",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/publication/installer_sources.py.txt",
+      "bytes": 6017,
+      "sha256": "c4ecaebe7bbf3341af92a3c766725df12619ea7d79197d67836078980b004558",
+      "source_group": "publication-v3-source/publication",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/publication/notebook_builder.py.txt",
+      "bytes": 12722,
+      "sha256": "ab3b7703e6aa20d3e71147553ce8b656779b3feaea407c02eb476feaa02431bb",
+      "source_group": "publication-v3-source/publication",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/publication/owned_process.py.txt",
+      "bytes": 6660,
+      "sha256": "d719e895956d5e8d216807582fcaab0b237af577d2ae6d9b2553fd00e9397ff4",
+      "source_group": "publication-v3-source/publication",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/publication/test_owned_process.py.txt",
+      "bytes": 24565,
+      "sha256": "70453392ca6e57973a4b0c2b4b649c349598cf3af945f5e4dfd71aa828f544ed",
+      "source_group": "publication-v3-source/publication",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/publication/test_publication.py.txt",
+      "bytes": 25911,
+      "sha256": "2b1058b25e3505b010baffb417691e2a2e57fa5f318cbbd1276bf55123f5749e",
+      "source_group": "publication-v3-source/publication",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/dev_evaluator/dev_evaluator.py.txt",
+      "bytes": 28328,
+      "sha256": "a6855f8a975a6e49aeaf9dd520ddd7b02a0e889e6395ac3d04b038635c11ed9f",
+      "source_group": "dev-native-adapter-v2-source/dev_evaluator",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/dev_evaluator/synthetic_fixtures.py.txt",
+      "bytes": 6110,
+      "sha256": "87201322597a3c13794e23e18103c24b7f17ba9faec15d89f478cfa5841d864f",
+      "source_group": "dev-native-adapter-v2-source/dev_evaluator",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/dev_native_adapter/isolated_score.py.txt",
+      "bytes": 14908,
+      "sha256": "a2c58bf221197cb1b175a1bae4d234e8355f33c82c95009e98d22c57667aa08f",
+      "source_group": "dev-native-adapter-v2-source/dev_native_adapter",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/dev_native_adapter/prediction_join.py.txt",
+      "bytes": 40802,
+      "sha256": "a12ffffe1a526688dd072ad2636d4b5d3014f7392848a462a3b2451ab27cd804",
+      "source_group": "dev-native-adapter-v2-source/dev_native_adapter",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/dev_native_adapter/score_bootstrap.py.txt",
+      "bytes": 3163,
+      "sha256": "c431b0ba7f45816a7413c422257023546903e60da00ef850f82fdcc6e9632f03",
+      "source_group": "dev-native-adapter-v2-source/dev_native_adapter",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/dev_native_adapter/score_root_loader.py.txt",
+      "bytes": 2794,
+      "sha256": "abf97ad21a8bd99a2faf09d991eb7bb70c2c9a532144fb49c9d350286adf3d44",
+      "source_group": "dev-native-adapter-v2-source/dev_native_adapter",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/dev_native_adapter/test_isolated_score.py.txt",
+      "bytes": 10757,
+      "sha256": "d6d974dde699cd516c74aeab3cdee7f6306a1f2eac6c8e103f56c93d95034e81",
+      "source_group": "dev-native-adapter-v2-source/dev_native_adapter",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/dev_native_adapter/test_prediction_join.py.txt",
+      "bytes": 27087,
+      "sha256": "c1550b022333505519be0642660c847449d1284582dd2e5f37e98396a46515ff",
+      "source_group": "dev-native-adapter-v2-source/dev_native_adapter",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/tpu_optimization/entry.py.txt",
+      "bytes": 13530,
+      "sha256": "de7b113d3958072286281aa6a762e771ef0853195e486d11db3c219c72c0e00e",
+      "source_group": "tpu_optimization",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/tpu_optimization/portable_adapter.py.txt",
+      "bytes": 13492,
+      "sha256": "585909d766df0d1d3384648b4f5701e352aaa27e23f66dbd129c32549489507e",
+      "source_group": "tpu_optimization",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/tpu_optimization/runtime.py.txt",
+      "bytes": 20357,
+      "sha256": "f2157ec4221fe01905dff908bba7ce4332a2621c0370290356cb614541b3a412",
+      "source_group": "tpu_optimization",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/tpu_optimization/source_loader.py.txt",
+      "bytes": 5117,
+      "sha256": "03d28c107bbfe8cbfbc9d1357a224aa2c74140985e6563fcbf04217731315004",
+      "source_group": "tpu_optimization",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/tpu_optimization/test_entry.py.txt",
+      "bytes": 8573,
+      "sha256": "c60bf71a82801872c6e3096945179cb1e1419a922c9286d7cdab50d35acf7833",
+      "source_group": "tpu_optimization",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/tpu_optimization/test_portable.py.txt",
+      "bytes": 4518,
+      "sha256": "38cb2c03a0028c40786f0bdfe94cb5f7176e6698ccbb7f0d7bd029d61b643f72",
+      "source_group": "tpu_optimization",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    },
+    {
+      "path": "source/tpu_optimization/test_runtime.py.txt",
+      "bytes": 12886,
+      "sha256": "ab692b9b75ed7ab204ef5aac3a71df38a22e00745660f3f62e4634a33d0f62e8",
+      "source_group": "tpu_optimization",
+      "transformation": "byte-identical reviewed source or synthetic test; inert .txt suffix"
+    }
+  ],
+  "excluded": [
+    "all private pair/answer/parity bodies",
+    "all real task data grids and predictions; handwritten synthetic fixtures remain in source/tests",
+    "all raw archives and notebooks",
+    "all provider/account/configuration records and operational logs",
+    "all model weights, credentials and caches",
+    "infrastructure-bound guest and owner scripts retained locally only",
+    "all SB files"
+  ],
+  "native_execution_authorized": false,
+  "new_training_authorized": false
+}

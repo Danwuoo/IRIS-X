@@ -1,0 +1,248 @@
+"""NEW strict, dependency-free contracts. No loaders, targets, scoring or providers.
+
+Historical mixed=37 is deliberately absent from execution: panel N is explicit,
+verified by the separately admitted pairpack producer, and derived again here.
+"""
+from __future__ import annotations
+from dataclasses import dataclass
+import hashlib
+import json
+import math
+from typing import Callable
+
+VOCAB, PAD, EOS, RESPONSE_CAP, CONTEXT_CAP = 16, 13, 15, 512, 3072
+UPDATES, BETA, SEED = 4, 0.1, 1729
+
+
+def need(condition, reason):
+    if not condition:
+        raise ValueError(reason)
+
+
+def canonical(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("ascii")
+
+
+def digest(value):
+    return hashlib.sha256(canonical(value)).hexdigest()
+
+
+def validate_grid_body(body):
+    need(bool(body) and all(type(t) is int and 0 <= t <= 10 for t in body), "nonempty grid body only")
+    widths, width = [], 0
+    for token in body:
+        if token == 10:
+            widths.append(width)
+            width = 0
+        else:
+            width += 1
+    widths.append(width)
+    need(1 <= len(widths) <= 30 and all(1 <= n <= 30 for n in widths), "grid dimensions 1..30")
+    need(len(set(widths)) == 1, "rectangular grid")
+
+
+def response_span(ids, attention, prompt):
+    """Independently reconstruct recovered query span: body+EOS, exactly one shift."""
+    need(type(ids) in (tuple, list) and type(attention) in (tuple, list), "integer sequence containers")
+    need(len(ids) == len(attention) > 0 and len(ids) <= CONTEXT_CAP, "complete bounded sequence")
+    need(all(type(t) is int and 0 <= t < VOCAB for t in ids), "integer full16 tokens")
+    need(all(type(m) is int and m in (0, 1) for m in attention), "integer binary attention")
+    n = sum(attention)
+    need(n > 0 and list(attention) == [1] * n + [0] * (len(ids) - n), "right padding only")
+    need(list(ids[n:]) == [PAD] * (len(ids) - n), "padding must be PAD13")
+    need(type(prompt) in (tuple, list) and 0 < len(prompt) < n and tuple(ids[:len(prompt)]) == tuple(prompt), "trusted exact prompt prefix")
+    at, pairs, last_start = 0, 0, None
+    while at < n:
+        for role in (11, 12):
+            need(list(ids[at:at + 3]) == [14, role, 10], "exact alternating role header")
+            at += 3
+            start = at
+            while at < n and ids[at] != EOS:
+                at += 1
+            need(at < n, "closing EOS15")
+            validate_grid_body(ids[start:at])
+            if role == 12:
+                last_start = start
+            at += 1
+        pairs += 1
+    need(at == n and pairs >= 2, "support pair and final query pair required")
+    need(last_start == len(prompt), "query body bound to original prompt")
+    targets = tuple(ids[last_start:n])
+    need(2 <= len(targets) <= RESPONSE_CAP and targets[-1] == EOS, "complete body plus EOS within response cap")
+    positions = tuple(range(last_start - 1, n - 1))
+    need(all(ids[p + 1] == y and attention[p + 1] == 1 for p, y in zip(positions, targets)), "one causal shift")
+    return positions, targets
+
+
+@dataclass(frozen=True)
+class Response:
+    prompt: tuple[int, ...]
+    body_eos: tuple[int, ...]
+    right_pad: int = 0
+
+    def __post_init__(self):
+        need(type(self.prompt) is tuple and type(self.body_eos) is tuple, "immutable token tuples")
+        need(type(self.right_pad) is int and self.right_pad >= 0, "nonnegative right pad")
+        response_span(self.ids, self.attention, self.prompt)
+
+    @property
+    def ids(self):
+        return self.prompt + self.body_eos + (PAD,) * self.right_pad
+
+    @property
+    def attention(self):
+        return (1,) * (len(self.prompt) + len(self.body_eos)) + (0,) * self.right_pad
+
+    @property
+    def pin(self):
+        return digest({"prompt": self.prompt, "body_eos": self.body_eos, "right_pad": self.right_pad})
+
+
+@dataclass(frozen=True)
+class Pair:
+    ordinal: int
+    parent_id: str
+    chosen: Response
+    rejected: Response
+
+    def __post_init__(self):
+        need(type(self.ordinal) is int and 0 <= self.ordinal < 128, "original TRAIN ordinal 0..127")
+        need(type(self.parent_id) is str and bool(self.parent_id), "nonempty parent identity")
+        need(self.chosen.prompt == self.rejected.prompt, "same original canonical prompt")
+        need(self.chosen.body_eos != self.rejected.body_eos, "distinct chosen and rejected responses")
+
+
+PIN_KEYS = ("pairpack", "material", "model", "tokenizer", "root_policy", "source")
+
+
+@dataclass(frozen=True)
+class Panel:
+    pairs: tuple[Pair, ...]
+    pins: tuple[tuple[str, str], ...]
+    verified_count: int
+    source_kind: str = "synthetic_fixture"
+
+    def __post_init__(self):
+        need(type(self.pairs) is tuple and 0 < len(self.pairs) <= 128, "finite nonempty immutable panel")
+        need(type(self.verified_count) is int and self.verified_count == len(self.pairs), "dynamic verified N matches actual panel")
+        need(tuple(p.ordinal for p in self.pairs) == tuple(sorted(p.ordinal for p in self.pairs)), "ascending original TRAIN ordinal")
+        need(len({p.ordinal for p in self.pairs}) == len(self.pairs) == len({p.parent_id for p in self.pairs}), "one pair per parent")
+        need(type(self.pins) is tuple and tuple(k for k, _ in self.pins) == PIN_KEYS, "closed identity pin order")
+        need(all(type(v) is str and len(v) == 64 and all(c in "0123456789abcdef" for c in v) for _, v in self.pins), "SHA256 identities")
+        need(self.source_kind in ("synthetic_fixture", "isolated_verified_pairpack"), "explicit source boundary")
+
+    @property
+    def n(self):
+        return len(self.pairs)
+
+    @property
+    def binding(self):
+        return digest({"pins": self.pins, "N": self.n, "kind": self.source_kind,
+                       "pairs": [(p.ordinal, p.parent_id, p.chosen.pin, p.rejected.pin) for p in self.pairs]})
+
+
+@dataclass(frozen=True)
+class Operation:
+    phase: str
+    kind: str
+    update_index: int | None
+    parent_ordinal: int | None
+    side: str | None
+    input_positions: int = 0
+    response_tokens: int = 0
+    graph_response_tokens: int = 0
+
+    def __post_init__(self):
+        need(self.phase in ("reference", "ce", "dpo", "kl_ce", "kl_dpo"), "closed phase")
+        need(self.kind in ("forward", "backward", "update"), "closed operation")
+        need(all(type(x) is int and x >= 0 for x in (self.input_positions, self.response_tokens, self.graph_response_tokens)), "exact nonnegative cost counts")
+
+
+def operation_schedule(panel):
+    """No generation/scoring: 18N TF + 8N backwards + 8 Adam commits exactly.
+
+    Input positions charge padded positions actually sent to the model. Backward
+    graph_response_tokens charge both DPO response graphs, not just one loss call.
+    Checkpointed internal layer recomputation is NOT a top-level forward here.
+    """
+    def forward(phase, pair, side, update=None):
+        r = getattr(pair, side)
+        return Operation(phase, "forward", update, pair.ordinal, side, len(r.ids), len(r.body_eos))
+    for p in panel.pairs:
+        for side in ("chosen", "rejected"):
+            yield forward("reference", p, side)
+    for arm in ("ce", "dpo"):
+        for u in range(1, UPDATES + 1):
+            for p in panel.pairs:
+                yield forward(arm, p, "chosen", u)
+                if arm == "dpo":
+                    yield forward(arm, p, "rejected", u)
+                tokens = len(p.chosen.body_eos) + (len(p.rejected.body_eos) if arm == "dpo" else 0)
+                yield Operation(arm, "backward", u, p.ordinal, None, graph_response_tokens=tokens)
+            yield Operation(arm, "update", u, None, None)
+        for p in panel.pairs:
+            for side in ("chosen", "rejected"):
+                yield forward("kl_" + arm, p, side)
+
+
+class CostLedger:
+    """Strict predictable accounting hooks, not a native cost/budget admission.
+
+    begin happens before the actual operation. Failure after begin is UNKNOWN,
+    even if an operation might have physically committed. No retry or refund.
+    External observer failures also fail closed. Include real wall/recompute/
+    memory/serialization accounting in the separately authorized native wrapper.
+    """
+    def __init__(self, panel, observer=None):
+        self.expected = tuple(operation_schedule(panel))
+        self.completed, self.attempted = [], []
+        self.inflight = None
+        self.status = "READY"
+        self.failure = None
+        self.observer = observer
+
+    def begin(self, op):
+        need(self.status in ("READY", "RUNNING") and self.inflight is None, "no UNKNOWN/reentrant ledger continuation")
+        need(len(self.completed) < len(self.expected) and op == self.expected[len(self.completed)], "exact planned operation order")
+        self.status, self.inflight = "RUNNING", op
+        self.attempted.append(op)
+        if self.observer is not None:
+            self.observer.begin(op)
+        return len(self.attempted)
+
+    def complete(self, token):
+        need(self.inflight is not None and token == len(self.attempted), "exact inflight operation token")
+        if self.observer is not None:
+            self.observer.complete(token)
+        self.completed.append(self.inflight)
+        self.inflight = None
+
+    def unknown(self, token, error):
+        self.status, self.failure = "UNKNOWN", str(error)
+        if self.observer is not None:
+            self.observer.unknown(token, str(error))
+
+    def call(self, op: Operation, function: Callable):
+        token = None
+        try:
+            token = self.begin(op)
+            result = function()
+            self.complete(token)
+            return result
+        except BaseException as exc:
+            self.unknown(token, exc)
+            raise
+
+    def finish(self):
+        need(self.status == "RUNNING" and self.inflight is None and tuple(self.completed) == self.expected, "full operation closure required")
+        self.status = "COMPLETE"
+        return self.summary()
+
+    def summary(self):
+        return {"status": self.status, "planned": len(self.expected), "attempted": len(self.attempted),
+                "completed": len(self.completed), "forward_calls": sum(o.kind == "forward" for o in self.completed),
+                "backward_calls": sum(o.kind == "backward" for o in self.completed),
+                "optimizer_commits": sum(o.kind == "update" for o in self.completed),
+                "forward_input_positions": sum(o.input_positions for o in self.completed),
+                "backward_response_tokens": sum(o.graph_response_tokens for o in self.completed),
+                "checkpoint_recompute_cost": "NOT_MEASURED_NOT_ZERO", "failure": self.failure}

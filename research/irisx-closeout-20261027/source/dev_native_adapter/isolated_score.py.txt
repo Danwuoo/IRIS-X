@@ -1,0 +1,182 @@
+"""NEW single-process one-gold-open DEV scoring entry; native default inert.
+
+Source/synthetic readiness only until exact out-of-band scoring root release.
+All192 + journal/reset/three-arm seals + independent successful process exit are
+validated before durable pre-gold seal and exactly one private goldpack open.
+"""
+from pathlib import Path
+import hashlib,json,os,signal,stat,time
+import dev_evaluator as de
+import prediction_join as pj
+
+HERE=Path(__file__).resolve().parent
+WORK=HERE.parent
+CONFIG=HERE/'score-run'
+NATIVE_SOURCE_SHA='16808af2779fdf8c89da31ddd8b32546280d0234bf8644396cb53b7c61184ad2'
+CORE_MANIFEST_SHA='987034c206a5600f47e53a9f0a9e6ebcad7c2e15f689b9f273447dbb52864754'
+NATIVE_IDENTITY_FILE_SHA='b04f48b1dee13331bdf631b4c09bdf445ab36226442d62df0084e3268cba7520'
+NATIVE_IDENTITY_SEMANTIC_SHA='a6c563a8467c34301ba81785e465f7a9b29679b16398e95c681651a73bf8dcec'
+NATIVE_GOLD_FILE_SHA='b09ab16f24a5d734f1eaadc394a7358c1720a7bac558d99b740c5489edae773b'
+NATIVE_GOLD_SEMANTIC_SHA='671e65487130846d14ac4093b229df2e6591dd4ff6bcae617385459f27f749ce'
+NATIVE_MATERIALIZATION_RECEIPT_SHA='7cdaf490eb47df76e67c46e2e4a1706b110abb3b78cfa9eb91ab76c5269f89bd'
+SOURCE_NAMES={'dev_native_adapter/prediction_join.py','dev_native_adapter/isolated_score.py','dev_native_adapter/score_bootstrap.py',
+ 'dev_native_adapter/score_root_loader.py','dev_native_adapter/test_prediction_join.py','dev_native_adapter/test_isolated_score.py','dev_native_adapter/CONTRACT.NEW.md',
+ 'dev_evaluator/dev_evaluator.py','dev_evaluator/SCORER-MANIFEST.PREPARED.json'}
+EVIDENCE_NAMES={'predictions':'PRIVATE-PREDICTIONS-192.json','journal':'PRIVATE-OPERATIONS-AND-PREDICTIONS.jsonl',
+ 'resets':'PRIVATE-RESET-RECEIPTS.json','joint_seal':'PREDICTIONS-SEALED.json','model_stop':'MODEL-PROCESS-STOPPED.json',
+ 'aggregate':'AGGREGATE-MODEL-STAGE.json','wrapper_terminal':'WRAPPER-TERMINAL.json','export_receipt':'EXPORT-RECEIPT.json','pre_setup_clock':'PRE-SETUP-CLOCK.json',**{'seal_'+a:'PREDICTIONS-'+a+'-SEALED.json' for a in de.ARMS}}
+
+
+def sha(b):return hashlib.sha256(b).hexdigest()
+def pin(b):return {'bytes':len(b),'sha256':sha(b)}
+def no_links(p):de.need(p.is_absolute() and not any(x.is_symlink() for x in (p,*p.parents)),'SCORE_NO_SYMLINK_ANCESTOR')
+def syncdir(p):
+    fd=os.open(p,os.O_RDONLY|os.O_DIRECTORY)
+    try:os.fsync(fd)
+    finally:os.close(fd)
+def write_once(p,obj):
+    raw=de.canonical(obj)+b'\n';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    with os.fdopen(fd,'wb') as f:f.write(raw);f.flush();os.fsync(f.fileno())
+    syncdir(p.parent);return pin(raw)
+def claim(p):
+    no_links(p);de.need(p.parent.is_dir(),'SCORE_ATTEMPT_PARENT')
+    os.mkdir(p,0o700);syncdir(p.parent)
+    write_once(p/'LEASE-CLAIMED.json',{'schema':'new-ps-dev-score-lease/v1','consumed':True,'retry_allowed':False,'goldpack_opens':0})
+def read_public(p):
+    no_links(p);de.need(p.is_file() and 0<p.stat().st_size<=32*1024**2,'PUBLIC_CONFIG_SOURCE_BOUND');return p.read_bytes()
+def read_private(p,cap):
+    no_links(p);de.need(p.parent.is_dir() and p.parent.stat().st_mode&0o777==0o700,'PRIVATE_INPUT_PARENT0700')
+    fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)
+    with os.fdopen(fd,'rb') as f:
+        st=os.fstat(f.fileno());de.need(stat.S_ISREG(st.st_mode) and st.st_mode&0o777==0o600 and 0<st.st_size<=cap,'PRIVATE_INPUT_REGULAR0600_BOUND')
+        b=f.read(cap+1);after=os.fstat(f.fileno())
+        de.need(len(b)<=cap and (st.st_dev,st.st_ino,st.st_size,st.st_mtime_ns,st.st_ctime_ns)==(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns,after.st_ctime_ns),'PRIVATE_FILE_UNCHANGED_READ')
+        return b
+
+
+def action(c):return {'schema':'new-ps-isolated-dev-score-action/v1','run_id':c['run_id'],
+ 'scope':'FIXED_DESIGN_SEEN_DEV32_FROZEN_VOTE_ALL192_THEN_ONE_GOLDPACK_OPEN','source_kind':de.SOURCE_KIND,
+ 'goldpack_semantic_opens_max':1,'requires_successful_model_process_exit':True,'max_seconds':60,
+ 'application_retries':0,'output_scope':'AGGREGATE_ONLY_NO_PER_PARENT_LABELS_OR_CORRECTNESS',
+ 'model_provider_GPU_calls':0,'quality_GO_authorized':False,'original_supply96_NO_GO_unchanged':True}
+
+
+def native_scope_pins(contract,context):
+    de.need(contract['identity']['sha256']==NATIVE_IDENTITY_FILE_SHA and contract['identity_semantic_sha256']==NATIVE_IDENTITY_SEMANTIC_SHA,
+      'EXACT_ORIGINAL_DEV32_IDENTITY_FILE_AND_SEMANTIC_PINS')
+    de.need(contract['goldpack_sha256']==NATIVE_GOLD_FILE_SHA and contract['goldpack_semantic_sha256']==NATIVE_GOLD_SEMANTIC_SHA,
+      'EXACT_PREMATERIALIZED_V2_GOLD_FILE_AND_SEMANTIC_PINS')
+    de.need(context['opaque_materialization_receipt_sha256']==NATIVE_MATERIALIZATION_RECEIPT_SHA,'EXACT_SUCCESSFUL_V2_MATERIALIZATION_RECEIPT')
+
+def preflight(b,mode,grant=None):
+    de.closed(b,{'contract','manifest','review','release','identity','context','sources'},'SCORING_PUBLIC_BUNDLE_SCHEMA')
+    c=de.strict_json(b['contract'])
+    de.closed(c,{'schema','mode','run_id','source_manifest_sha256','core_manifest_sha256','native_source_manifest_sha256',
+      'identity','identity_semantic_sha256','context','evidence','goldpack_path','goldpack_sha256','goldpack_semantic_sha256',
+      'output_scope','max_score_seconds','pre_model_source_review_sha256'},'SCORING_CONTRACT_SCHEMA')
+    de.need(c['schema']=='new-ps-isolated-dev-score-contract/v1' and c['mode']==mode and type(c['run_id']) is str
+      and c['run_id'].startswith('new-dpo-ce-dev32-'),'SCORING_CONTRACT_SCOPE')
+    de.need(de.sha_ok(c['pre_model_source_review_sha256']),'PRE_MODEL_SOURCE_REVIEW_PIN_REQUIRED')
+    de.need(type(c['max_score_seconds']) is int and c['max_score_seconds']==60 and c['output_scope']=='AGGREGATE_ONLY_NO_PER_PARENT_LABELS_OR_CORRECTNESS','SCORING_FIXED_SCOPE_BOUND')
+    pj.checkpin(c['identity'],b['identity']);pj.checkpin(c['context'],b['context'])
+    de.need(sha(b['manifest'])==c['source_manifest_sha256'],'SCORE_SOURCE_MANIFEST_PIN')
+    m=de.strict_json(b['manifest']);de.closed(m,{'schema','files'},'SCORE_MANIFEST_SCHEMA')
+    de.need(m['schema']=='new-ps-native-prediction-transform-source-manifest/v1','SCORE_MANIFEST_VERSION')
+    de.closed(m['files'],SOURCE_NAMES,'SCORE_FIXED_SOURCE_ALLOWLIST');de.closed(b['sources'],SOURCE_NAMES,'SCORE_SOURCE_BUFFERS')
+    for n in SOURCE_NAMES:pj.checkpin(m['files'][n],b['sources'][n])
+    de.need(sha(b['sources']['dev_evaluator/SCORER-MANIFEST.PREPARED.json'])==c['core_manifest_sha256'],'FROZEN_BASE_SCORER_MANIFEST')
+    ctx=de.strict_json(b['context']);identity=de.strict_json(b['identity'])
+    de.need(ctx['run_id']==c['run_id'] and ctx['identity_sha256']==c['identity_semantic_sha256'] and ctx['native_source_sha256']==c['native_source_manifest_sha256']
+      and ctx['bindings']['opaque_dev_goldpack_semantic_sha256']==c['goldpack_semantic_sha256'],'PRE_MODEL_CONTEXT_GOLD_SOURCE_IDENTITY_BINDING')
+    ident=de.validate_identity(identity,expected_sha256=c['identity_semantic_sha256'])
+    de.need(ident.profile==('SYNTHETIC_ONLY' if mode=='SYNTHETIC_ONLY' else 'NATIVE_UNRELEASED'),'EXACT_SCORING_IDENTITY_PROFILE')
+    if mode!='SYNTHETIC_ONLY':native_scope_pins(c,ctx)
+    de.closed(c['evidence'],pj.KEYS,'FIXED_COMPLETE_NATIVE_EVIDENCE_FILES')
+    for key,x in c['evidence'].items():
+        de.closed(x,{'path','pin'},'EVIDENCE_PATH_PIN_SCHEMA')
+        p=Path(x['path']);no_links(p);de.need(p.name==EVIDENCE_NAMES[key],'FIXED_EVIDENCE_BASENAME')
+        de.closed(x['pin'],{'bytes','sha256'},'EVIDENCE_PIN_SCHEMA')
+        de.need(type(x['pin']['bytes']) is int and 0<x['pin']['bytes']<=256*1024**2 and de.sha_ok(x['pin']['sha256']),'EVIDENCE_BOUNDED_PIN')
+    gold=Path(c['goldpack_path']);no_links(gold)
+    de.need(gold.name=='PRIVATE-DEV32-GOLDPACK.json' and de.sha_ok(c['goldpack_sha256']) and de.sha_ok(c['goldpack_semantic_sha256']),'EXACT_PRIVATE_GOLD_PIN_SCOPE')
+    review=de.strict_json(b['review'])
+    de.need(review.get('independent_of_author') is True and type(review.get('real_gold_reads')) is int,'SCORING_REVIEW_EXACT_TYPES')
+    de.need(review=={'schema':'new-ps-independent-isolated-dev-score-review/v1','status':'PASS_POST_MODEL_EXACT_INPUT_CLOSURE',
+      'pre_model_source_review_sha256':c['pre_model_source_review_sha256'],'independent_of_author':True,'contract_sha256':sha(b['contract']),'source_manifest_sha256':sha(b['manifest']),'real_gold_reads':0},'EXACT_SCORING_REVIEW')
+    release=de.strict_json(b['release'])
+    authority='SYNTHETIC_FIXTURE' if mode=='SYNTHETIC_ONLY' else 'ROOT_EXPLICIT_POST_MODEL_ONE_SHOT_DEV_SCORE'
+    expected={'schema':'new-ps-isolated-dev-score-release/v1','authority':authority,'run_id':c['run_id'],
+      'contract_sha256':sha(b['contract']),'review_sha256':sha(b['review']),'action_sha256':de.digest(action(c)),
+      'authorized_once':True,'goldpack_opens_max':1,'model_or_provider_execution_authorized':False}
+    de.need(release==expected and release.get('authorized_once') is True and release.get('model_or_provider_execution_authorized') is False and type(release.get('goldpack_opens_max')) is int,'EXACT_SCORE_RELEASE')
+    if mode!='SYNTHETIC_ONLY':
+        de.need(c['core_manifest_sha256']==CORE_MANIFEST_SHA and c['native_source_manifest_sha256']==NATIVE_SOURCE_SHA,'REVIEWED_FROZEN_CORE_NATIVE_V5')
+        expected_grant={'schema':'new-ps-out-of-band-dev-score-root-grant/v1','authority':authority,'run_id':c['run_id'],
+          'contract_sha256':sha(b['contract']),'source_manifest_sha256':sha(b['manifest']),'review_sha256':sha(b['review']),
+          'release_sha256':sha(b['release']),'action_sha256':de.digest(action(c))}
+        de.need(grant==expected_grant,'EXACT_ACTUAL_POST_MODEL_ROOT_GRANT')
+        de.need(globals().get('_REVIEWED_TRANSFORM_MANIFEST_SHA256')==sha(b['manifest']) and
+          getattr(de,'_REVIEWED_TRANSFORM_MANIFEST_SHA256',None)==sha(b['manifest']) and
+          getattr(pj,'_REVIEWED_TRANSFORM_MANIFEST_SHA256',None)==sha(b['manifest']),'EXACT_BYTE_EXECUTED_SOURCE_MARKER')
+    return c,identity,ctx
+
+
+def _run(attempt,bundle_loader,evidence_loader,gold_loader,mode,grant=None):
+    opens=0;start=time.monotonic();old=None
+    try:
+        de.need(signal.getitimer(signal.ITIMER_REAL)==(0.0,0.0),'FRESH_SCORE_PROCESS_TIMER')
+        old=signal.signal(signal.SIGALRM,lambda *_:(_ for _ in ()).throw(de.AdmissionError('SCORING_DEADLINE')))
+        signal.setitimer(signal.ITIMER_REAL,60)
+        b=bundle_loader();c,identity,ctx=preflight(b,mode,grant)
+        raw={k:evidence_loader(k,x) for k,x in c['evidence'].items()}
+        private_bundle,metadata=pj.normalize(raw,{k:x['pin'] for k,x in c['evidence'].items()},identity,ctx,expected_context_sha256=de.digest(ctx))
+        ident=de.validate_identity(identity,expected_sha256=c['identity_semantic_sha256'])
+        predictions=de.validate_predictions(private_bundle,ident,expected_sha256=de.digest(private_bundle),expected_bindings=ctx['bindings'],expected_closure_sha256=de.digest(private_bundle['closure']))
+        de.need(predictions.complete and metadata['all_predictions_complete'] is True,'COMPLETE_NATIVE_EVIDENCE_BEFORE_GOLD')
+        seal=write_once(attempt/'PRE-GOLD-SEAL.json',{'schema':'new-ps-native-dev-pre-gold-seal/v1','run_id':c['run_id'],
+          'contract_sha256':sha(b['contract']),'source_manifest_sha256':sha(b['manifest']),'review_sha256':sha(b['review']),
+          'release_sha256':sha(b['release']),'prediction_bundle_semantic_sha256':de.digest(private_bundle),
+          'closure_semantic_sha256':de.digest(private_bundle['closure']),'model_stop_sha256':c['evidence']['model_stop']['pin']['sha256'],
+          'goldpack_sha256':c['goldpack_sha256'],'goldpack_semantic_sha256':c['goldpack_semantic_sha256'],
+          'exact192_complete_model_stopped':True,'goldpack_opens':0,'retry_allowed':False})
+        write_once(attempt/'GOLD-READ-INTENT.json',{'schema':'new-ps-native-dev-gold-read-intent/v1','goldpack_sha256':c['goldpack_sha256'],'maximum_opens':1,'failure_consumes_attempt':True})
+        opens=1;gold_raw=gold_loader(c['goldpack_path'])
+        de.need(type(gold_raw) is bytes and 0<len(gold_raw)<=32*1024**2 and sha(gold_raw)==c['goldpack_sha256'],'EXACT_GOLD_BYTES_AFTER_ONE_OPEN')
+        target=de.strict_json(gold_raw)
+        case=de._admit_private_target_document(predictions,target,expected_target_sha256=c['goldpack_semantic_sha256'])
+        aggregate=de._evaluate_admitted_case(case)
+        aggregate_pin=write_once(attempt/'AGGREGATE-DEV32.json',aggregate)
+        score_seconds=time.monotonic()-start
+        result={'schema':'new-ps-isolated-dev-score-result/v1','status':'COMPLETE_AGGREGATE_ONLY_NEW_RECONSTRUCTION',
+          'goldpack_open_attempts':opens,'aggregate_sha256':aggregate_pin['sha256'],'pre_gold_seal_sha256':seal['sha256'],
+          'source_manifest_sha256':sha(b['manifest']),'isolated_cpu_scoring_seconds':score_seconds,
+          'cost_scope':'MODEL_SETUP_THROUGH_SMALL_EXPORTS_PLUS_SEPARATE_ISOLATED_CPU_SCORING',
+          'summed_known_pipeline_seconds_including_acquisition_and_scoring':aggregate['cost']['total_pipeline_seconds_including_sunk_acquisition']+score_seconds,
+          'model_provider_GPU_calls':0,'author_per_parent_label_output':False,'quality_GO':False,'retry_allowed':False}
+        write_once(attempt/'ATTEMPT-RESULT.json',result);return result
+    except BaseException:
+        result={'schema':'new-ps-isolated-dev-score-result/v1','status':'FAILED_OR_UNKNOWN_ATTEMPT_CONSUMED_NO_RETRY',
+          'goldpack_open_attempts':opens,'model_provider_GPU_calls':0,'author_per_parent_label_output':False,'quality_GO':False,'retry_allowed':False}
+        try:write_once(attempt/'ATTEMPT-RESULT.json',result)
+        except BaseException:pass
+        return result
+    finally:
+        if old is not None:signal.setitimer(signal.ITIMER_REAL,0);signal.signal(signal.SIGALRM,old)
+
+
+def score_synthetic_once(attempt,bundle_loader,fake_evidence_loader,fake_gold_loader):
+    claim(Path(attempt));return _run(Path(attempt),bundle_loader,fake_evidence_loader,fake_gold_loader,'SYNTHETIC_ONLY')
+
+
+def _native_bundle():
+    files={'contract':'CONTRACT.json','manifest':'SOURCE-MANIFEST.json','review':'INDEPENDENT-REVIEW.json','release':'ROOT-RELEASE.json','identity':'IDENTITY.json','context':'CONTEXT.json'}
+    return {**{k:read_public(CONFIG/v) for k,v in files.items()},'sources':{n:read_public(WORK/n) for n in SOURCE_NAMES}}
+
+
+def score_native_once(grant):
+    de.need(type(grant) is dict and grant.get('schema')=='new-ps-out-of-band-dev-score-root-grant/v1' and grant.get('authority')=='ROOT_EXPLICIT_POST_MODEL_ONE_SHOT_DEV_SCORE','POST_MODEL_EXPLICIT_ROOT_REQUIRED')
+    attempt=CONFIG/'attempt';claim(attempt)
+    return _run(attempt,_native_bundle,lambda k,x:read_private(Path(x['path']),256*1024**2 if k=='journal' else 32*1024**2),
+                lambda p:read_private(Path(p),32*1024**2),'NATIVE_POST_MODEL_SCORE',grant)
+
+if __name__=='__main__':raise SystemExit('NATIVE_DEV_SCORER_INERT_WITHOUT_SEPARATE_REVIEWED_POST_MODEL_ROOT_GRANT')

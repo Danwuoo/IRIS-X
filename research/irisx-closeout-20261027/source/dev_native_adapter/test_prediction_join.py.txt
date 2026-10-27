@@ -1,0 +1,273 @@
+"""Handwritten synthetic predictions/journal only; no targets/native reads."""
+from pathlib import Path
+import sys,copy,json,unittest
+sys.path.insert(0,str(Path(__file__).resolve().parent.parent/'dev_evaluator'))
+import dev_evaluator as de
+import synthetic_fixtures as sf
+import prediction_join as pj
+
+def fixture(*,equal_policies=False,invalid=False,science_elapsed=.1):
+    identity,original,_unused_synthetic_truth=sf.documents();del _unused_synthetic_truth
+    h=lambda s:de.digest('synthetic:'+s)
+    policies={a:h(a) for a in de.ARMS}
+    if equal_policies:policies['DPO']=policies['CE']
+    root=pj.sha((pj.BACKEND_SHA+policies['fresh_base']).encode())
+    bindings=dict(original['bindings']);bindings['root_policy_sha256']=root;bindings['frozen_reference_sha256']=h('reference-cache')
+    ctx={'schema':'new-ps-native-prediction-normalization-context/v1','run_id':'new-dpo-ce-dev32-synthetic',
+      'native_contract_sha256':h('contract'),'native_source_sha256':bindings['stage_source_sha256'],'native_release_sha256':h('release'),
+      'wrapper_contract_sha256':h('wrapper-contract'),'wrapper_source_manifest_sha256':h('wrapper-source'),'identity_sha256':de.digest(identity),'bindings':bindings,'setup_anchor_epoch':1.,
+      'historical_acquisition_seconds':123.0,'opaque_materialization_receipt_sha256':h('opaque-receipt')}
+    rows=[]
+    for arm in de.ARMS:
+        for ordinal,p in enumerate(identity['rows']):
+            for slot in (0,1):rows.append({'arm':arm,'parent_id':p['parent_id'],'ordinal':ordinal,'query_demo_ordinal':p['query_demo_ordinal'],
+              'slot':slot,'seed':1729+ordinal*4096+slot,'view_id':'identity','policy_adapter_sha256':policies[arm],
+              'candidate':{'grid':[[1]],'finished_eos':True,'truncated':False,'sampled_logps':[-.5,-.5]},'status':'VALID_EOS'})
+    if invalid:
+        rows[0]['candidate']={'grid':None,'finished_eos':False,'truncated':True,'sampled_logps':[-.5]*512};rows[0]['status']='KNOWN_INVALID_CAP'
+    events=[];opid=rootid=0;roots={}
+    def emit(e,f):events.append({'event':e,'fields':f,'epoch':1+len(events)*.001})
+    def op(phase,event,fields,nroot=0,elapsed=.1):
+        nonlocal opid,rootid
+        if pj.phase_kind(phase)=='science':elapsed=science_elapsed
+        opid+=1;f={'id':opid,'phase':phase,'event':event,'native_cuda':False,**fields};emit('operation_intent',f)
+        for _ in range(nroot):
+            rootid+=1;r={'id':rootid,'phase':phase,'input_positions':20,'model_training':event=='forward' and fields.get('grad',False),'use_cache':False}
+            emit('physical_forward_intent',r);emit('physical_forward_complete',{k:r[k] for k in ('id','phase','input_positions')});roots[phase]=roots.get(phase,0)+1
+        emit('operation_complete',{**f,'elapsed_seconds':elapsed})
+    def forward(phase,grad):op(phase,'forward',{'grad':grad,'input_positions':20,'response_tokens':2},1)
+    def generate(a):
+        for o in range(32):
+            emit('policy_replay_intent',{'arm':a,'ordinal':o})
+            op(a+'_DEV_parent_policy_replay_EXTRA_COST','generation_replay',{'prompt_positions':18,'synthetic_response_tokens':6,'extra_root_calls':12},12)
+            emit('policy_replay_complete',{'arm':a,'ordinal':o,'receipt':{'synthetic':True}})
+            for slot in (0,1):
+                row=rows[de.ARMS.index(a)*64+o*2+slot];emit('draw_intent',{k:row[k] for k in pj.DRAW_KEYS})
+                op(a+'_DEV_generate','generation',{'prompt_positions':18,'response_cap':512},len(row['candidate']['sampled_logps'])+(6 if row['status']=='VALID_EOS' else 5),1.0)
+                emit('draw_complete',row)
+    emit('model_load_intent',{'release_sha256':ctx['native_release_sha256'],'paid_or_quota_time_already_charged':True})
+    for label in ('engineering-support','engineering-two-live-dpo','engineering-final-root'):
+        op('engineering_PUBLIC_ONLY_EXTRA_COST','reset',{'label':label})
+    op('engineering_PUBLIC_ONLY_EXTRA_COST','engineering_p1',{'public_synthetic_only':True},33)
+    op('fresh_base_reset','reset',{'label':'fresh_base'});generate('fresh_base')
+    op('reference_reset','reset',{'label':'reference'})
+    for _ in range(74):forward('reference',False)
+    for a in ('CE','DPO'):
+        op(a+'_reset','reset',{'label':a.lower()})
+        for u in range(1,5):
+            phase=f'{a}_train_{u}'
+            for _ in range(37):
+                for __ in range(1 if a=='CE' else 2):forward(phase,True)
+                op(phase,'backward',{'tracked_graphs':1 if a=='CE' else 2})
+            op(phase,'commit',{'update_index':u})
+        for _ in range(74):forward(a+'_fixed_prefix_KL',False)
+        op(a+'_checkpoint_roundtrip_EXTRA_COST','checkpoint',{'arm':a.lower(),'extra_public_probe_forwards':2},2)
+        generate(a)
+    emit('predictions_seal',{'run_id':ctx['run_id'],'prediction_count':192,'semantic_sha256':de.digest(rows)})
+    journal=b''.join(de.canonical(e)+b'\n' for e in events)
+    resets={'schema':'new-ps-native-reset-receipts/v1','run_id':ctx['run_id'],'receipts':[
+      {'label':label,'root_identity':root,'adapter_digest':policies['fresh_base'],'rng_digest':h('rng'),
+       'fresh_empty_adam':True,'native_cuda':False,'backend_reset':{'synthetic':True}}
+      for label in ('engineering-support','engineering-two-live-dpo','engineering-final-root','fresh_base','reference','ce','dpo')]}
+    docs={'predictions':{'schema':'new-ps-native-192-predictions/v1','contract_sha256':ctx['native_contract_sha256'],'rows':rows},'resets':resets}
+    raw={k:de.canonical(v)+b'\n' for k,v in docs.items()};raw['journal']=journal
+    pins={k:pj.pin(b) for k,b in raw.items()}
+    for a in de.ARMS:
+        s={'schema':'new-ps-native-arm-predictions-seal/v1','run_id':ctx['run_id'],'arm':a,'draws':64,
+          'ordered_rows_semantic_sha256':de.digest([r for r in rows if r['arm']==a]),'joint_private_prediction_file':pins['predictions'],
+          'private_journal':pins['journal'],'private_resets':pins['resets'],'release_sha256':ctx['native_release_sha256'],
+          'contract_sha256':ctx['native_contract_sha256'],'all192_complete_before_arm_seal':True,'DEV_target_reads':0}
+        raw['seal_'+a]=de.canonical(s)+b'\n';pins['seal_'+a]=pj.pin(raw['seal_'+a])
+    seals={a:pins['seal_'+a] for a in de.ARMS}
+    physical={'schema':'new-ps-root-and-layer-physical-accounting/v1','root_input_positions_reserved':rootid*20,'root_input_positions_completed':rootid*20,
+      'checkpoint_recomputation':'included in decoder-layer execution counts, not relabeled root forwards','FLOPs_claimed':False,'retry_allowed':False,
+      'abrupt_process_death':'durable inflight operation reservation remains UNKNOWN; never refunded','status':'RUNNING','root_forward_intents':rootid,'root_forward_completions':rootid,'operation_intents':opid,'operation_completions':opid,
+      'root_unknown':0,'decoder_layer_unknown':0,'operation_unknown':0,'decoder_layer_execution_intents':rootid*36,
+      'decoder_layer_execution_completions':rootid*36,'by_phase':{p:{'root_reserved':n,'root_completed':n,'root_input_positions_reserved':n*20,'root_input_positions_completed':n*20,
+      'decoder_layer_executions_reserved':n*36,'decoder_layer_executions_completed':n*36} for p,n in roots.items()}}
+    aggregate={'schema':'new-ps-fixed-paired-workflow-result/v1','prediction_count':192,'predictions_semantic_sha256':de.digest(rows),
+      'private_prediction_file':pins['predictions'],'private_journal':pins['journal'],'private_resets':pins['resets'],
+      'distinct_arm_seals':seals,'whole_pipeline_physical_cost':physical,'source_kind':'NEW_RECONSTRUCTION','profile':'SYNTHETIC_FIXTURE',
+      'N':37,'panel_binding':h('panel'),'reference_cache_sha256':h('reference-cache'),'initial_full16_maxabs':{'CE':0.,'DPO':0.},
+      'losses':{'CE':[1.,1.,1.,1.],'DPO':[1.,1.,1.,1.]},'arms':{},'engineering_and_checkpoint_probes_in_this_count':False,
+      'DEV_target_reads':0,'quality_GO':False,'CE_DPO_equal_adapter_is_not_filtered':True,'engineering_aggregate':{'status':'PASS_SYNTHETIC'},
+      'experimental_training_and_KL_cost':{'status':'COMPLETE','planned':970,'attempted':970,'completed':970,'forward_calls':666,
+       'backward_calls':296,'optimizer_commits':8,'forward_input_positions':13320,'backward_response_tokens':888,
+       'checkpoint_recompute_cost':'NOT_MEASURED_NOT_ZERO','failure':None}}
+    raw['aggregate']=de.canonical(aggregate)+b'\n';pins['aggregate']=pj.pin(raw['aggregate'])
+    joint={'schema':'new-ps-native-predictions-seal/v1','run_id':ctx['run_id'],'draws':192,'private_predictions':pins['predictions'],
+      'aggregate':pins['aggregate'],'private_journal':pins['journal'],'private_resets':pins['resets'],'distinct_arm_seals':seals,
+      'contract_sha256':ctx['native_contract_sha256'],'source_manifest_sha256':ctx['native_source_sha256'],
+      'all_physical_intents_terminal':True,'DEV_target_reads':0,'model_process_exit_still_required':True}
+    raw['joint_seal']=de.canonical(joint)+b'\n';pins['joint_seal']=pj.pin(raw['joint_seal'])
+    clock={'schema':'new-ps-first-notebook-code-clock/v1','run_id':ctx['run_id'],'first_epoch':1.,'first_monotonic':100.,
+      'capture_scope':'ROOT_PINNED_FIRST_CELL_BEFORE_PAYLOAD_VERIFICATION_EXTRACTION_INSTALL','clock_reset_allowed':False,'native_source_manifest_sha256':ctx['native_source_sha256'],
+      'wrapper_source_manifest_sha256':ctx['wrapper_source_manifest_sha256']}
+    raw['pre_setup_clock']=de.canonical(clock)+b'\n';pins['pre_setup_clock']=pj.pin(raw['pre_setup_clock'])
+    stop={'schema':'new-ps-native-model-process-stopped/v1','run_id':ctx['run_id'],'child_pid':123,'observed_returncode':0,
+      'wait_returned':True,'deadline_termination':False,'model_process_stopped':True,'observed_epoch':1000.0,
+      'supervisor_communication_failure':False,'supervisor_termination_signal':None,
+      'parent_death_guard':'LINUX_PR_SET_PDEATHSIG_SIGKILL_EXPECTED_PARENT_RACECHECK','host_or_provider_failure_is_unknown':True,
+      'contract_sha256':ctx['native_contract_sha256'],'DEV_target_reads_by_supervisor':0,'retry_allowed':False,'scoring_admitted':False,
+      'pre_setup_clock':pins['pre_setup_clock'],'predictions_seal':pins['joint_seal'],'status':'MODEL_STOPPED_SEALED_PREDICTIONS_AWAIT_SEPARATE_SCORER_ADMISSION'}
+    raw['model_stop']=de.canonical(stop)+b'\n';pins['model_stop']=pj.pin(raw['model_stop'])
+    export={'schema':'new-ps-small-post-stop-exports/v1','status':'PASS_NEW_EXPORTS_NOT_ORIGINAL_RECOVERY_ZIP',
+      'public_aggregate_archive':{'bytes':100,'sha256':h('public-export')},'PRIVATE_evaluator_archive':{'bytes':100,'sha256':h('private-export')},
+      'checkpoint_weight_archives_created':0,'TRAIN_pairpack_included':False,'DEV_gold_included':False,
+      'raw_private_logs_exposed_to_author':False,'scoring_admitted':False,'retry_allowed':False,'pre_setup_clock':pins['pre_setup_clock']}
+    names_public=['AGGREGATE-MODEL-STAGE.json','MODEL-STAGE-TERMINAL.json','PREDICTIONS-SEALED.json','PRELOAD-SEAL.json',
+      'PRE-PRIVATE-PAIRPACK-SEAL.json','PRE-PRIVATE-DEVICE-PROOF.json','MATERIAL-PROOF.json',
+      *['PREDICTIONS-'+a+'-SEALED.json' for a in de.ARMS],'MODEL-PROCESS-STOPPED.json',
+      'EXPERIMENT-CONTRACT.json','SOURCE-MANIFEST.json','INDEPENDENT-REVIEW.json','ACCOUNT-AND-BUDGET.json','DEV-SCORER-ADMISSION.json','ROOT-RELEASE.json']
+    names_private=['PRIVATE-PREDICTIONS-192.json','PRIVATE-OPERATIONS-AND-PREDICTIONS.jsonl','PRIVATE-RESET-RECEIPTS.json',
+      'PREDICTIONS-SEALED.json',*['PREDICTIONS-'+a+'-SEALED.json' for a in de.ARMS],'MODEL-PROCESS-STOPPED.json']
+    ep={'AGGREGATE-MODEL-STAGE.json':pins['aggregate'],'PREDICTIONS-SEALED.json':pins['joint_seal'],'MODEL-PROCESS-STOPPED.json':pins['model_stop'],
+      'PRIVATE-PREDICTIONS-192.json':pins['predictions'],'PRIVATE-OPERATIONS-AND-PREDICTIONS.jsonl':pins['journal'],'PRIVATE-RESET-RECEIPTS.json':pins['resets'],
+      **{'PREDICTIONS-'+a+'-SEALED.json':pins['seal_'+a] for a in de.ARMS},
+      'EXPERIMENT-CONTRACT.json':{'bytes':100,'sha256':ctx['native_contract_sha256']},'SOURCE-MANIFEST.json':{'bytes':100,'sha256':ctx['native_source_sha256']},'ROOT-RELEASE.json':{'bytes':100,'sha256':ctx['native_release_sha256']}}
+    for key,names in (('public_aggregate_archive',names_public),('PRIVATE_evaluator_archive',names_private)):
+        export[key]['members']=[{'name':n,**ep.get(n,{'bytes':100,'sha256':h(n)})} for n in names]
+    raw['export_receipt']=de.canonical(export)+b'\n';pins['export_receipt']=pj.pin(raw['export_receipt'])
+    outer={'schema':'new-ps-whole-wrapper-terminal/v1','status':'COMPLETE_FIXED37_ALL192_SMALL_EXPORTS','run_id':ctx['run_id'],
+      'setup_anchor_epoch':1.,'finished_epoch':1100.,'wall_from_immutable_anchor_seconds':1099.,'outer_entry_epoch':1.,'outer_elapsed_monotonic_seconds':1099.,
+      'actual_setup_epoch':1.,'actual_setup_monotonic':100.,'finished_monotonic':1199.,'setup_to_export_monotonic_seconds':1099.,
+      'prepublication_budget_offset_seconds':0.,'budget_elapsed_seconds':1099.,'pre_setup_clock_receipt':pins['pre_setup_clock'],
+      'native_release_sha256':ctx['native_release_sha256'],'controller_exit_observed':True,'controller_returncode':0,
+      'end_boundary':'AFTER_DURABLE_EXPORT_RECEIPT_AND_EXPORT_CHILD_EXIT_BEFORE_THIS_TERMINAL_BOOKKEEPING',
+      'native_contract_sha256':ctx['native_contract_sha256'],'native_source_manifest_sha256':ctx['native_source_sha256'],
+      'wrapper_contract_sha256':ctx['wrapper_contract_sha256'],'wrapper_source_manifest_sha256':ctx['wrapper_source_manifest_sha256'],
+      'export_receipt':pins['export_receipt'],'model_stop_receipt':pins['model_stop'],'retry_allowed':False,'provider_resource_release':'UNKNOWN',
+      'correctness_scoring_performed':False,'quality_GO':False}
+    raw['wrapper_terminal']=de.canonical(outer)+b'\n';pins['wrapper_terminal']=pj.pin(raw['wrapper_terminal'])
+    return raw,pins,identity,ctx
+
+class AdapterTests(unittest.TestCase):
+    def setUp(self):self.raw,self.pins,self.identity,self.context=fixture()
+    def run_adapter(self):return pj.normalize(self.raw,self.pins,self.identity,self.context,expected_context_sha256=de.digest(self.context))
+    def test_full192_real_journal_join_and_frozen_schema(self):
+        bundle,report=self.run_adapter();self.assertTrue(report['all_predictions_complete']);self.assertFalse(report['correctness_computed'])
+        self.assertEqual([a['cost']['measured_draw_seconds'] for a in bundle['arms']],[64.,64.,64.])
+        self.assertEqual(bundle['closure']['engineering_probe_forward_calls'],1185)
+        self.assertEqual(bundle['closure']['checkpoint_probe_forward_calls'],4)
+        self.assertEqual(bundle['closure']['total_non_generation_forward_calls'],1855)
+        self.assertEqual(len(set(a['prediction_seal_sha256'] for a in bundle['arms'])),3)
+    def test_equal_trained_policies_are_not_discarded(self):
+        self.raw,self.pins,self.identity,self.context=fixture(equal_policies=True)
+        bundle,_=self.run_adapter();self.assertEqual(bundle['arms'][1]['policy_sha256'],bundle['arms'][2]['policy_sha256'])
+        self.assertNotEqual(bundle['arms'][1]['prediction_seal_sha256'],bundle['arms'][2]['prediction_seal_sha256'])
+    def test_known_invalid_cap_preserved_not_refilled(self):
+        self.raw,self.pins,self.identity,self.context=fixture(invalid=True)
+        bundle,report=self.run_adapter();self.assertEqual(bundle['arms'][0]['rows'][0]['draws'][0]['status'],'KNOWN_INVALID_CAP')
+        self.assertEqual(report['status_counts']['KNOWN_INVALID_CAP'],1)
+    def test_byte_mutation_rejected_before_parse(self):
+        self.raw['journal']+=b'PRIVATE_SENTINEL';
+        with self.assertRaisesRegex(de.AdmissionError,'EXTERNAL_BYTE_PIN'):self.run_adapter()
+    def test_no_target_field_input(self):
+        self.raw['targets']=b'{}'
+        with self.assertRaises(de.AdmissionError):self.run_adapter()
+    def test_no_model_stop_no_admission(self):
+        s=de.strict_json(self.raw['model_stop']);s['wait_returned']=False
+        self.raw['model_stop']=de.canonical(s);self.pins['model_stop']=pj.pin(self.raw['model_stop'])
+        with self.assertRaisesRegex(de.AdmissionError,'PROCESS_EXIT'):self.run_adapter()
+    def test_zero_elapsed_is_not_fabricated_by_join(self):
+        ev=[de.strict_json(x) for x in self.raw['journal'].splitlines()]
+        for e in ev:
+            if e['event']=='operation_complete' and e['fields']['event']=='generation':e['fields']['elapsed_seconds']=0
+        joined=pj.join_journal(b''.join(de.canonical(x)+b'\n' for x in ev),de.strict_json(self.raw['predictions'])['rows'],public_prompt_lengths=[len(p['canonical_prompt']) for p in self.identity['rows']])
+        self.assertEqual(sum(x[0] for x in joined['draws']),0)
+    def assert_bad_journal(self,change):
+        ev=[de.strict_json(x) for x in self.raw['journal'].splitlines()];change(ev)
+        with self.assertRaises(de.AdmissionError):pj.join_journal(b''.join(de.canonical(x)+b'\n' for x in ev),de.strict_json(self.raw['predictions'])['rows'],public_prompt_lengths=[len(p['canonical_prompt']) for p in self.identity['rows']])
+    def test_unknown_event_never_invalid(self):self.assert_bad_journal(lambda e:e[2].update(event='draw_unknown'))
+    def test_missing_physical_completion(self):self.assert_bad_journal(lambda e:e.pop(next(i for i,x in enumerate(e) if x['event']=='physical_forward_complete')))
+    def test_duplicate_draw(self):self.assert_bad_journal(lambda e:e.insert(next(i for i,x in enumerate(e) if x['event']=='draw_complete'),next(x for x in e if x['event']=='draw_complete')))
+    def test_wrong_elapsed_type(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='operation_complete').update(elapsed_seconds=True))
+    def test_wrong_slot(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='draw_intent').update(slot=1))
+    def test_removed_replay(self):self.assert_bad_journal(lambda e:e.pop(next(i for i,x in enumerate(e) if x['event']=='policy_replay_intent')))
+    def test_malformed_operation_id(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='operation_intent').update(id=True))
+    def test_science_missing_commit(self):self.assert_bad_journal(lambda e:e.pop(next(i for i,x in enumerate(e) if x['event']=='operation_complete' and x['fields']['event']=='commit')))
+    def test_science_grad_false_rejected(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='operation_intent' and x['fields']['phase']=='CE_train_1' and x['fields']['event']=='forward').update(grad=False))
+    def test_dpo_graph_count_rejected(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='operation_intent' and x['fields']['phase']=='DPO_train_1' and x['fields']['event']=='backward').update(tracked_graphs=1))
+    def test_commit_index_rejected(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='operation_intent' and x['fields']['event']=='commit').update(update_index=99))
+    def test_generation_public_prompt_length_rejected(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='operation_intent' and x['fields']['event']=='generation').update(prompt_positions=19))
+    def test_forward_context_bound_rejected(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='operation_intent' and x['fields']['event']=='forward').update(input_positions=999999))
+    def test_forward_own_physical_position_parity(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='physical_forward_intent' and x['fields']['phase']=='reference').update(input_positions=21))
+    def test_completion_bool_int_not_equivalent(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='operation_complete' and x['fields']['event']=='forward' and x['fields']['phase']=='CE_train_1').update(grad=1))
+    def test_physical_completion_bool_int_not_equivalent(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='physical_forward_complete').update(id=True))
+    def test_science_position_and_graph_response_token_totals(self):
+        audit=pj.join_journal(self.raw['journal'],de.strict_json(self.raw['predictions'])['rows'],public_prompt_lengths=[18]*32)
+        self.assertEqual(audit['science_forward_input_positions'],13320);self.assertEqual(audit['science_backward_response_tokens'],888)
+    def test_whole_wall_includes_post_stop_export(self):
+        bundle,_=self.run_adapter();self.assertEqual(bundle['closure']['whole_wall_seconds'],1099.)
+    def test_outer_failure_blocks_admission(self):
+        outer=de.strict_json(self.raw['wrapper_terminal']);outer['status']='FAILED_OR_UNKNOWN_ATTEMPT_CONSUMED'
+        self.raw['wrapper_terminal']=de.canonical(outer);self.pins['wrapper_terminal']=pj.pin(self.raw['wrapper_terminal'])
+        with self.assertRaisesRegex(de.AdmissionError,'OUTER_EXPORT'):self.run_adapter()
+    def test_outer_end_boundary_model_stop_only_rejected(self):
+        outer=de.strict_json(self.raw['wrapper_terminal']);outer['end_boundary']='MODEL_STOP_ONLY'
+        self.raw['wrapper_terminal']=de.canonical(outer);self.pins['wrapper_terminal']=pj.pin(self.raw['wrapper_terminal'])
+        with self.assertRaisesRegex(de.AdmissionError,'EXPORT_BOUNDARY'):self.run_adapter()
+    def test_outer_wrong_stop_pin_rejected(self):
+        outer=de.strict_json(self.raw['wrapper_terminal']);outer['model_stop_receipt']['sha256']='e'*64
+        self.raw['wrapper_terminal']=de.canonical(outer);self.pins['wrapper_terminal']=pj.pin(self.raw['wrapper_terminal'])
+        with self.assertRaisesRegex(de.AdmissionError,'OUTER_EXPORT'):self.run_adapter()
+    def test_epoch_shift_not_used_as_science_cost(self):
+        outer=de.strict_json(self.raw['wrapper_terminal']);outer['finished_epoch']+=50;outer['wall_from_immutable_anchor_seconds']+=50
+        self.raw['wrapper_terminal']=de.canonical(outer);self.pins['wrapper_terminal']=pj.pin(self.raw['wrapper_terminal'])
+        bundle,_=self.run_adapter();self.assertEqual(bundle['closure']['whole_wall_seconds'],1099.)
+    def test_prepublication_offset_not_counted_as_paid_setup(self):
+        outer=de.strict_json(self.raw['wrapper_terminal']);outer['setup_to_export_monotonic_seconds']=1100.
+        self.raw['wrapper_terminal']=de.canonical(outer);self.pins['wrapper_terminal']=pj.pin(self.raw['wrapper_terminal'])
+        with self.assertRaisesRegex(de.AdmissionError,'MONOTONIC_SETUP'):self.run_adapter()
+    def test_first_code_clock_pin_mismatch_rejected(self):
+        self.raw['pre_setup_clock']+=b' '
+        with self.assertRaisesRegex(de.AdmissionError,'EXTERNAL_BYTE_PIN'):self.run_adapter()
+    def test_whole_wall_must_cover_disjoint_science_operations(self):
+        self.raw,self.pins,self.identity,self.context=fixture(science_elapsed=9999.)
+        with self.assertRaisesRegex(de.AdmissionError,'WHOLE_MONOTONIC_COVERS'):self.run_adapter()
+    def test_disjoint_top_level_science_generation_extra_cost_sum(self):
+        audit=pj.join_journal(self.raw['journal'],de.strict_json(self.raw['predictions'])['rows'],public_prompt_lengths=[18]*32)
+        self.assertGreater(audit['disjoint_top_level_operation_seconds'],192.+97.)
+        self.assertLess(audit['disjoint_top_level_operation_seconds'],1099.)
+    def test_whole_wall250_below_measured299point6_rejected(self):
+        outer=de.strict_json(self.raw['wrapper_terminal']);outer.update(setup_to_export_monotonic_seconds=250.,outer_elapsed_monotonic_seconds=250.,finished_monotonic=350.,budget_elapsed_seconds=250.)
+        self.raw['wrapper_terminal']=de.canonical(outer);self.pins['wrapper_terminal']=pj.pin(self.raw['wrapper_terminal'])
+        with self.assertRaisesRegex(de.AdmissionError,'WHOLE_MONOTONIC_COVERS'):self.run_adapter()
+    def test_disjoint_science_duration_overflow_fails_closed(self):
+        self.raw,self.pins,self.identity,self.context=fixture(science_elapsed=1e308)
+        with self.assertRaisesRegex(de.AdmissionError,'DISJOINT_OPERATION_SECONDS_FINITE'):self.run_adapter()
+    def test_reference_cache_pin_mismatch(self):
+        self.context['bindings']['frozen_reference_sha256']='e'*64
+        with self.assertRaisesRegex(de.AdmissionError,'ACTUAL_SEALED_FROZEN_REFERENCE_CACHE_PIN'):self.run_adapter()
+    def test_replay_completion_unknown_field_rejected(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='policy_replay_complete').update(unknown=True))
+    def test_operation_integer_bool_rejected(self):self.assert_bad_journal(lambda e:next(x['fields'] for x in e if x['event']=='operation_intent' and x['fields']['event']=='generation').update(response_cap=True))
+    def test_model_stop_pid_bool_rejected(self):
+        stop=de.strict_json(self.raw['model_stop']);stop['child_pid']=True;self.raw['model_stop']=de.canonical(stop);self.pins['model_stop']=pj.pin(self.raw['model_stop'])
+        with self.assertRaisesRegex(de.AdmissionError,'PID_INTEGER'):self.run_adapter()
+    def test_context_source_mismatch(self):
+        self.context['native_source_sha256']='e'*64
+        with self.assertRaisesRegex(de.AdmissionError,'STAGE_SOURCE'):self.run_adapter()
+
+if __name__=='__main__':unittest.main()
+
+class V2FirstCodeCostTests(unittest.TestCase):
+    setUp=AdapterTests.setUp
+    run_adapter=AdapterTests.run_adapter
+    def test_nonzero_packaging_offset_rejected(self):
+        o=de.strict_json(self.raw['wrapper_terminal']);o['prepublication_budget_offset_seconds']=100.
+        self.raw['wrapper_terminal']=de.canonical(o);self.pins['wrapper_terminal']=pj.pin(self.raw['wrapper_terminal'])
+        with self.assertRaisesRegex(de.AdmissionError,'EXACT_MONOTONIC'):self.run_adapter()
+    def test_7200_runtime_boundary_rejected(self):
+        o=de.strict_json(self.raw['wrapper_terminal']);o.update(finished_monotonic=7300.,setup_to_export_monotonic_seconds=7200.,outer_elapsed_monotonic_seconds=7200.,budget_elapsed_seconds=7200.)
+        self.raw['wrapper_terminal']=de.canonical(o);self.pins['wrapper_terminal']=pj.pin(self.raw['wrapper_terminal'])
+        with self.assertRaisesRegex(de.AdmissionError,'EXACT_MONOTONIC'):self.run_adapter()
+    def test_clock_source_mutation_rejected_before_math(self):
+        c=de.strict_json(self.raw['pre_setup_clock']);c['wrapper_source_manifest_sha256']='e'*64
+        self.raw['pre_setup_clock']=de.canonical(c)  # Existing sealed pin deliberately unchanged.
+        with self.assertRaisesRegex(de.AdmissionError,'EXTERNAL_BYTE_PIN'):self.run_adapter()
+    def test_export_clock_pin_mismatch_rejected(self):
+        e=de.strict_json(self.raw['export_receipt']);e['pre_setup_clock']['sha256']='e'*64
+        self.raw['export_receipt']=de.canonical(e);self.pins['export_receipt']=pj.pin(self.raw['export_receipt'])
+        o=de.strict_json(self.raw['wrapper_terminal']);o['export_receipt']=self.pins['export_receipt']
+        self.raw['wrapper_terminal']=de.canonical(o);self.pins['wrapper_terminal']=pj.pin(self.raw['wrapper_terminal'])
+        with self.assertRaisesRegex(de.AdmissionError,'EXPORT_ORIGINAL_FIRST_CLOCK'):self.run_adapter()

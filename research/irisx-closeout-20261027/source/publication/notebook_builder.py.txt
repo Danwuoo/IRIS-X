@@ -1,0 +1,189 @@
+"""NEW public-only payload/notebook builder. No provider or execution calls.
+
+Explicit source/config allowlists only; no directory walking, targets, pairpack,
+weights, installed runtime, credentials or old study entry are accepted.
+Private TRAIN pack is a separate opaque own-account input, never notebook text.
+"""
+from pathlib import Path,PurePosixPath
+import ast
+import base64
+import hashlib
+import io
+import json
+import re
+import zipfile
+from dataclasses import dataclass,field
+from .bootstrap import MODULES as WRAPPER_MODULES,EXTRA as WRAPPER_EXTRA
+
+NATIVE_MANIFEST='16808af2779fdf8c89da31ddd8b32546280d0234bf8644396cb53b7c61184ad2'
+CONFIG_NAMES={'EXPERIMENT-CONTRACT.json','SOURCE-MANIFEST.json','INDEPENDENT-REVIEW.json',
+ 'ACCOUNT-AND-BUDGET.json','DEV-SCORER-ADMISSION.json','ROOT-RELEASE.json',
+ 'WRAPPER-CONTRACT.json','WRAPPER-SOURCE-MANIFEST.json','WRAPPER-INDEPENDENT-REVIEW.json',
+ 'NATIVE-ROOT-GRANT.json'}
+_BUNDLE_KEY=object()
+_ASSEMBLED_BUNDLES={}  # actual factory object identity -> independent immutable byte seals
+
+@dataclass(frozen=True)
+class VerifiedPublicBundle:
+    """Immutable assembly provenance, not a caller's public=True assertion.
+
+    Only assemble_public_bundle mints this after the full closed public source
+    allowlist. This is process discipline, not a malicious Python/OS boundary.
+    """
+    payload:bytes
+    manifest_raw:bytes
+    root_grant_sha256:str
+    _key:object=field(repr=False,compare=False)
+    def __post_init__(self):
+        need(self._key is _BUNDLE_KEY and type(self.payload)is bytes and type(self.manifest_raw)is bytes,
+             'VERIFIED_PUBLIC_ASSEMBLY_FACTORY_REQUIRED')
+    @property
+    def manifest(self):return json.loads(self.manifest_raw)
+
+def need(ok,code):
+    if not ok:raise ValueError(code)
+
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+
+def canonical(value):return json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()+b'\n'
+
+def read(path):
+    need(path.is_absolute() and not any(p.is_symlink()for p in(path,*path.parents)) and path.is_file(),
+         'PUBLIC_BUNDLE_REGULAR_SOURCE')
+    need(0<path.stat().st_size<=4*1024**2,'PUBLIC_BUNDLE_FILE_BOUND')
+    return path.read_bytes()
+
+def pin(raw):return {'bytes':len(raw),'sha256':sha(raw)}
+
+def validate_wrapper_manifest(wrapper):
+    need(type(wrapper)is dict and set(wrapper)=={'schema','files'} and
+         wrapper['schema']=='new-ps-setup-export-source-manifest/v1' and
+         type(wrapper['files'])is dict and set(wrapper['files'])=={p for _,p in WRAPPER_MODULES}|WRAPPER_EXTRA,
+         'EXACT_WRAPPER_SOURCE_MEMBERS_BEFORE_READ')
+    return wrapper
+
+def assemble_public_bundle(project_root,original_root,config_root,wrapper_grant,*,native_source_root=None):
+    """Future local packaging only, after exact public config/root pins exist."""
+    project,original,config=map(Path,(project_root,original_root,config_root))
+    native_project=Path(native_source_root)if native_source_root is not None else project
+    need(set(wrapper_grant['files'])=={'WRAPPER-CONTRACT.json','WRAPPER-SOURCE-MANIFEST.json',
+        'WRAPPER-INDEPENDENT-REVIEW.json','NATIVE-ROOT-GRANT.json'},'CLOSED_WRAPPER_ROOT_DOCS')
+    documents={name:read(config/name)for name in CONFIG_NAMES}
+    for name,expected in wrapper_grant['files'].items():need(sha(documents[name])==expected,'WRAPPER_CONFIG_PIN')
+    native_grant=json.loads(documents['NATIVE-ROOT-GRANT.json'])
+    need(set(native_grant['files'])==CONFIG_NAMES-{'WRAPPER-CONTRACT.json','WRAPPER-SOURCE-MANIFEST.json',
+        'WRAPPER-INDEPENDENT-REVIEW.json','NATIVE-ROOT-GRANT.json'},'CLOSED_NATIVE_ROOT_DOCS')
+    for name,expected in native_grant['files'].items():need(sha(documents[name])==expected,'NATIVE_CONFIG_PIN')
+    need(sha(documents['SOURCE-MANIFEST.json'])==NATIVE_MANIFEST,'EXACT_REVIEWED_NATIVE_V6')
+    native=json.loads(documents['SOURCE-MANIFEST.json']);wrapper=json.loads(documents['WRAPPER-SOURCE-MANIFEST.json'])
+    validate_wrapper_manifest(wrapper)
+    blobs={'config/'+name:raw for name,raw in documents.items()}
+    for manifest in(native,wrapper):
+        for rel,expected in manifest['files'].items():
+            need(PurePosixPath(rel).parts[0]in('native_experiment','training','publication') and
+                 '..'not in PurePosixPath(rel).parts and not PurePosixPath(rel).is_absolute(),'SOURCE_ONLY_PREFIX')
+            source_root=native_project if manifest is native else project
+            raw=read(source_root/rel);need(pin(raw)==expected,'EXACT_PUBLIC_SOURCE_PIN');blobs['source/'+rel]=raw
+    # Parse literals ONLY from independently pinned public backend/installer source.
+    # No imports/execution or original source directory enumeration.
+    def literals(raw,names):
+        out={}
+        for node in ast.parse(raw).body:
+            if isinstance(node,ast.Assign) and len(node.targets)==1 and isinstance(node.targets[0],ast.Name):
+                name=node.targets[0].id
+                if name in names:
+                    value=node.value.args[0]if isinstance(node.value,ast.Call) and isinstance(node.value.func,ast.Name) and node.value.func.id=='MappingProxyType'else node.value
+                    out[name]=ast.literal_eval(value)
+        need(set(out)==set(names),'PINNED_PUBLIC_LITERAL_TABLES');return out
+    installer=literals(blobs['source/publication/installer_sources.py'],{'PINS'})['PINS']
+    backend=literals(blobs['source/native_experiment/backend_load.py'],{'SOURCE_PINS','ASSET_PINS'})
+    originals=dict(installer)
+    originals.update({'runtime/'+rel:expected for rel,expected in backend['SOURCE_PINS'].values()})
+    originals.update({'runtime/'+rel:expected for rel,expected in backend['ASSET_PINS'].items()})
+    for rel,expected in originals.items():
+        raw=read(original/rel);need(sha(raw)==expected,'ORIGINAL_PUBLIC_SOURCE_PIN');blobs['original/'+rel]=raw
+    manifest={'schema':'new-ps-public-only-notebook-bundle/v1','files':{k:pin(v)for k,v in sorted(blobs.items())},
+      'private_targets_or_pairpack_included':False,'runtime_or_weights_included':False,'old_study_entry_included':False}
+    raw_manifest=canonical(manifest);blobs['PUBLIC-BUNDLE-MANIFEST.json']=raw_manifest
+    stream=io.BytesIO()
+    with zipfile.ZipFile(stream,'w',compression=zipfile.ZIP_DEFLATED)as archive:
+        for name,raw in sorted(blobs.items()):
+            info=zipfile.ZipInfo(name,date_time=(2026,10,27,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED
+            info.external_attr=(0o100600<<16);archive.writestr(info,raw)
+    payload=stream.getvalue();need(len(payload)<20_000_000 and sum(map(len,blobs.values()))<=16*1024**2,'PUBLIC_BUNDLE_SMALL_CAP')
+    bundle=VerifiedPublicBundle(payload,raw_manifest,sha(canonical(wrapper_grant)),_BUNDLE_KEY)
+    # Registration occurs ONLY here, never in the dataclass constructor. Normal
+    # dataclasses.replace/copy cannot turn a prior capability into a new payload.
+    _ASSEMBLED_BUNDLES[id(bundle)]=(bundle,sha(payload),sha(raw_manifest),bundle.root_grant_sha256)
+    return bundle
+
+def build_notebook(bundle,*,run_id,output_root,root_grant,bootstrap_sha256,clock_sha256):
+    need(type(bundle)is VerifiedPublicBundle and bundle._key is _BUNDLE_KEY and
+         bundle.root_grant_sha256==sha(canonical(root_grant)),'EXACT_VERIFIED_PUBLIC_ASSEMBLY_CAPABILITY')
+    registered=_ASSEMBLED_BUNDLES.get(id(bundle))
+    need(registered is not None and registered[0]is bundle and
+         registered[1:]==(sha(bundle.payload),sha(bundle.manifest_raw),bundle.root_grant_sha256),
+         'ORIGINAL_ASSEMBLY_FACTORY_IDENTITY_AND_BYTES_REQUIRED')
+    payload,manifest=bundle.payload,bundle.manifest
+    need(type(payload)is bytes and len(payload)<20_000_000,'PUBLIC_ZIP_BOUND')
+    need(re.fullmatch(r'new-dpo-ce-dev32-[a-z0-9-]+',run_id)is not None,'FIXED_RUN_ID')
+    need(re.fullmatch(r'/kaggle/working/iris-ps-[a-z0-9-]+',output_root)is not None,'EXCLUSIVE_KAGGLE_ROOT')
+    need(root_grant['run_id']==run_id and root_grant['bootstrap_sha256']==bootstrap_sha256,'EXACT_NOTEBOOK_ROOT_GRANT')
+    need(manifest['schema']=='new-ps-public-only-notebook-bundle/v1' and
+         all(manifest[k]is False for k in('private_targets_or_pairpack_included','runtime_or_weights_included','old_study_entry_included')),
+         'PUBLIC_ONLY_BUNDLE_ATTESTATION')
+    expected=manifest['files'];need(0<len(expected)<256,'FINITE_PUBLIC_SOURCE_SET')
+    need(expected.get('source/publication/bootstrap.py',{}).get('sha256')==bootstrap_sha256 and
+         expected.get('source/publication/entry_clock.py',{}).get('sha256')==clock_sha256,'EXACT_FIRST_CLOCK_BOOTSTRAP_MEMBERS')
+    with zipfile.ZipFile(io.BytesIO(payload))as archive:
+        names=archive.namelist();need(len(names)==len(set(names)) and set(names)==set(expected)|{'PUBLIC-BUNDLE-MANIFEST.json'},'EXACT_ARCHIVE_SET')
+        need(sum(i.file_size for i in archive.infolist())<=16*1024**2 and
+             all(0<i.file_size<=4*1024**2 and not((i.external_attr>>16)&0o170000)==0o120000 for i in archive.infolist()),'PUBLIC_ARCHIVE_EXPANSION_BOUND')
+        for name in names:
+            path=PurePosixPath(name)
+            need(not path.is_absolute() and '..'not in path.parts and str(path)==name and '\\'not in name,'PUBLIC_ARCHIVE_SAFE_NAME')
+        need(archive.read('PUBLIC-BUNDLE-MANIFEST.json')==canonical(manifest),'EXACT_PUBLIC_MANIFEST')
+        for name,p in expected.items():need(pin(archive.read(name))==p,'EXACT_ARCHIVE_BYTES')
+    spec={'run_id':run_id,'output_root':output_root,'zip_sha256':sha(payload),'manifest':manifest,
+          'grant':root_grant,'bootstrap_sha256':bootstrap_sha256,'clock_sha256':clock_sha256,
+          'native_source_manifest_sha256':NATIVE_MANIFEST}
+    # This is literally the FIRST notebook code line, before base64 decoding,
+    # hashes/extraction/imported application code/install; both clocks immutable.
+    code="import time; _IRIS_CLOCK=(time.time(),time.monotonic())\n"
+    code+="import base64,hashlib,io,json,os,stat,zipfile\nfrom pathlib import Path,PurePosixPath\n"
+    code+="_S=json.loads("+repr(canonical(spec).decode())+")\n"
+    code+="_B=base64.b64decode("+repr(base64.b64encode(payload).decode())+",validate=True)\n"
+    code+="""def _need(ok,code):
+ if not ok:raise RuntimeError(code)
+def _tick():_need(time.monotonic()-_IRIS_CLOCK[1]<7200,'ORIGINAL_FIRST_CELL_DEADLINE')
+def _sha(b):return hashlib.sha256(b).hexdigest()
+_tick();_need(_sha(_B)==_S['zip_sha256'],'PUBLIC_ZIP_HASH')
+_root=Path(_S['output_root']);_need(not _root.exists() and not any(p.is_symlink()for p in(_root,*_root.parents)),'EXCLUSIVE_ROOT')
+os.umask(0o077);_root.mkdir(mode=0o700)
+with zipfile.ZipFile(io.BytesIO(_B))as _z:
+ _files=_S['manifest']['files'];_names=_z.namelist()
+ _need(len(_names)==len(set(_names)) and set(_names)==set(_files)|{'PUBLIC-BUNDLE-MANIFEST.json'},'CLOSED_PUBLIC_MEMBERS')
+ _need(sum(i.file_size for i in _z.infolist())<=16*1024**2,'PUBLIC_EXPANDED_BOUND')
+ for _name in sorted(_files):
+  _tick();_p=PurePosixPath(_name);_i=_z.getinfo(_name)
+  _need(not _p.is_absolute() and '..'not in _p.parts and str(_p)==_name and '\\\\'not in _name and not stat.S_ISLNK(_i.external_attr>>16),'SAFE_PUBLIC_MEMBER')
+  _raw=_z.read(_name);_need({'bytes':len(_raw),'sha256':_sha(_raw)}==_files[_name],'PUBLIC_MEMBER_PIN')
+  _path=_root/_name;_path.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
+  _fd=os.open(_path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+  with os.fdopen(_fd,'wb')as _f:_f.write(_raw);_f.flush();os.fsync(_f.fileno())
+_tick();_config=_root/'config';_source=_root/'source'
+def _load_public(rel,pin,marker=None):
+ _p=_source/rel;_b=_p.read_bytes();_need(_sha(_b)==pin,'PUBLIC_ENTRY_PIN')
+ _n={'__name__':'new_ps_pinned_notebook_entry','__file__':str(_p)}
+ if marker:_n[marker]=pin
+ exec(compile(_b,str(_p),'exec',dont_inherit=True),_n);return _n
+_clock=_load_public('publication/entry_clock.py',_S['clock_sha256'])
+_clock['record_first_cell_clock'](_config,_S['run_id'],*_IRIS_CLOCK,native_source_manifest_sha256=_S['native_source_manifest_sha256'],wrapper_source_manifest_sha256=_S['grant']['files']['WRAPPER-SOURCE-MANIFEST.json'])
+_entry=_load_public('publication/bootstrap.py',_S['bootstrap_sha256'],'_ROOT_VERIFIED_PUBLICATION_BOOTSTRAP_SHA256')
+_result=_entry['launch_from_pinned_notebook'](str(_config),_S['grant'])
+print(json.dumps(_result,sort_keys=True,separators=(',',':')))
+"""
+    return canonical({'nbformat':4,'nbformat_minor':5,'metadata':{'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'}},
+      'cells':[{'cell_type':'code','execution_count':None,'id':'fixed37-first-clock','metadata':{},'outputs':[],'source':code.splitlines(True)}]})
+
+if __name__=='__main__':raise SystemExit('LOCAL_PUBLIC_ONLY_BUILDER_NO_PROVIDER_CALLS')

@@ -1,0 +1,394 @@
+"""NEW author-side synthetic stdlib tests ONLY; never publication/install/native.
+
+Actual children execute handwritten Python fixtures, under SYNTHETIC_* temp
+paths, with explicit credential-free environments. Source tests read only the
+seven public installer source/manifest files and reviewed supervisor bytes.
+No prepare() call, package install, network/provider/GPU/model/target/private-pack
+read or hash occurs. Source/CPU passes are not a dispatch or quality admission.
+"""
+from contextlib import ExitStack
+import ast
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import signal
+import stat
+import subprocess
+import sys
+import tempfile
+import time
+from types import SimpleNamespace
+import unittest
+from unittest import mock
+
+from . import owned_process as owned
+from . import installer_sources as installers
+
+ACTIVE = Path(__file__).resolve().parents[1]
+SUPERVISOR = ACTIVE.parent / "native-v6-source/native_experiment/supervisor.py"
+ORIGINAL = ACTIVE.parent.parent / "recovery-20261026-2212/iris/kaggle-original/supply96/source-recovered-offline"
+SYNTHETIC_ENV = {"LANG": "C.UTF-8", "PYTHONDONTWRITEBYTECODE": "1"}
+
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def fixture_command(code, *args):
+    return [sys.executable, "-I", "-S", "-B", "-c", code, *map(str, args)]
+
+
+def source_loader_code():
+    """Public source-only child loader; no package/site/prepare execution."""
+    return r'''
+import hashlib,json,os,signal,sys,types,time
+from pathlib import Path
+active=Path(sys.argv[1]); p=active/'publication/owned_process.py'
+n={'__name__':'SYNTHETIC_OWNED_HELPER','__file__':str(p)}
+exec(compile(p.read_bytes(),str(p),'exec',dont_inherit=True),n)
+guard=n['load_guard'](active.parent/'native-v6-source/native_experiment/supervisor.py')
+exec(guard.PARENT_DEATH_GUARD_SOURCE, n)
+n['_arm_parent_death_kill'](os.getppid())
+'''
+
+
+class OwnedValidationTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="SYNTHETIC_OWNED_VALIDATION_"); self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.guard = owned.load_guard(SUPERVISOR)
+
+    def kwargs(self):
+        return dict(deadline=time.time() + 30, monotonic_deadline=time.monotonic() + 30,
+                    child_env=dict(SYNTHETIC_ENV), guard=self.guard)
+
+    def assert_pre_spawn_denied(self, kwargs, code, *, argv=None):
+        with mock.patch.object(self.guard, "_OwnedChildScope", side_effect=AssertionError("SYNTHETIC_FORBIDDEN_SPAWN")):
+            with self.assertRaisesRegex(ValueError, code):
+                owned.run_owned(argv or fixture_command("raise AssertionError('must not execute')"), self.root / "attempt", **kwargs)
+        self.assertFalse((self.root / "attempt").exists())
+
+    def test_epoch_deadline_and_cleanup_reserve_denied_before_exec_or_output(self):
+        for delta in (-1, 0, 9.9, 10):
+            with self.subTest(delta=delta):
+                kw = self.kwargs(); kw["deadline"] = time.time() + delta
+                self.assert_pre_spawn_denied(kw, "OWNED_ORIGINAL_DEADLINE_CLEANUP_RESERVE")
+
+    def test_monotonic_deadline_cannot_be_extended_by_epoch_clock(self):
+        kw = self.kwargs(); kw["monotonic_deadline"] = time.monotonic() + 9
+        self.assert_pre_spawn_denied(kw, "OWNED_NONEXTENDABLE_MONOTONIC_DEADLINE")
+
+    def test_deadlines_must_be_finite_no_unbounded_native_stage(self):
+        for field in ("deadline", "monotonic_deadline"):
+            for value in ((math.inf, -math.inf, math.nan, True, None) if field == "deadline" else (math.inf, -math.inf, math.nan, True)):
+                with self.subTest(field=field, value=value):
+                    kw = self.kwargs(); kw[field] = value
+                    self.assert_pre_spawn_denied(kw, "OWNED_.*DEADLINE|OWNED_FINITE")
+
+    def test_invalid_argv_env_and_log_caps_denied_before_spawn(self):
+        for value in ([], [""], [True], "python"):
+            with self.subTest(argv=value):
+                with mock.patch.object(self.guard, "_OwnedChildScope", side_effect=AssertionError("spawn")):
+                    with self.assertRaisesRegex(ValueError, "OWNED_ARGV"):
+                        owned.run_owned(value, self.root / "attempt", **self.kwargs())
+        for field, value, code in (("child_env", None, "OWNED_CLOSED_ENV"), ("child_env", {"X": 1}, "OWNED_CLOSED_ENV"),
+                                   ("log_cap", 0, "OWNED_LOG_BOUND"), ("log_cap", True, "OWNED_LOG_BOUND"),
+                                   ("log_cap", 64 * 1024**2 + 1, "OWNED_LOG_BOUND")):
+            kw = self.kwargs(); kw[field] = value
+            self.assert_pre_spawn_denied(kw, code)
+
+    def test_output_path_symlink_and_existing_attempt_never_overwritten(self):
+        target = self.root / "SYNTHETIC_TARGET"; target.mkdir()
+        link = self.root / "SYNTHETIC_LINK"; link.symlink_to(target, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, "OWNED_OUTPUT_PATH"):
+            owned.run_owned(fixture_command("pass"), link / "attempt", **self.kwargs())
+        attempt = self.root / "attempt"; attempt.mkdir(); marker = attempt / "SYNTHETIC_KEEP"; marker.write_bytes(b"UNCHANGED")
+        with mock.patch.object(self.guard, "_OwnedChildScope", side_effect=AssertionError("spawn")):
+            with self.assertRaises(FileExistsError): owned.run_owned(fixture_command("pass"), attempt, **self.kwargs())
+        self.assertEqual(marker.read_bytes(), b"UNCHANGED")
+
+    def test_public_stdin_type_and_cap_denied_before_child(self):
+        for index, payload in enumerate(("not-bytes", b"x" * (4 * 1024**2 + 1))):
+            with self.subTest(index=index), mock.patch.object(self.guard, "_OwnedChildScope", side_effect=AssertionError("spawn")):
+                with self.assertRaisesRegex(ValueError, "OWNED_PUBLIC_STDIN_BOUND"):
+                    owned.run_owned(fixture_command("pass"), self.root / ("attempt_" + str(index)), stdin_payload=payload, **self.kwargs())
+
+    def test_guard_load_exact_public_bytes_and_no_side_effects(self):
+        raw = SUPERVISOR.read_bytes(); self.assertEqual(digest(raw), owned.SUPERVISOR_SHA)
+        with mock.patch.object(subprocess, "Popen", side_effect=AssertionError("import must not spawn")):
+            guard = owned.load_guard(SUPERVISOR)
+        self.assertTrue(callable(guard._stop_owned_child)); self.assertTrue(callable(guard._OwnedChildScope))
+        self.assertIn("PR_SET_PDEATHSIG_FAILED", guard.PARENT_DEATH_GUARD_SOURCE)
+        p = self.root / "SYNTHETIC_TAMPERED_SUPERVISOR.py"; p.write_bytes(raw + b"\nraise AssertionError('MUST_NOT_EXECUTE')\n")
+        with self.assertRaisesRegex(ValueError, "OWNED_GUARD_EXACT_SOURCE"): owned.load_guard(p)
+        link = self.root / "SYNTHETIC_GUARD_LINK.py"; link.symlink_to(SUPERVISOR)
+        with self.assertRaisesRegex(ValueError, "OWNED_GUARD_PATH"): owned.load_guard(link)
+
+    def test_json_receipt_exclusive0600_and_nonfinite_refusal(self):
+        path = self.root / "SYNTHETIC_RECEIPT.json"
+        value = {"synthetic": True, "status": "NO_NATIVE_ACTION"}
+        result = owned.write_json(path, value); raw = path.read_bytes()
+        self.assertEqual(result, {"bytes": len(raw), "sha256": digest(raw)})
+        self.assertEqual(json.loads(raw), value); self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+        with self.assertRaises(FileExistsError): owned.write_json(path, value)
+        with self.assertRaises(ValueError): owned.write_json(self.root / "SYNTHETIC_NAN.json", {"x": math.nan})
+
+
+class ActualHarmlessChildTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="SYNTHETIC_OWNED_CHILD_"); self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name); self.guard = owned.load_guard(SUPERVISOR)
+
+    def run_child(self, code, *, name="attempt", stdin_payload=None, seconds=25, log_cap=1024**2, env=None):
+        return owned.run_owned(fixture_command(code), self.root / name, deadline=time.time() + seconds,
+            monotonic_deadline=time.monotonic() + seconds, child_env=dict(SYNTHETIC_ENV if env is None else env),
+            guard=self.guard, stdin_payload=stdin_payload, log_cap=log_cap)
+
+    def test_exact_public_stdin_stdout_closed_env_and_receipts(self):
+        payload = b"SYNTHETIC_PUBLIC_ONLY\nsecond-line\x00tail"
+        code = "import os,sys;data=sys.stdin.buffer.read();assert 'SYNTHETIC_PARENT_ONLY' not in os.environ;sys.stdout.buffer.write(b'RECEIVED:'+data)"
+        with mock.patch.dict(os.environ, {"SYNTHETIC_PARENT_ONLY": "NOT_A_REAL_SECRET"}):
+            receipt = self.run_child(code, stdin_payload=payload)
+        self.assertEqual(receipt["returncode"], 0); self.assertIsNone(receipt["reason"])
+        self.assertEqual((self.root / "attempt/PRIVATE-stdout.log").read_bytes(), b"RECEIVED:" + payload)
+        self.assertTrue(receipt["wait_returned"]); self.assertFalse(receipt["resource_released_claimed"])
+        self.assertFalse(receipt["provider_runtime_limit_proven"]); self.assertFalse(receipt["retry_allowed"])
+        self.assertEqual(json.loads((self.root / "attempt/SUPERVISOR.json").read_bytes()), receipt)
+        self.assertEqual(stat.S_IMODE((self.root / "attempt").stat().st_mode), 0o700)
+        for name in ("PRIVATE-stdout.log", "SUPERVISOR.json"):
+            self.assertEqual(stat.S_IMODE((self.root / "attempt" / name).stat().st_mode), 0o600)
+
+    def test_optional_monotonic_deadline_derives_only_remaining_original_wall(self):
+        epoch = time.time() + 25; expected = time.monotonic() + 25
+        receipt = owned.run_owned(fixture_command("pass"), self.root / "attempt", deadline=epoch,
+                                  child_env=dict(SYNTHETIC_ENV), guard=self.guard)
+        self.assertEqual(receipt["returncode"], 0)
+        self.assertEqual(receipt["original_deadline_epoch"], epoch)
+        self.assertTrue(math.isfinite(receipt["original_monotonic_deadline"]))
+        self.assertLess(abs(receipt["original_monotonic_deadline"] - expected), .1)
+
+    def test_nonzero_child_is_preserved_not_retried_or_promoted_success(self):
+        receipt = self.run_child("import sys;print('SYNTHETIC_FAILURE');sys.exit(7)")
+        self.assertEqual(receipt["returncode"], 7); self.assertFalse(receipt["retry_allowed"])
+        self.assertEqual((self.root / "attempt/PRIVATE-stdout.log").read_text(), "SYNTHETIC_FAILURE\n")
+
+    def test_log_cap_reports_actual_overshoot_without_claiming_hard_byte_limit(self):
+        receipt = self.run_child("import sys;sys.stdout.write('SYNTHETIC_'+('x'*2048))", log_cap=128)
+        self.assertEqual(receipt["reason"], "OWNED_LOG_CAP")
+        self.assertGreater(receipt["log_bytes"], 128)
+        self.assertEqual(receipt["log_bytes"], (self.root / "attempt/PRIVATE-stdout.log").stat().st_size)
+
+    def test_timeout_honors_original_clock_and_stops_harmless_child(self):
+        started = time.monotonic()
+        receipt = self.run_child("import time;print('SYNTHETIC_SLEEP',flush=True);time.sleep(30)", seconds=10.5)
+        self.assertEqual(receipt["reason"], "OWNED_ORIGINAL_DEADLINE")
+        self.assertLess(receipt["returncode"], 0); self.assertTrue(receipt["wait_returned"])
+        self.assertLess(time.monotonic() - started, 8)
+
+    def test_actual_caller_termination_stops_own_child_and_restores_handler(self):
+        code = source_loader_code() + r'''
+import threading
+root=Path(sys.argv[2]); original=signal.getsignal(signal.SIGTERM)
+# Signal only this synthetic caller after run_owned installed its guard.
+def interrupt():
+    time.sleep(.15);os.kill(os.getpid(),signal.SIGTERM)
+thread=threading.Thread(target=interrupt);thread.start()
+receipt=n['run_owned']([sys.executable,'-I','-S','-B','-c','import time;time.sleep(30)'],root/'attempt',deadline=time.time()+25,monotonic_deadline=time.monotonic()+25,child_env={'LANG':'C.UTF-8'},guard=guard)
+thread.join(timeout=2)
+assert receipt['reason']=='OWNED_TERMINATION_REQUESTED' and receipt['returncode']<0
+assert signal.getsignal(signal.SIGTERM)==original
+print(json.dumps({'synthetic_only':True,'child_stopped':True,'handler_restored':True}))
+'''
+        result = subprocess.run(fixture_command(code, ACTIVE, self.root), env=dict(SYNTHETIC_ENV), capture_output=True, text=True, timeout=12)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(json.loads(result.stdout)["handler_restored"])
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Linux own-group/reaper requirement")
+    def test_exited_leader_live_descendant_is_killed_and_reaped(self):
+        code = source_loader_code() + r'''
+import ctypes
+root=Path(sys.argv[2]); marker=root/'SYNTHETIC_DESCENDANT_PID'
+libc=ctypes.CDLL(None,use_errno=True)
+assert libc.prctl(36,1,0,0,0)==0
+# The descendant deliberately ignores TERM and keeps the leader's process
+# group. KILL must reach it even though the direct leader exited successfully.
+descendant="import os,signal,sys,time;from pathlib import Path;signal.signal(signal.SIGTERM,signal.SIG_IGN);Path(sys.argv[1]).write_text(str(os.getpid()));time.sleep(30)"
+leader="import subprocess,sys,time;from pathlib import Path;p=Path(sys.argv[1]);subprocess.Popen([sys.executable,'-I','-S','-B','-c',sys.argv[2],str(p)]);end=time.monotonic()+3\nwhile not p.exists() and time.monotonic()<end:time.sleep(.01)\nassert p.exists()\n"
+receipt=n['run_owned']([sys.executable,'-I','-S','-B','-c',leader,str(marker),descendant],root/'attempt',deadline=time.time()+25,monotonic_deadline=time.monotonic()+25,child_env={'LANG':'C.UTF-8'},guard=guard)
+pid=int(marker.read_text());reaped=False
+try:
+    end=time.monotonic()+3
+    while time.monotonic()<end:
+        found,status=os.waitpid(pid,os.WNOHANG)
+        if found:
+            reaped=True;assert os.WIFSIGNALED(status) and os.WTERMSIG(status)==signal.SIGKILL;break
+        time.sleep(.01)
+    assert reaped and receipt['returncode']==0
+    print(json.dumps({'synthetic_only':True,'leader_exited':True,'descendant_killed_reaped':True}))
+finally:
+    if not reaped:
+        try:os.kill(pid,signal.SIGKILL)
+        except ProcessLookupError:pass
+        end=time.monotonic()+2
+        while time.monotonic()<end:
+            try:
+                if os.waitpid(pid,os.WNOHANG)[0]:break
+            except ChildProcessError:break
+            time.sleep(.01)
+'''
+        result = subprocess.run(fixture_command(code, ACTIVE, self.root), env=dict(SYNTHETIC_ENV), capture_output=True, text=True, timeout=12)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(json.loads(result.stdout)["descendant_killed_reaped"])
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Linux PDEATHSIG requirement")
+    def test_first_child_PDEATHSIG_survives_exec_parent_death_killed_and_reaped(self):
+        outer = source_loader_code() + r'''
+import ctypes
+root=Path(sys.argv[2]);marker=root/'SYNTHETIC_FIRST_CHILD_PID'
+libc=ctypes.CDLL(None,use_errno=True);assert libc.prctl(36,1,0,0,0)==0
+parent_code=sys.argv[3]
+parent=subprocess.Popen([sys.executable,'-I','-S','-B','-c',parent_code,str(active),str(root)],env={'LANG':'C.UTF-8'},stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
+pid=None;reaped=False
+try:
+    end=time.monotonic()+4
+    while not marker.exists() and parent.poll() is None and time.monotonic()<end:time.sleep(.01)
+    assert marker.exists(),'SYNTHETIC_CHILD_NOT_READY'
+    pid=int(marker.read_text());parent.kill();parent.wait(timeout=3)
+    end=time.monotonic()+3
+    while time.monotonic()<end:
+        found,status=os.waitpid(pid,os.WNOHANG)
+        if found:
+            reaped=True;assert os.WIFSIGNALED(status) and os.WTERMSIG(status)==signal.SIGKILL;break
+        time.sleep(.01)
+    assert reaped,'SYNTHETIC_PDEATHSIG_NOT_OBSERVED'
+    print(json.dumps({'synthetic_only':True,'first_child_sigkill_after_exec':True,'reaped':True}))
+finally:
+    if parent.poll() is None:parent.kill();parent.wait(timeout=3)
+    if pid is not None and not reaped:
+        try:os.kill(pid,signal.SIGKILL)
+        except ProcessLookupError:pass
+        end=time.monotonic()+2
+        while time.monotonic()<end:
+            try:
+                if os.waitpid(pid,os.WNOHANG)[0]:break
+            except ChildProcessError:break
+            time.sleep(.01)
+'''
+        # source_loader_code arms the intermediate parent itself against death
+        # of the bounded test reaper, before it can launch another process.
+        parent = source_loader_code() + r'''
+root=Path(sys.argv[2]);marker=root/'SYNTHETIC_FIRST_CHILD_PID'
+child="import os,sys,time;from pathlib import Path;Path(sys.argv[1]).write_text(str(os.getpid()));time.sleep(30)"
+n['run_owned']([sys.executable,'-I','-S','-B','-c',child,str(marker)],root/'attempt',deadline=time.time()+25,monotonic_deadline=time.monotonic()+25,child_env={'LANG':'C.UTF-8'},guard=guard)
+'''
+        # outer needs subprocess for its wholly synthetic parent process.
+        outer = "import subprocess\n" + outer
+        result = subprocess.run(fixture_command(outer, ACTIVE, self.root, parent), env=dict(SYNTHETIC_ENV), capture_output=True, text=True, timeout=12)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        summary = json.loads(result.stdout); self.assertTrue(summary["first_child_sigkill_after_exec"]); self.assertTrue(summary["reaped"])
+
+
+class OriginalInstallerSourceOnlyTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="SYNTHETIC_INSTALLER_SOURCE_ONLY_"); self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name); self.before_modules = set(sys.modules); self.before_path = list(sys.path)
+        self.addCleanup(self.clean_private_imports)
+        self.guard = owned.load_guard(SUPERVISOR)
+        self.deadline = time.time() + 30; self.mono = time.monotonic() + 30
+        self.source = installers.OriginalInstallerSources(ORIGINAL, guard=self.guard, deadline=self.deadline, monotonic_deadline=self.mono)
+
+    def clean_private_imports(self):
+        for name in set(sys.modules) - self.before_modules:
+            if name.startswith("_new_ps_offline_"): sys.modules.pop(name, None)
+        sys.path[:] = self.before_path  # recovered offline module adds runtime path
+
+    def copied_source(self):
+        target = self.root / ("SYNTHETIC_COPY_" + str(len(list(self.root.iterdir())))); target.mkdir()
+        for rel, raw in self.source.blobs.items():
+            p = target / rel; p.parent.mkdir(parents=True, exist_ok=True); p.write_bytes(raw)
+        return target
+
+    def make_source(self, root):
+        return installers.OriginalInstallerSources(root, guard=self.guard, deadline=self.deadline, monotonic_deadline=self.mono)
+
+    def test_exact_seven_original_public_source_bytes_no_material_or_targets(self):
+        self.assertEqual(set(self.source.blobs), set(installers.PINS)); self.assertEqual(len(self.source.blobs), 7)
+        for rel, raw in self.source.blobs.items():
+            self.assertLess(len(raw), 65536); self.assertEqual(digest(raw), installers.PINS[rel])
+        self.assertEqual(set(self.source.modules), {"local_supervisor"})
+
+    def test_imports_bytecompiled_private_namespace_no_spawn_or_prepare(self):
+        with mock.patch.object(subprocess, "Popen", side_effect=AssertionError("SOURCE_IMPORT_CANNOT_EXECUTE")), \
+             mock.patch.object(installers, "run_owned", side_effect=AssertionError("NO_INSTALLER_EXECUTION")):
+            for name in installers.MODULES:
+                module = self.source.module(name)
+                self.assertIsNone(module.__cached__); self.assertTrue(module.__name__.startswith("_new_ps_offline_"))
+                self.assertEqual(Path(module.__file__), ORIGINAL / installers.MODULES[name])
+                self.assertIs(self.source.module(name), module)
+        self.assertNotIn("torch", set(sys.modules) - self.before_modules)
+        self.assertEqual(self.source.module("offline_bootstrap").supervise.__self__, self.source)
+        self.assertEqual(self.source.module("mounted_materials").EXPECTED["torch"], "2.8.0+cu128")
+
+    def test_unregistered_module_and_reused_private_namespace_denied(self):
+        with self.assertRaisesRegex(ValueError, "INSTALLER_CLOSED_MODULES"): self.source.module("SYNTHETIC_UNREGISTERED")
+        self.source.module("portable_interpreter")
+        second = self.make_source(ORIGINAL)
+        with self.assertRaisesRegex(ValueError, "INSTALLER_FRESH_PRIVATE_NAMESPACE"): second.module("portable_interpreter")
+
+    def test_missing_tampered_oversized_or_symlink_source_fails_before_compile(self):
+        for mode in ("missing", "tamper", "oversize", "symlink"):
+            with self.subTest(mode=mode):
+                root = self.copied_source(); path = root / "portable_interpreter.py"
+                if mode == "missing": path.unlink()
+                elif mode == "tamper": path.write_bytes(path.read_bytes() + b"\nraise AssertionError('NO_COMPILE')\n")
+                elif mode == "oversize": path.write_bytes(b"x" * 65536)
+                else: path.unlink(); path.symlink_to(ORIGINAL / "portable_interpreter.py")
+                with self.assertRaisesRegex(ValueError, "INSTALLER_(BOUNDED_SOURCE|EXACT_ORIGINAL_BYTES)"): self.make_source(root)
+        link = self.root / "SYNTHETIC_ROOT_LINK"; link.symlink_to(ORIGINAL, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, "INSTALLER_SOURCE_ROOT"): self.make_source(link)
+
+    def test_prepare_child_command_is_only_compiled_not_executed_and_pins_preserved(self):
+        original = [sys.executable, "-I", str(ORIGINAL / "prepare_python_child.py"), "--assets", "SYNTHETIC_NO_ASSETS",
+                    "--manifest-sha", "f" * 64, "--destination", "SYNTHETIC_NO_DESTINATION"]
+        rewritten = self.source.guarded_interpreter_entry(original)
+        self.assertEqual(rewritten[:5], [sys.executable, "-I", "-S", "-B", "-c"])
+        self.assertEqual(rewritten[6:], original[3:]); code = rewritten[5]
+        compile(code, "SYNTHETIC_COMPILE_ONLY_NEVER_EXECUTE_PREPARE", "exec")
+        self.assertIn(installers.PINS["portable_interpreter.py"], code)
+        self.assertIn(installers.PINS["prepare_python_child.py"], code)
+        self.assertIn("exec(compile", code); self.assertIn("SOURCE_SYMLINK", code)
+
+    def test_only_reviewed_venv_pip_flags_preserved_without_running(self):
+        for module in ("venv", "pip"):
+            command = [sys.executable, "-I", "-m", module, "SYNTHETIC_ARGUMENT", "--no-index"]
+            self.assertEqual(self.source.guarded_interpreter_entry(command), [sys.executable, "-B", *command[1:]])
+        for command in ([sys.executable, "-c", "print('NO')"], [sys.executable, "-I", "-m", "http.server"], ["/bin/sh", "-c", "false"]):
+            with self.assertRaisesRegex(ValueError, "INSTALLER_ONLY_REVIEWED_PYTHON_COMMANDS"):
+                self.source.guarded_interpreter_entry(command)
+
+    def test_supervise_adapter_preserves_original_deadlines_no_allowance_restart(self):
+        argv = [sys.executable, "-I", "-m", "pip", "SYNTHETIC_NOT_AN_INSTALL"]
+        with mock.patch.object(installers, "run_owned", return_value={"SYNTHETIC_INERT": True}) as run:
+            result = self.source.supervise(argv, self.root / "never_created", max_seconds=1, child_env={})
+        self.assertEqual(result, {"SYNTHETIC_INERT": True}); self.assertFalse((self.root / "never_created").exists())
+        self.assertEqual(run.call_args.kwargs["deadline"], self.deadline)
+        self.assertEqual(run.call_args.kwargs["monotonic_deadline"], self.mono)
+        for seconds in (0, 7201, True, None):
+            with mock.patch.object(installers, "run_owned", side_effect=AssertionError("invalid allowance reached runner")):
+                with self.assertRaisesRegex(ValueError, "INSTALLER_NO_NEW_TIME_ALLOWANCE"):
+                    self.source.supervise(argv, self.root / "never_created", max_seconds=seconds, child_env={})
+
+    def test_prepare_remains_explicit_default_off_without_calling_it(self):
+        tree = ast.parse((ACTIVE / "publication/installer_sources.py").read_bytes())
+        cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "OriginalInstallerSources")
+        method = next(n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name == "prepare")
+        self.assertEqual([a.arg for a in method.args.kwonlyargs], ["execute"])
+        self.assertIs(method.args.kw_defaults[0].value, False)
+        self.assertIsInstance(method.body[0], ast.Expr)
+        self.assertIn("INSTALLER_DEFAULT_OFF", ast.unparse(method.body[0]))
+
+
+if __name__ == "__main__":
+    unittest.main()

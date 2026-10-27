@@ -1,0 +1,210 @@
+"""NEW isolated GPU model-stage entry. No direct/default CLI execution.
+
+Only the reviewed byte bootstrap can call this with actual out-of-band root
+authority. All journals/candidates/checkpoints are PRIVATE. The returned/public
+status contains aggregate metrics and hashes only; no DEV gold route exists.
+An external supervisor must observe this process exiting before model-stop can
+be certified and any separate DEV correctness scoring can start.
+"""
+from pathlib import Path
+import gc
+import hashlib
+import json
+import os
+import shutil
+import stat
+import time
+from training.contracts import Response, digest, need
+from .admission import issue_native_release
+from .contracts import PRIVATE_PIN, strict_json, sha, parse_bound_private_pack, validate_dev_rows
+from .backend_load import load_native_backend, preflight_native_device
+from .backend_engine import NativeEngine
+from .physical_audit import AuditHooks
+from .workflow import run_native_workflow
+
+PUBLIC_INPUT_PIN = {"bytes": 83008, "sha256": "fcdc71de7828b4770a99020a0c35cfe41bfcccffda5d4b3753ee4b413b9c8e0b"}
+LIMITS = {"max_root_calls": 101311, "max_root_input_positions": 3405148, "max_layer_calls": 3663288}
+CHECKPOINT_BYTES = 3 * 780 * 1024**2
+LOG_BYTES_RESERVATION = 256 * 1024**2
+WORKING_DISK_RESERVE = 1024**3
+
+
+def _read_pin(path, pin, cap):
+    path = Path(path)
+    need(path.is_absolute() and not any(p.is_symlink() for p in (path, *path.parents)), "INPUT_PATH_NO_SYMLINKS")
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    with os.fdopen(fd, "rb") as stream:
+        meta = os.fstat(stream.fileno())
+        need(stat.S_ISREG(meta.st_mode) and meta.st_size == pin["bytes"] <= cap, "INPUT_REGULAR_SIZE")
+        raw = stream.read(cap + 1)
+    need({"bytes": len(raw), "sha256": sha(raw)} == pin, "EXACT_INPUT_HASH")
+    return raw
+
+
+def _write(path, value):
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode() + b"\n"
+    fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, "wb") as stream:
+        stream.write(raw); stream.flush(); os.fsync(stream.fileno())
+    fd = os.open(Path(path).parent, os.O_RDONLY | os.O_DIRECTORY)
+    try: os.fsync(fd)
+    finally: os.close(fd)
+    return {"bytes": len(raw), "sha256": sha(raw)}
+
+
+def _closed_private_file_pin(path, *, cap):
+    """Isolated worker only: hash its own closed private journal, never print it."""
+    path = Path(path)
+    need(path.is_absolute() and not any(p.is_symlink() for p in (path, *path.parents)), "PRIVATE_CLOSED_FILE_PATH")
+    h, size = hashlib.sha256(), 0
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    with os.fdopen(fd, "rb") as stream:
+        meta = os.fstat(stream.fileno())
+        need(stat.S_ISREG(meta.st_mode) and (meta.st_mode & 0o777) == 0o600 and meta.st_size <= cap,
+             "PRIVATE_CLOSED_FILE_MODE_BOUND")
+        for chunk in iter(lambda: stream.read(1024**2), b""):
+            size += len(chunk); need(size <= cap, "PRIVATE_CLOSED_FILE_BOUND")
+            h.update(chunk)
+        after = os.fstat(stream.fileno())
+        need((meta.st_size, meta.st_mtime_ns, meta.st_ctime_ns) ==
+             (after.st_size, after.st_mtime_ns, after.st_ctime_ns) and size == meta.st_size,
+             "PRIVATE_CLOSED_FILE_UNCHANGED")
+    return {"bytes": size, "sha256": h.hexdigest()}
+
+
+class PrivateJournal:
+    def __init__(self, path):
+        self.path, self.bytes, self.events = Path(path), 0, 0
+        need(self.path.is_absolute() and not any(p.is_symlink() for p in (self.path, *self.path.parents)),
+             "PRIVATE_JOURNAL_ABSOLUTE_NO_SYMLINKS")
+        need(self.path.parent.is_dir() and (self.path.parent.stat().st_mode & 0o777) == 0o700,
+             "PRIVATE_JOURNAL_PARENT0700")
+        self.status = "READY"
+        self.fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW, 0o600)
+    def emit(self, event, fields):
+        need(self.fd is not None and self.status != "UNKNOWN", "PRIVATE_JOURNAL_CLOSED_OR_UNKNOWN")
+        raw = json.dumps({"event": event, "fields": fields, "epoch": time.time()}, sort_keys=True,
+                         separators=(",", ":"), allow_nan=False).encode() + b"\n"
+        try:
+            need(self.bytes + len(raw) <= LOG_BYTES_RESERVATION, "PRIVATE_JOURNAL_DISK_RESERVATION")
+            self.bytes += len(raw); self.events += 1
+            view = memoryview(raw)
+            while view:
+                n = os.write(self.fd, view); need(n > 0, "PRIVATE_JOURNAL_WRITE"); view = view[n:]
+            os.fsync(self.fd)
+        except BaseException:
+            self.status = "UNKNOWN"
+            raise
+    def close(self):
+        if self.fd is not None: os.close(self.fd); self.fd = None
+
+
+def run_root_authorized(directory, root_grant):
+    marker = globals().get("__reviewed_byte_bootstrap__")
+    need(type(marker) is dict and marker.get("schema") == "new-ps-native-reviewed-byte-bootstrap/v1", "REVIEWED_NATIVE_ENTRY_BYTES_REQUIRED")
+    os.umask(0o077)
+    release = issue_native_release(directory, out_of_band_root_grant=root_grant, reviewed_byte_bootstrap=marker)
+    contract = release.public_contract()
+    attempt = release.attempt_root
+    journal, hooks, engine, loaded = None, None, None, None
+    private_pack_reads = 0
+    result = None
+    try:
+        need(contract.get("public_inputs") == PUBLIC_INPUT_PIN and contract.get("physical_limits") == LIMITS,
+             "FROZEN_PUBLIC_INPUT_AND_WHOLE_PIPELINE_LIMITS")
+        public = strict_json(_read_pin(contract["public_inputs_path"], PUBLIC_INPUT_PIN, 1024**2))
+        need(public["target_reads"] == public["private_pairpack_reads"] == 0 and public["clean_holdout"] is False,
+             "PUBLIC_ONLY_DESIGN_SEEN_INPUT")
+        validate_dev_rows(public["dev_rows"])
+        need(digest(public["dev_rows"]) == contract["dev_public_panel_semantic_sha256"], "ORIGINAL_DEV32_INPUT_BINDING")
+        p = public["engineering_public_probe"]
+        probe = Response(tuple(p["prompt"]), tuple(p["body_EOS"]))
+        need(probe.pin == p["response_pin"] == contract["engineering_public_probe_sha256"] and
+             p["query_gold_used"] is False and p["private_pairpack_used"] is False, "FIXED_PUBLIC_ENGINEERING_PROBE")
+        need(shutil.disk_usage(attempt).free >= CHECKPOINT_BYTES + LOG_BYTES_RESERVATION + WORKING_DISK_RESERVE,
+             "CHECKPOINT_JOURNAL_EXPORT_DISK_RESERVE")
+        device_preflight = preflight_native_device(runtime_root=contract["recovered_runtime_root"],
+                                              release=release, enable_cuda_execution=True)
+        device_pin = _write(attempt / "PRE-PRIVATE-DEVICE-PROOF.json", device_preflight.proof)
+        _write(attempt / "PRE-PRIVATE-PAIRPACK-SEAL.json", {"schema": "new-ps-pre-private-pairpack-seal/v1",
+            "release_sha256": release.release_pin, "pairpack_expected": PRIVATE_PIN, "source_manifest_sha256": contract["source_manifest_sha256"],
+            "public_inputs": PUBLIC_INPUT_PIN, "device_proof": device_pin,
+            "read_attempts": 0, "DEV_gold_access": False, "retry_allowed": False})
+        private_pack_reads = 1
+        raw = _read_pin(contract["private_pairpack_path"], PRIVATE_PIN, 262144)
+        panel = parse_bound_private_pack(raw, expected_pin=PRIVATE_PIN, public_identity=public["train_identity"],
+            runtime_source_sha256=contract["source_manifest_sha256"], expected_bindings=public["private_source_bindings"])
+        del raw
+        journal = PrivateJournal(attempt / "PRIVATE-OPERATIONS-AND-PREDICTIONS.jsonl")
+        hooks = AuditHooks(science_deadline=release.science_deadline_epoch, emit=journal.emit, **LIMITS)
+        hooks.set_phase("material_and_model_load")
+        journal.emit("model_load_intent", {"release_sha256": release.release_pin, "paid_or_quota_time_already_charged": True})
+        loaded = load_native_backend(runtime_root=contract["recovered_runtime_root"], model_dir=contract["model_dir"],
+            receipt_path=contract["material_receipt_path"], proof_output=attempt / "MATERIAL-PROOF.json",
+            release=release, device_preflight=device_preflight, enable_cuda_execution=True)
+        runtime = attempt / "private-runtime"; runtime.mkdir(mode=0o700)
+        engine = NativeEngine(loaded, hooks=hooks, deadline=release.science_deadline_epoch, generation_output=runtime)
+        hooks.install(engine.model, tuple(engine.model.get_base_model().model.layers))
+        hooks.set_phase("engineering_PUBLIC_ONLY_EXTRA_COST")
+        engineering = engine.engineering_gate(probe, attempt / "engineering")
+        need(engine.native_training_gate_passed is True, "OBSERVED_SAME_ENGINE_GATE")
+        checkpoints = attempt / "checkpoints"; checkpoints.mkdir(mode=0o700)
+        result, predictions = run_native_workflow(engine, release, panel, public["dev_rows"], checkpoint_root=checkpoints,
+            public_probe=probe, hooks=hooks, emit=journal.emit, run_id=contract["run_id"])
+        physical = hooks.snapshot()
+        need(physical["status"] != "UNKNOWN" and physical["root_unknown"] == physical["decoder_layer_unknown"] ==
+             physical["operation_unknown"] == 0, "ALL_PHYSICAL_INTENTS_CLOSED")
+        need(physical["root_forward_intents"] <= LIMITS["max_root_calls"] and physical["decoder_layer_execution_intents"] <= LIMITS["max_layer_calls"],
+             "WHOLE_PHYSICAL_LIMITS")
+        prediction_pin = _write(attempt / "PRIVATE-PREDICTIONS-192.json", {"schema": "new-ps-native-192-predictions/v1",
+            "contract_sha256": root_grant["files"]["EXPERIMENT-CONTRACT.json"], "rows": predictions})
+        reset_pin = _write(attempt / "PRIVATE-RESET-RECEIPTS.json", {"schema": "new-ps-native-reset-receipts/v1",
+            "run_id": contract["run_id"], "receipts": engine.reset_receipts})
+        # No further model calls or journal appends after this boundary. Exact
+        # generation elapsed/physical records remain private and are hash-bound
+        # for the later separately admitted prediction-to-scorer transform.
+        journal.close()
+        journal_pin = _closed_private_file_pin(journal.path, cap=LOG_BYTES_RESERVATION)
+        arm_seals = {}
+        for arm in ("fresh_base", "CE", "DPO"):
+            rows = [row for row in predictions if row["arm"] == arm]
+            need(len(rows) == 64, "ALL_THREE_ARM_SEALS64")
+            arm_seals[arm] = _write(attempt / ("PREDICTIONS-" + arm + "-SEALED.json"), {
+                "schema": "new-ps-native-arm-predictions-seal/v1", "run_id": contract["run_id"],
+                "arm": arm, "draws": 64, "ordered_rows_semantic_sha256": digest(rows),
+                "joint_private_prediction_file": prediction_pin, "private_journal": journal_pin,
+                "private_resets": reset_pin, "release_sha256": release.release_pin,
+                "contract_sha256": root_grant["files"]["EXPERIMENT-CONTRACT.json"],
+                "all192_complete_before_arm_seal": True, "DEV_target_reads": 0})
+        del rows, predictions
+        result["engineering_aggregate"] = {"status": engineering["status"], "private_receipt_retained": True}
+        result["private_prediction_file"] = prediction_pin
+        result["private_journal"] = journal_pin
+        result["private_resets"] = reset_pin
+        result["distinct_arm_seals"] = arm_seals
+        result["whole_pipeline_physical_cost"] = physical
+        result_pin = _write(attempt / "AGGREGATE-MODEL-STAGE.json", result)
+        seal_pin = _write(attempt / "PREDICTIONS-SEALED.json", {"schema": "new-ps-native-predictions-seal/v1",
+            "run_id": contract["run_id"], "draws": 192, "private_predictions": prediction_pin, "aggregate": result_pin,
+            "private_journal": journal_pin, "private_resets": reset_pin, "distinct_arm_seals": arm_seals,
+            "contract_sha256": root_grant["files"]["EXPERIMENT-CONTRACT.json"], "source_manifest_sha256": contract["source_manifest_sha256"],
+            "all_physical_intents_terminal": True, "DEV_target_reads": 0, "model_process_exit_still_required": True})
+        status = {"schema": "new-ps-model-stage-terminal/v1", "status": "COMPLETE_PREDICTIONS_SEALED_WAIT_PROCESS_EXIT",
+                  "predictions_seal": seal_pin, "aggregate": result_pin, "private_pairpack_reads": private_pack_reads,
+                  "DEV_target_reads": 0, "quality_GO": False, "retry_allowed": False}
+    except BaseException:
+        status = {"schema": "new-ps-model-stage-terminal/v1", "status": "FAILED_OR_UNKNOWN_ATTEMPT_CONSUMED",
+                  "failure_code": "NATIVE_STAGE_STOP_REVIEW_PRIVATE_JOURNAL", "private_pairpack_reads": private_pack_reads,
+                  "DEV_target_reads": 0, "quality_GO": False, "retry_allowed": False}
+    finally:
+        if hooks is not None: hooks.close()
+        if journal is not None: journal.close()
+        engine = loaded = None
+        gc.collect()
+    # This does NOT certify process exit/model stopped. The external supervisor
+    # must observe wait()/returncode then write the independent stop receipt.
+    _write(attempt / "MODEL-STAGE-TERMINAL.json", status)
+    return status
+
+
+if __name__ == "__main__": raise SystemExit("NATIVE_ENTRY_INERT_REVIEWED_ROOT_BOOTSTRAP_REQUIRED")

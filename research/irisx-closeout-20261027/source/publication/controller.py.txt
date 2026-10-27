@@ -1,0 +1,340 @@
+"""NEW full fixed37 setup→model→export controller, default inert.
+
+Root grants exact source/config once. Actual first notebook code anchors7200s;
+queue/local publication never consumes this runtime clock, and no stage resets it. Author/model
+never receive DEV gold. This is not a free-standing native probe launcher.
+"""
+from pathlib import Path
+import hashlib
+import json
+import math
+import os
+import re
+import sys
+import time
+import zipfile
+from .owned_process import load_guard, run_owned, write_json, SUPERVISOR_SHA
+from .installer_sources import OriginalInstallerSources, PINS
+
+NATIVE_MANIFEST_SHA="16808af2779fdf8c89da31ddd8b32546280d0234bf8644396cb53b7c61184ad2"
+EXPORT_SHA="74deb8281a1bdb4c9122fb6aab3f05aae9367d663d1c4313d95cfce3ba071c19"
+WRAPPER_DOCS={"WRAPPER-CONTRACT.json","WRAPPER-SOURCE-MANIFEST.json","WRAPPER-INDEPENDENT-REVIEW.json","NATIVE-ROOT-GRANT.json"}
+NATIVE_DOCS={'EXPERIMENT-CONTRACT.json','SOURCE-MANIFEST.json','INDEPENDENT-REVIEW.json',
+             'ACCOUNT-AND-BUDGET.json','DEV-SCORER-ADMISSION.json','ROOT-RELEASE.json'}
+NATIVE_BOOTSTRAP_SHA='1b853f396e63bd63b0b0796073a39a9084575ff49a9e0655ed8d2320a047d1bf'
+
+
+def need(ok,code):
+    if not ok:raise ValueError(code)
+
+
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+
+
+def strict_json(raw):
+    def pairs(items):
+        result={}
+        for key,value in items:
+            need(key not in result,'WRAPPER_DUPLICATE_JSON_KEY');result[key]=value
+        return result
+    def invalid(value):raise ValueError('WRAPPER_NONFINITE_JSON')
+    return json.loads(raw,object_pairs_hook=pairs,parse_constant=invalid)
+
+
+def read(path,cap=4*1024**2):
+    path=Path(path)
+    need(path.is_absolute() and not any(p.is_symlink()for p in(path,*path.parents)),"WRAPPER_NO_SYMLINK")
+    need(path.is_file() and 0<path.stat().st_size<=cap,"WRAPPER_PUBLIC_FILE_BOUND")
+    return path.read_bytes()
+
+
+def clean_host_env(work):
+    # Existing account/credentials are never needed inside offline provider run.
+    return {"PATH":"/usr/local/bin:/usr/bin:/bin","HOME":str(work),"LANG":"C.UTF-8",
+      "TORCH_DEVICE_BACKEND_AUTOLOAD":"0","CUBLAS_WORKSPACE_CONFIG":":4096:8",
+      "CUDA_VISIBLE_DEVICES":"0","PYTHONDONTWRITEBYTECODE":"1","PYTHONNOUSERSITE":"1",
+      "HF_HUB_OFFLINE":"1","TRANSFORMERS_OFFLINE":"1","HF_DATASETS_OFFLINE":"1",
+      "HF_HUB_DISABLE_TELEMETRY":"1","WANDB_DISABLED":"true","PIP_NO_INDEX":"1",
+      "PIP_DISABLE_PIP_VERSION_CHECK":"1","TOKENIZERS_PARALLELISM":"false","DO_NOT_TRACK":"1"}
+
+
+def validate_native_grant(native,run_id):
+    need(type(native)is dict and set(native)=={'schema','run_id','scope','files','bootstrap_sha256'} and
+         native['schema']=='new-ps-explicit-native-root-grant/v1' and
+         native['scope']=='ONE_CHARGED_ENGINEERING_THEN_FIXED37_DPO_CE_DEV32_EXPERIMENT' and
+         native['run_id']==run_id and native['bootstrap_sha256']==NATIVE_BOOTSTRAP_SHA and
+         type(native['files'])is dict and set(native['files'])==NATIVE_DOCS and
+         all(type(pin)is str and re.fullmatch('[a-f0-9]{64}',pin)for pin in native['files'].values()) and
+         native['files']['SOURCE-MANIFEST.json']==NATIVE_MANIFEST_SHA,'EXACT_NATIVE_GRANT_BEFORE_SELECTED_READS')
+    return native
+
+
+def validate_start_account(account,run_id):
+    """Public prerequisites BEFORE charged setup; actual GPU remains unclaimed.
+
+    Root/UI must check freshness externally immediately before SaveRun. The
+    immutable notebook pins that obligation, not an invented future click receipt.
+    Queue delay does not expire the pinned evidence or reset the first-code clock.
+    """
+    now=time.time()
+    def finite(x):return type(x)in(int,float) and math.isfinite(x) and x>=0
+    need(type(account)is dict and account.get('run_id')==run_id and
+         all(finite(account.get(k))for k in('observed_epoch','valid_until_epoch','setup_anchor_epoch',
+             'total_cumulative_budget_usd','GPU_quota_remaining_seconds')),'PRESETUP_BOUND_FINITE_ACCOUNT')
+    sub=account.get('submission_admission')
+    need(type(sub)is dict and set(sub)=={'required_stage','external_root_ui_check_required','runtime_account_refresh_allowed'} and
+         sub['required_stage']=='FINAL_PROVIDER_SUBMISSION_IMMEDIATELY_BEFORE_SAVERUN' and
+         sub['external_root_ui_check_required']is True and sub['runtime_account_refresh_allowed']is False and
+         account['observed_epoch']<account['valid_until_epoch']<=account['observed_epoch']+3600 and
+         account['observed_epoch']<=now,'PINNED_EXTERNAL_SUBMISSION_OBLIGATION_NOT_QUEUE_AGE')
+    need(account.get('platform')=='KAGGLE_EXISTING_ACCOUNT_NO_INCREMENTAL_GCP_COST' and
+         account['total_cumulative_budget_usd']==150 and account.get('new_GCP_resources_or_cost')is False and
+         finite(account.get('verified_incremental_cash_max_usd')) and account['verified_incremental_cash_max_usd']==0 and
+         account.get('quota_and_no_incremental_charge_basis_verified')is True and
+         account['GPU_quota_remaining_seconds']>=7200,'PRESETUP_EXISTING_KAGGLE_QUOTA_BUDGET_ONLY')
+    need(account.get('provider_denial')is False and account.get('actual_accelerator_choice_verified')is True and
+         account.get('concurrent_account_capacity_verified')is True and
+         type(account.get('gpu_count'))is int and account['gpu_count']==1 and
+         type(account.get('tpu_count'))is int and account['tpu_count']==0,'PRESETUP_ONE_GPU_SELECTOR_NO_DENIAL')
+    return account
+
+
+def validate_first_clock(clock,grant):
+    need(type(clock)is dict and set(clock)=={'schema','run_id','first_epoch','first_monotonic','capture_scope','clock_reset_allowed',
+         'native_source_manifest_sha256','wrapper_source_manifest_sha256'} and
+         clock['schema']=='new-ps-first-notebook-code-clock/v1' and clock['run_id']==grant['run_id'] and
+         clock['capture_scope']=='ROOT_PINNED_FIRST_CELL_BEFORE_PAYLOAD_VERIFICATION_EXTRACTION_INSTALL' and
+         clock['clock_reset_allowed']is False and clock['native_source_manifest_sha256']==NATIVE_MANIFEST_SHA and
+         clock['wrapper_source_manifest_sha256']==grant['files']['WRAPPER-SOURCE-MANIFEST.json'], 'EXACT_FIRST_CELL_RUN_SOURCE_CLOCK')
+    need(all(type(clock[k])in(int,float) and math.isfinite(clock[k]) and clock[k]>=0 for k in('first_epoch','first_monotonic')) and
+         0<=time.time()-clock['first_epoch']<7020 and 0<=time.monotonic()-clock['first_monotonic']<7020,
+         'ORIGINAL_FIRST_CODE_SCIENCE7020')
+    return clock['first_epoch']+7200,clock['first_monotonic']+7200
+
+
+def verify_context(directory,grant):
+    need(type(grant)is dict and set(grant)=={"schema","authority","run_id","files","bootstrap_sha256"} and
+         grant["schema"]=="new-ps-setup-export-root-grant/v1" and
+         grant["authority"]=="ROOT_EXPLICIT_ONE_FIXED37_SETUP_MODEL_EXPORT_RUN" and
+         set(grant["files"])==WRAPPER_DOCS,"EXACT_WRAPPER_ROOT_GRANT")
+    root=Path(directory)
+    need(root.is_absolute() and root==root.resolve() and root.is_dir() and not any(p.is_symlink()for p in(root,*root.parents)),"WRAPPER_ROOT")
+    docs={}
+    for name,pin in grant["files"].items():
+        raw=read(root/name);need(sha(raw)==pin,"WRAPPER_ROOT_DOCUMENT_PIN");docs[name]=strict_json(raw)
+    c=docs["WRAPPER-CONTRACT.json"];review=docs["WRAPPER-INDEPENDENT-REVIEW.json"]
+    need(c["run_id"]==grant["run_id"] and c["source_manifest_sha256"]==grant["files"]["WRAPPER-SOURCE-MANIFEST.json"] and
+         review["contract_sha256"]==grant["files"]["WRAPPER-CONTRACT.json"] and
+         review["source_manifest_sha256"]==c["source_manifest_sha256"] and
+         review["status"]=="PASS_FULL_SETUP_EXPORT_SOURCE_NOT_NATIVE_OUTCOME","WRAPPER_REVIEW_BOUND")
+    need(c["schema"]=="new-ps-kaggle-setup-export-contract/v1" and c["platform"]=="KAGGLE_PRIVATE_OFFLINE_FIXED37" and
+         c["whole_seconds"]==7200 and c["science_seconds"]==7020 and c["cleanup_reserve_seconds"]==10 and
+         c["required_competition_mount"]=="arc-prize-2026-arc-agi-3" and c["competition_body_reads_allowed"]is False and
+         c["DEV_gold_attached"]is False and c["Internet_enabled"]is False and
+         c["queue_and_publication_time_counted_from_immutable_account_anchor"]is False and
+         c.get('first_notebook_code_budget_anchor')is True,"WRAPPER_FIXED_SCOPE")
+    need(all(type(c[k])is int for k in('whole_seconds','science_seconds','cleanup_reserve_seconds')),'WRAPPER_INTEGER_LIMITS')
+    need(c["input_root"]=="/kaggle/input" and str(root).startswith('/kaggle/working/') and
+         re.fullmatch(r'/tmp/iris-ps-[a-z0-9-]+',c["runtime_temp_root"]) is not None,"KAGGLE_FIXED_OUTPUT_TEMP_SCOPE")
+    need(c['native_source_root']==str(root.parent/'source') and c['original_setup_root']==str(root.parent/'original'),
+         'EXACT_EXTRACTED_PUBLIC_SOURCE_ROOTS')
+    native=validate_native_grant(docs["NATIVE-ROOT-GRANT.json"],c['run_id'])
+    native_docs={}
+    for name,pin in native["files"].items():
+        raw=read(root/name);need(sha(raw)==pin,"NATIVE_DOC_UNCHANGED_BEFORE_INSTALL");native_docs[name]=strict_json(raw)
+    account=validate_start_account(native_docs["ACCOUNT-AND-BUDGET.json"],c['run_id']);contract=native_docs["EXPERIMENT-CONTRACT.json"]
+    clock_raw=read(root/'PRE-SETUP-CLOCK.json',4096);clock=strict_json(clock_raw)
+    validate_first_clock(clock,grant)
+    need(account['observed_epoch']<=clock['first_epoch'], 'ACCOUNT_OBSERVATION_PRECEDES_FIRST_CODE')
+    need(native_docs['ROOT-RELEASE.json'].get('wrapper_source_manifest_sha256')==grant['files']['WRAPPER-SOURCE-MANIFEST.json'],
+         'NATIVE_ROOT_BINDS_WRAPPER_CLOCK_SOURCE')
+    need(contract["recovered_runtime_root"]==str(Path(c["original_setup_root"])/"runtime") and
+         contract["model_dir"]=="/kaggle/input/models/sorokin/qwen3_4b_grids15_sft139/transformers/bfloat16/1" and
+         contract["source_manifest_sha256"]==NATIVE_MANIFEST_SHA,"NO_OLD_STUDY_ENTRY_OR_MODEL_SWAP")
+    need(Path(c["native_source_root"])/"publication/controller.py"==Path(__file__),"ACTUAL_WRAPPER_SOURCE_LOCATION")
+    need(not any((root/name).exists()for name in('attempt','bootstrap-attempt','supervisor-attempt','small-export-attempt')),
+         "NO_PRIOR_NATIVE_ATTEMPT_OR_EXPORT_REUSE")
+    return {"root":root,"contract":c,"native_grant":native,"native_contract":contract,"account":account,"grant":grant,"clock":clock,"clock_raw":clock_raw}
+
+
+def verified_source_call(path,pin,function,arguments):
+    """PUBLIC JSON authority/paths only; private candidates/targets never inline."""
+    code=("import hashlib,json,sys\nfrom pathlib import Path\nx=json.loads(sys.stdin.read());p=Path(x['path'])\n"
+       "if any(q.is_symlink()for q in(p,*p.parents)):raise SystemExit('SOURCE_SYMLINK')\n"
+       "b=p.read_bytes()\nif hashlib.sha256(b).hexdigest()!=x['pin']:raise SystemExit('SOURCE_HASH')\n"
+       "n={'__name__':'new_ps_source_verified_stage','__file__':str(p),x['marker']:x['pin']}\n"
+       "exec(compile(b,str(p),'exec',dont_inherit=True),n)\n"
+       "r=n[x['function']](*x['args'],**x['kwargs'])\n"
+       "print(json.dumps({'stage_returned':True,'status':r.get('status','RETURNED')},sort_keys=True))\n")
+    data=dict(path=str(path),pin=pin,function=function,**arguments)
+    return code,json.dumps(data,sort_keys=True,separators=(",",":")).encode()
+
+
+def launch_from_pinned_notebook(directory,grant):
+    """Top notebook watchdog, also owns the isolated outer controller process.
+
+    Direct-child PDEATHSIG propagates down the explicitly guarded stage chain.
+    Escaped SDK/OS descendants and provider resource release remain UNKNOWN.
+    """
+    marker=globals().get('__reviewed_publication_bytes__')
+    need(type(marker)is dict and marker.get('bootstrap_sha256')==grant.get('bootstrap_sha256'),
+         'PINNED_NOTEBOOK_REVIEWED_SOURCE_ENTRY')
+    ctx=verify_context(directory,grant);root=ctx['root'];c=ctx['contract']
+    clock=ctx['clock']
+    whole=clock['first_epoch']+7200
+    mono=clock['first_monotonic']+7200
+    guard=load_guard(Path(c['native_source_root'])/'native_experiment/supervisor.py')
+    code,payload=verified_source_call(Path(c['native_source_root'])/'publication/bootstrap.py',
+        grant['bootstrap_sha256'],'run_with_root_grant',
+        {'marker':'_ROOT_VERIFIED_PUBLICATION_BOOTSTRAP_SHA256','args':[str(root),grant],'kwargs':{}})
+    result=run_owned([sys.executable,'-I','-S','-B','-c',code],root/'notebook-supervision',
+        deadline=whole,monotonic_deadline=mono,child_env=clean_host_env(root),guard=guard,stdin_payload=payload)
+    path=root/'whole-wrapper-attempt/WRAPPER-TERMINAL.json'
+    terminal=json.loads(read(path))if path.is_file()else {}
+    success=(result['returncode']==0 and result['reason']is None and
+             terminal.get('status')=='COMPLETE_FIXED37_ALL192_SMALL_EXPORTS')
+    return {'status':'COMPLETE_FIXED37_SMALL_EXPORTS_WAIT_ISOLATED_SCORER'if success else
+        'FAILED_OR_UNKNOWN_ATTEMPT_CONSUMED','retry_allowed':False,'quality_GO':False,
+        'provider_resource_release':'UNKNOWN','correctness_scoring_performed':False}
+
+
+def failure_pack(root,stage,deadline,mono):
+    """Best effort small PUBLIC metadata only; no private logs/partial predictions."""
+    if time.time()>=deadline or time.monotonic()>=mono:return None
+    value={"schema":"new-ps-wrapper-safe-failure/v1","status":"FAILED_OR_UNKNOWN_ATTEMPT_CONSUMED",
+           "stage":stage,"retry_allowed":False,"provider_resource_release":"UNKNOWN",
+           "model_stop_not_inferred_from_wrapper_exit":True,"quality_GO":False}
+    path=root/"FAILURE-SAFE.json"
+    if path.exists():
+        raw=read(path);return {'bytes':len(raw),'sha256':sha(raw)}
+    pin=write_json(path,value)
+    raw=read(path)
+    if time.time()>=deadline or time.monotonic()>=mono:return pin
+    zpath=root/"PUBLIC-FAILURE-METADATA.NEW.zip"
+    with zipfile.ZipFile(zpath,'x',compression=zipfile.ZIP_DEFLATED)as archive:archive.writestr(path.name,raw)
+    os.chmod(zpath,0o600)
+    return pin
+
+
+def inner_pipeline(ctx,seal):
+    root=ctx['root'];c=ctx['contract'];native=ctx['native_grant'];whole=seal['whole_deadline_epoch'];mono=seal['monotonic_deadline']
+    need(os.getppid()==seal['outer_pid'] and time.monotonic()<mono-10,"OWNED_OUTER_PARENT_AND_CLOCK")
+    need(seal['setup_anchor_epoch']==ctx['clock']['first_epoch'] and whole==seal['setup_anchor_epoch']+7200 and
+         mono==ctx['clock']['first_monotonic']+7200 and
+         seal['first_cell_clock']=={'bytes':len(ctx['clock_raw']),'sha256':sha(ctx['clock_raw'])},
+         "NO_CLOCK_RESET_IN_CHILD")
+    own=root/'whole-wrapper-attempt';stage='SETUP';guard=load_guard(Path(c['native_source_root'])/'native_experiment/supervisor.py')
+    try:
+        temp=Path(c['runtime_temp_root']);need(not temp.exists(),"EXCLUSIVE_TEMP_RUNTIME")
+        temp.mkdir(mode=0o700)
+        (temp/'results').mkdir(mode=0o700)
+        installer=OriginalInstallerSources(c['original_setup_root'],guard=guard,deadline=whole-180,monotonic_deadline=mono-180,output_root=root)
+        setup=installer.prepare(c['input_root'],temp/'runtime',execute=True)
+        need(setup['no_network']is True and setup['model_loaded']is False and setup['wheel_count']==43 and
+             setup['model_root']==ctx['native_contract']['model_dir'],"EXACT_OFFLINE_SETUP_NO_MODEL")
+        disk=setup['disk_admission']
+        need(disk['schema']=='new-ps-explicit-temp-output-disk-admission/v1' and disk['status']=='PASS' and
+             disk['temporary_path']==str(temp) and disk['output_path']==str(root),'NEW_BOUND_DISK_ADMISSION_REQUIRED')
+        write_json(own/'SETUP-DISK-ADMISSION.json',disk)
+        write_json(own/'SETUP-PASS.json',{'status':'PASS_ORIGINAL_OFFLINE43_INSTALLED_NOT_MODEL_GATE',
+            'wheel_count':43,'setup_anchor_epoch':seal['setup_anchor_epoch'],'deadline_epoch':whole,
+            'runtime_outside_persistent_output':True,'no_network':True,'competition_body_reads':0})
+        stage='FIXED37_NATIVE_ENGINEERING_TRAINING_ALL192'
+        supervisor=Path(c['native_source_root'])/'native_experiment/supervisor.py'
+        code,payload=verified_source_call(supervisor,SUPERVISOR_SHA,
+            'supervise_root_authorized',{'marker':'_ROOT_VERIFIED_SUPERVISOR_SHA256','args':[str(root),native],
+             'kwargs':{'python_executable':setup['python']}})
+        observed=run_owned([setup['python'],'-I','-B','-c',code],own/'native-controller',
+            deadline=whole-150,monotonic_deadline=mono-150,child_env=setup['environment'],guard=guard,stdin_payload=payload)
+        need(observed['returncode']==0 and observed['reason']is None,"NATIVE_CONTROLLER_FAILED_OR_UNKNOWN")
+        stop=json.loads(read(root/'supervisor-attempt/MODEL-PROCESS-STOPPED.json'))
+        need(stop['status']=='MODEL_STOPPED_SEALED_PREDICTIONS_AWAIT_SEPARATE_SCORER_ADMISSION' and
+             stop['model_process_stopped']is True and stop['wait_returned']is True and stop['observed_returncode']==0,
+             "ACTUAL_MODEL_STOP_REQUIRED_BEFORE_EXPORT")
+        stage='SMALL_POST_STOP_EXPORT'
+        code,payload=verified_source_call(Path(c['native_source_root'])/'native_experiment/export_results.py',EXPORT_SHA,
+            'export_root_authorized',{'marker':'_ROOT_VERIFIED_EXPORT_SOURCE_SHA256','args':[str(root),native],'kwargs':{}})
+        exported=run_owned([setup['python'],'-I','-S','-B','-c',code],own/'export-controller',
+            deadline=whole,monotonic_deadline=mono,child_env=setup['environment'],guard=guard,stdin_payload=payload)
+        need(exported['returncode']==0 and exported['reason']is None,"EXPORT_FAILED_OR_UNKNOWN")
+        status={'status':'COMPLETE_FIXED37_ALL192_MODEL_STOPPED_SMALL_EXPORTS','correctness_scoring_performed':False,
+                'DEV_gold_access':False,'quality_GO':False,'retry_allowed':False,'provider_resource_release':'UNKNOWN'}
+        write_json(own/'INNER-TERMINAL.json',status);return status
+    except BaseException:
+        try:failure_pack(own,stage,whole,mono)
+        except BaseException:pass
+        status={'status':'FAILED_OR_UNKNOWN_WRAPPER_ATTEMPT_CONSUMED','failed_stage':stage,'retry_allowed':False,
+                'correctness_scoring_performed':False,'DEV_gold_access':False,'provider_resource_release':'UNKNOWN'}
+        try:write_json(own/'INNER-TERMINAL.json',status)
+        except BaseException:pass
+        return status
+
+
+def run_root_authorized(directory,grant,*,inner=False,outer_seal_pin=None):
+    marker=globals().get('__reviewed_publication_bytes__')
+    need(type(marker)is dict and marker.get('bootstrap_sha256')==grant.get('bootstrap_sha256') and
+         sys.flags.isolated==1 and sys.flags.dont_write_bytecode==1,"REVIEWED_PUBLICATION_BOOTSTRAP_ONLY")
+    os.umask(0o077);ctx=verify_context(directory,grant);root=ctx['root'];c=ctx['contract']
+    own=root/'whole-wrapper-attempt'
+    if inner:
+        raw=read(own/'PRE-INSTALL-SEAL.json');need(sha(raw)==outer_seal_pin,"EXACT_OUTER_PREINSTALL_SEAL")
+        return inner_pipeline(ctx,json.loads(raw))
+    clock_raw=ctx['clock_raw'];clock=ctx['clock']
+    start_wall,start_mono=clock['first_epoch'],clock['first_monotonic']
+    anchor=start_wall;whole=anchor+7200;mono=start_mono+7200
+    need(time.monotonic()<mono-10,"ORIGINAL_WHOLEWALL_ALREADY_CONSUMED")
+    own.mkdir(mode=0o700)
+    seal={'schema':'new-ps-before-install-wholewall-seal/v1','run_id':grant['run_id'],'setup_anchor_epoch':anchor,
+      'outer_entry_epoch':start_wall,'whole_deadline_epoch':whole,'monotonic_deadline':mono,
+      'outer_pid':os.getpid(),'wrapper_files':grant['files'],'native_source_manifest_sha256':NATIVE_MANIFEST_SHA,
+      'first_cell_clock':{'bytes':len(clock_raw),'sha256':sha(clock_raw)},
+      'actual_setup_epoch':start_wall,'actual_setup_monotonic':start_mono,
+      'attempt_consumed':True,'retry_allowed':False,'model_loaded':False,'private_pairpack_opened':False}
+    seal_pin=write_json(own/'PRE-INSTALL-SEAL.json',seal)
+    guard=load_guard(Path(c['native_source_root'])/'native_experiment/supervisor.py')
+    bootstrap=Path(c['native_source_root'])/'publication/bootstrap.py'
+    code,payload=verified_source_call(bootstrap,grant['bootstrap_sha256'],'run_with_root_grant',
+       {'marker':'_ROOT_VERIFIED_PUBLICATION_BOOTSTRAP_SHA256','args':[str(root),grant],
+        'kwargs':{'inner':True,'outer_seal_pin':seal_pin['sha256']}})
+    try:
+        result=run_owned([sys.executable,'-I','-S','-B','-c',code],own/'whole-controller',deadline=whole,
+          monotonic_deadline=mono,child_env=clean_host_env(own),guard=guard,stdin_payload=payload,log_cap=8*1024**2)
+        terminal_path=own/'INNER-TERMINAL.json'
+        terminal=json.loads(read(terminal_path))if terminal_path.is_file()else {}
+        complete=(terminal.get('status')=='COMPLETE_FIXED37_ALL192_MODEL_STOPPED_SMALL_EXPORTS' and
+                  (root/'small-export-attempt/EXPORT-RECEIPT.json').is_file() and result['returncode']==0 and result['reason']is None)
+        if not complete:failure_pack(own,'OUTER_OR_INNER_UNKNOWN',whole,mono)
+        finished_epoch,finished_mono=time.time(),time.monotonic()
+        export_pin=model_stop_pin=None
+        if complete:
+            raw=read(root/'small-export-attempt/EXPORT-RECEIPT.json');export_pin={'bytes':len(raw),'sha256':sha(raw)}
+            raw=read(root/'supervisor-attempt/MODEL-PROCESS-STOPPED.json');model_stop_pin={'bytes':len(raw),'sha256':sha(raw)}
+            # The boundary is AFTER durable export receipt and export child exit.
+            finished_epoch,finished_mono=time.time(),time.monotonic()
+            need(finished_epoch<whole and finished_mono<mono,"WHOLE_FINAL_EXPORT_BOUND")
+        status={'schema':'new-ps-whole-wrapper-terminal/v1','status':'COMPLETE_FIXED37_ALL192_SMALL_EXPORTS' if complete else 'FAILED_OR_UNKNOWN_ATTEMPT_CONSUMED',
+          'run_id':grant['run_id'],'setup_anchor_epoch':anchor,'finished_epoch':finished_epoch,
+          'wall_from_immutable_anchor_seconds':finished_epoch-anchor,'outer_entry_epoch':start_wall,
+          'outer_elapsed_monotonic_seconds':finished_mono-start_mono,
+          'actual_setup_epoch':start_wall,'actual_setup_monotonic':start_mono,'finished_monotonic':finished_mono,
+          'setup_to_export_monotonic_seconds':finished_mono-start_mono,
+          'prepublication_budget_offset_seconds':0,
+          'budget_elapsed_seconds':finished_mono-start_mono,
+          'pre_setup_clock_receipt':{'bytes':len(clock_raw),'sha256':sha(clock_raw)},
+          'end_boundary':'AFTER_DURABLE_EXPORT_RECEIPT_AND_EXPORT_CHILD_EXIT_BEFORE_THIS_TERMINAL_BOOKKEEPING',
+          'native_contract_sha256':ctx['native_grant']['files']['EXPERIMENT-CONTRACT.json'],
+          'native_release_sha256':ctx['native_grant']['files']['ROOT-RELEASE.json'],
+          'native_source_manifest_sha256':NATIVE_MANIFEST_SHA,
+          'wrapper_contract_sha256':grant['files']['WRAPPER-CONTRACT.json'],
+          'wrapper_source_manifest_sha256':grant['files']['WRAPPER-SOURCE-MANIFEST.json'],
+          'export_receipt':export_pin,'model_stop_receipt':model_stop_pin,'retry_allowed':False,
+          'controller_exit_observed':result['wait_returned'],'controller_returncode':result['returncode'],
+          'provider_resource_release':'UNKNOWN','correctness_scoring_performed':False,'quality_GO':False}
+        write_json(own/'WRAPPER-TERMINAL.json',status);return status
+    except BaseException:
+        try:failure_pack(own,'OUTER_SUPERVISION_UNKNOWN',whole,mono)
+        except BaseException:pass
+        return {'status':'FAILED_OR_UNKNOWN_ATTEMPT_CONSUMED','retry_allowed':False,'provider_resource_release':'UNKNOWN'}
+
+
+if __name__=='__main__':raise SystemExit('WRAPPER_INERT_EXPLICIT_ROOT_RELEASE_REQUIRED')

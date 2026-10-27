@@ -1,0 +1,183 @@
+"""NEW fixed real-model experiment workflow, with no target or provider access.
+
+The native path requires actual NativeEngine + NativeRelease. It is not called
+during development. A separate explicit CPU fixture path tests the same loop.
+All prediction arms finish and seal before a separate DEV scorer may see gold.
+"""
+from pathlib import Path
+import math
+from training.contracts import CostLedger, Operation, UPDATES, digest, need, validate_grid_body
+from training.torch_ops import ReferenceCache, assert_initial_equality, dpo_parent, matched_ce_parent, response_kl
+from .contracts import validate_dev_rows
+
+
+def _candidate(candidate):
+    need(type(candidate) is dict and set(candidate) == {"grid", "finished_eos", "truncated", "sampled_logps"}, "ORIGINAL_CANDIDATE_SCHEMA")
+    need(type(candidate["finished_eos"]) is bool and type(candidate["truncated"]) is bool and
+         candidate["truncated"] is not candidate["finished_eos"], "CANDIDATE_TERMINAL_STATE")
+    lp = candidate["sampled_logps"]
+    need(type(lp) is list and 1 <= len(lp) <= 512 and all(type(v) in (int, float) and math.isfinite(v) and v <= 1e-5 for v in lp), "CANDIDATE_LOGPS")
+    if candidate["finished_eos"]:
+        grid = candidate["grid"]
+        need(type(grid) is list and bool(grid) and all(type(row) is list for row in grid), "CANDIDATE_GRID")
+        tokens = []
+        for index, row in enumerate(grid):
+            if index: tokens.append(10)
+            tokens.extend(row)
+        validate_grid_body(tokens)
+        need(len(tokens) + 1 == len(lp), "CANDIDATE_EOS_TOKEN_ACCOUNTING")
+    else:
+        need(candidate["grid"] is None and len(lp) == 512, "KNOWN_INVALID_CAP_NOT_UNKNOWN")
+    return candidate
+
+
+def _run(engine, panel, dev_rows, *, checkpoint_root, public_probe, hooks, emit, run_id, fixture):
+    validate_dev_rows(dev_rows)
+    need(not ({row["parent_id"] for row in dev_rows} & {p.parent_id for p in panel.pairs}), "TRAIN_DEV_DISJOINT")
+    need(panel.source_kind == ("synthetic_fixture" if fixture else "isolated_verified_pairpack"), "WORKFLOW_PRIVATE_PANEL_PROFILE")
+    need(type(run_id) is str and bool(run_id), "WORKFLOW_RUN_ID")
+    root = Path(checkpoint_root)
+    need(root.is_absolute(), "CHECKPOINT_ROOT_ABSOLUTE")
+    ledger = CostLedger(panel)
+    predictions, losses, arms = [], {}, {}
+    initial_errors = {}
+
+    def phase(name):
+        hooks.set_phase(name)
+
+    def forward(name, pair, side, update=None, grad=False):
+        response = getattr(pair, side)
+        op = Operation(name, "forward", update, pair.ordinal, side, len(response.ids), len(response.body_eos))
+        return ledger.call(op, lambda: engine.forward(response, grad=grad))
+
+    def generate(arm):
+        phase(arm + "_DEV_generate")
+        before = engine.adapter_digest()
+        rows = []
+        for row in dev_rows:
+            # Preserve the original global_sft_loop.collect same-policy cached /
+            # full replay check once per parent before that parent's G2 draws.
+            # These96 fixed synthetic replay probes are charged separately from
+            # the192 quality draws, never hidden inside a generation-only bound.
+            phase(arm + "_DEV_parent_policy_replay_EXTRA_COST")
+            emit("policy_replay_intent", {"arm": arm, "ordinal": row["ordinal"]})
+            replay = engine.verify_policy_replay(row, engine.deadline)
+            emit("policy_replay_complete", {"arm": arm, "ordinal": row["ordinal"], "receipt": replay})
+            phase(arm + "_DEV_generate")
+            for slot in (0, 1):
+                seed = 1729 + row["ordinal"] * 4096 + slot
+                key = {"arm": arm, "parent_id": row["parent_id"], "ordinal": row["ordinal"],
+                       "query_demo_ordinal": row["query_demo_ordinal"], "slot": slot, "seed": seed,
+                       "view_id": "identity", "policy_adapter_sha256": before}
+                emit("draw_intent", key)
+                try:
+                    candidate = _candidate(engine.generate(list(row["prompt"]), seed, 512, engine.deadline))
+                except BaseException:
+                    emit("draw_unknown", key)
+                    raise
+                result = dict(key, candidate=candidate, status="VALID_EOS" if candidate["finished_eos"] else "KNOWN_INVALID_CAP")
+                emit("draw_complete", result)
+                rows.append(result)
+        need(len(rows) == 64 and engine.adapter_digest() == before, "FROZEN_POLICY_COMPLETE_DEV64")
+        predictions.extend(rows)
+        return {"draws": 64, "policy_adapter_sha256": before, "predictions_semantic_sha256": digest(rows)}
+
+    try:
+        phase("fresh_base_reset")
+        engine.reset("fresh_base")
+        arms["fresh_base"] = generate("fresh_base")
+        phase("reference_reset")
+        engine.reset("reference")
+        phase("reference")
+        cache_rows = [(forward("reference", pair, "chosen"), forward("reference", pair, "rejected")) for pair in panel.pairs]
+        cache = ReferenceCache.create(panel, cache_rows, engine.root_identity)
+        del cache_rows
+        cache.assert_intact(panel, engine.root_identity)
+        for arm, label, cursor_arm in (("ce", "CE", "winner_sft"), ("dpo", "DPO", "dpo")):
+            phase(label + "_reset")
+            engine.reset(arm)
+            losses[label], initial_errors[label] = [], 0.0
+            for update in range(1, UPDATES + 1):
+                phase(label + "_train_" + str(update))
+                batch = []
+                cache.assert_intact(panel, engine.root_identity)
+                for index, pair in enumerate(panel.pairs):
+                    ref_chosen, ref_rejected = cache.values[index]
+                    chosen = forward(arm, pair, "chosen", update, True)
+                    if arm == "dpo":
+                        rejected = forward(arm, pair, "rejected", update, True)
+                        if update == 1:
+                            initial_errors[label] = max(initial_errors[label], assert_initial_equality((chosen, rejected), cache.values[index]))
+                        loss = dpo_parent(chosen.selected, rejected.selected, ref_chosen.selected, ref_rejected.selected, panel.n)
+                        graph_tokens = len(pair.chosen.body_eos) + len(pair.rejected.body_eos)
+                    else:
+                        if update == 1:
+                            initial_errors[label] = max(initial_errors[label], assert_initial_equality((chosen,), (ref_chosen,)))
+                        loss = matched_ce_parent(chosen.selected, panel.n)
+                        graph_tokens = len(pair.chosen.body_eos)
+                    batch.append(float(loss.detach()))
+                    ledger.call(Operation(arm, "backward", update, pair.ordinal, None, graph_response_tokens=graph_tokens), lambda: engine.backward(loss))
+                    del loss, chosen
+                    if arm == "dpo": del rejected
+                need(len(batch) == panel.n, "FULL_PANEL_BEFORE_ADAM")
+                cache.assert_intact(panel, engine.root_identity)
+                ledger.call(Operation(arm, "update", update, None, None), lambda: engine.commit(update))
+                losses[label].append(math.fsum(batch))
+            need(engine.arm_updates == 4, "EXACT_FOUR_COMMITS_PER_ARM")
+            policy = engine.adapter_digest()
+            need(policy != engine.root_digest, "TRAINED_POLICY_CHANGED_FROM_ROOT")
+            phase(label + "_fixed_prefix_KL")
+            kl = []
+            for index, pair in enumerate(panel.pairs):
+                values = [forward("kl_" + arm, pair, side) for side in ("chosen", "rejected")]
+                kl.append(math.fsum(float(response_kl(value, ref)) for value, ref in zip(values, cache.values[index])) / 2)
+            cache.assert_intact(panel, engine.root_identity)
+            engine.check_frozen()
+            need(policy == engine.adapter_digest(), "KL_DOES_NOT_UPDATE")
+            phase(label + "_checkpoint_roundtrip_EXTRA_COST")
+            cursor = {"schema": 1, "run_id": run_id, "arm": cursor_arm, "phase": "paired_final",
+                      "optimizer_updates": 4, "parent_ordinal": None, "ttt_episode_updates": 0}
+            identity = {"experiment": "NEW_DPO_MATCHED_CE_EXPLORATORY", "run_id": run_id,
+                        "panel_binding": panel.binding, "root_identity": engine.root_identity, "arm": label}
+            checkpoint = engine.checkpoint_roundtrip(cursor_arm, cursor, identity, public_probe, root / label)
+            need(policy == engine.adapter_digest() and engine.arm_updates == 4, "ROUNDTRIP_RETAINS_FINAL_POLICY")
+            generation = generate(label)
+            arms[label] = dict(generation, updates=4, fixed_prefix_full16_kl=math.fsum(kl) / panel.n, checkpoint=checkpoint)
+        # Coincident independently trained policies/predictions are genuine ties,
+        # not a reason to discard, retry, resample, or force unequal parameters.
+        need(len(predictions) == 192, "ALL_THREE_FRESH_DEV64_COMPLETE")
+        cost = ledger.finish()
+        result = {"schema": "new-ps-fixed-paired-workflow-result/v1", "source_kind": "NEW_RECONSTRUCTION",
+                  "profile": "SYNTHETIC_FIXTURE" if fixture else "NATIVE_PREDICTIONS_SEALED_AWAITING_DEV_SCORER",
+                  "N": panel.n, "panel_binding": panel.binding, "reference_cache_sha256": cache.original_digest,
+                  "initial_full16_maxabs": initial_errors, "losses": losses, "arms": arms,
+                  "experimental_training_and_KL_cost": cost, "engineering_and_checkpoint_probes_in_this_count": False,
+                  "whole_pipeline_physical_cost": hooks.snapshot(), "prediction_count": 192,
+                  "predictions_semantic_sha256": digest(predictions), "DEV_target_reads": 0, "quality_GO": False,
+                  "CE_DPO_equal_adapter_is_not_filtered": True}
+        emit("predictions_seal", {"run_id": run_id, "prediction_count": 192, "semantic_sha256": digest(predictions)})
+        return result, tuple(predictions)
+    except BaseException:
+        ledger.unknown(None, "WORKFLOW_FAILURE_NO_RETRY")
+        emit("workflow_unknown", {"run_id": run_id, "retry_allowed": False, "cost": ledger.summary()})
+        raise
+
+
+def run_fixture_workflow(engine, panel, dev_rows, **kwargs):
+    need(getattr(engine, "fixture_only", False) is True and panel.source_kind == "synthetic_fixture", "EXPLICIT_CPU_FIXTURE_ONLY")
+    return _run(engine, panel, dev_rows, fixture=True, **kwargs)
+
+
+def run_native_workflow(engine, release, panel, dev_rows, **kwargs):
+    from .backend_engine import NativeEngine
+    from .contracts import NativeRelease
+    need(type(engine) is NativeEngine and type(release) is NativeRelease, "EXACT_NATIVE_ENGINE_AND_RELEASE")
+    loaded = engine._loaded
+    need(loaded.release is release, "SAME_ALREADY_LOADED_NATIVE_RELEASE")
+    loaded.assert_native()
+    contract = release.public_contract_for_continuation(loaded)
+    need(kwargs.get('run_id') == loaded._admitted_run_id, "WORKFLOW_SAME_ADMITTED_RUN_ID")
+    need(digest(dev_rows) == contract.get("dev_public_panel_semantic_sha256") and panel.n == 37,
+         "NATIVE_SEALED_DEV32_AND_TRAIN37")
+    need(engine.native_training_gate_passed is True, "ACTUAL_SAME_ENGINE_NATIVE_GATE_REQUIRED")
+    return _run(engine, panel, dev_rows, fixture=False, **kwargs)

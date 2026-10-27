@@ -1,0 +1,244 @@
+"""NEW bounded private-pair and public-DEV contracts. No file/target loaders.
+
+The private parser is for a future separately admitted isolated training worker.
+Author tests supply only handwritten synthetic bytes. Parsing is not selection,
+label recomputation or permission to read the real private pack.
+"""
+import hashlib
+import json
+import math
+import time
+from pathlib import Path
+from dataclasses import dataclass, field
+from training.contracts import Panel, Pair, Response, PIN_KEYS, digest, need
+
+PRIVATE_PIN = {"bytes": 156923, "sha256": "a66a3e905dad5cb26ac823b039a6f2ecfee71d9e2138251428bbd95745dc60bb"}
+PAIR_AGGREGATE_PIN = "699fe2fef3a5f1fad733031ddb10c89fb5735fea357c4efab6c02ba9ed1afe1f"
+TRAIN_CONTRACT_PIN = "e3e4ea1f040e4acadb5434c59c7bcab5f52c975c59615a12c2e804626c3535c2"
+TRAIN_PANEL_SEMANTIC_PIN = "3e95efc3b5fbc9ceb5e14b334da94d785572ec93982b6f12fb332db8f0674a88"
+TRAIN_IDENTITY_SEMANTIC_PIN = "3fe8315cc8249b4f0e4bb2c15a7da6ebe7799c277fac375c5e1ce032f90fd901"
+MODEL_CONFIG_PIN = "932e9430395ba3eea4087cba1769241bc7d0dc8d574846862d6983659456a2d0"
+TOKENIZER_ARTIFACT_PIN = "af6b9e855f9db3192bd9152607708ebd7700b40f9fc5f792a26af70150a96cd5"
+DECODER_CONTRACT_PIN = "57f7073cb1c63db816e2b17b9deab323d27834bf663ef5e33e0009e48c293425"
+ROOT_POLICY_PIN = "eb9ebc364bc4240ec5d50e5e2c1a666df062d4332210ab62cc4ad20858e89fbb"
+MATERIAL_PIN = "ca4299fa4b43a024583858ff6db9695c6c00550ffac79911f436b7d4abf080a2"
+POLICIES = ("fresh_base", "CE", "DPO")
+MAX_RESPONSE, MAX_CONTEXT, NATIVE_N = 512, 3072, 37
+_RELEASE_KEY = object()
+
+
+@dataclass(frozen=True)
+class NativeRelease:
+    """Opaque reviewed-load capability, not a caller-supplied PASS dictionary.
+
+    Only admission.issue_native_release constructs it after the out-of-band
+    root grant, fixed public document verification and durable one-attempt seal.
+    Python object privacy is process discipline, not an OS security boundary.
+    The capability admits paid engineering/model loading; actual native gates
+    remain required before any experimental training or DEV generation.
+    """
+    document_paths_and_pins: tuple
+    release_pin: str
+    valid_until_epoch: float
+    science_deadline_epoch: float
+    _key: object = field(repr=False, compare=False)
+    science_deadline_monotonic: float = 0.0
+
+    def __post_init__(self):
+        need(self._key is _RELEASE_KEY, "ROOT_REVIEWED_NATIVE_RELEASE_FACTORY_REQUIRED")
+
+    def verify_before_load(self):
+        need(self._key is _RELEASE_KEY and time.time() < self.science_deadline_epoch and
+             0 < self.science_deadline_monotonic and time.monotonic() < self.science_deadline_monotonic, "NATIVE_RELEASE_EXPIRED")
+        for name, size, expected in self.document_paths_and_pins:
+            path = Path(name)
+            need(path.is_absolute() and not any(p.is_symlink() for p in (path, *path.parents)), "NATIVE_PUBLIC_RECEIPT_PATH")
+            need(path.is_file() and path.stat().st_size == size <= 4 * 1024 * 1024, "NATIVE_PUBLIC_RECEIPT_SIZE")
+            need(sha(path.read_bytes()) == expected, "NATIVE_PUBLIC_RECEIPT_CHANGED")
+        return self.release_pin
+
+    def verify_continuation(self, loaded):
+        """V5: only an activated, actual-load factory capability may continue.
+
+        V6 account freshness is externally checked at provider SUBMISSION, not
+        queued model start. No account document or clock is extended or rewritten.
+        The fixed science deadline, every original public document byte, exact
+        release/backend object and admitted run binding remain mandatory.
+        """
+        from .backend_load import LoadedNativeBackend, _BINDING_SENTINEL, _ACTUAL_LOAD_COMPLETED_KEY
+        need(type(loaded) is LoadedNativeBackend and loaded._seal is _BINDING_SENTINEL and
+             getattr(loaded, '_continuation_key', None) is _ACTUAL_LOAD_COMPLETED_KEY,
+             "ACTUAL_LOADED_CONTINUATION_CAPABILITY_REQUIRED")
+        need(loaded.release is self and loaded._admitted_release is self and
+             loaded.backend is loaded._admitted_backend and self._key is _RELEASE_KEY and
+             self.release_pin == loaded.release_pin == loaded._admitted_release_pin and
+             self.science_deadline_epoch == loaded._admitted_science_deadline and
+             self.science_deadline_monotonic == loaded._admitted_science_monotonic and
+             self.valid_until_epoch == loaded._admitted_account_valid_until and
+             self.document_paths_and_pins == loaded._admitted_documents,
+             "CONTINUATION_EXACT_LOADED_RELEASE_RUN_BINDING")
+        need(time.time() < self.science_deadline_epoch and 0 < self.science_deadline_monotonic and
+             time.monotonic() < self.science_deadline_monotonic, "CONTINUATION_ORIGINAL_SCIENCE_DEADLINE")
+        # Deliberately NOT valid_until_epoch: fixed external submission evidence
+        # may age in the provider queue; actual first-code clocks never reset.
+        for name, size, expected in self.document_paths_and_pins:
+            path = Path(name)
+            need(path.is_absolute() and not any(p.is_symlink() for p in (path, *path.parents)), "NATIVE_PUBLIC_RECEIPT_PATH")
+            need(path.is_file() and path.stat().st_size == size <= 4 * 1024 * 1024, "NATIVE_PUBLIC_RECEIPT_SIZE")
+            raw = path.read_bytes()
+            need(sha(raw) == expected, "NATIVE_PUBLIC_RECEIPT_CHANGED")
+            if name == self.document_paths_and_pins[0][0]:
+                need(strict_json(raw).get('run_id') == loaded._admitted_run_id,
+                     "CONTINUATION_SAME_ADMITTED_RUN_ID")
+        return self.release_pin
+
+    def public_contract_for_continuation(self, loaded):
+        self.verify_continuation(loaded)
+        name, size, expected = self.document_paths_and_pins[0]
+        raw = Path(name).read_bytes()
+        need(len(raw) == size and sha(raw) == expected, "NATIVE_PUBLIC_RECEIPT_CHANGED")
+        contract = strict_json(raw)
+        need(contract.get('run_id') == loaded._admitted_run_id, "CONTINUATION_SAME_ADMITTED_RUN_ID")
+        return contract
+
+    def public_contract(self):
+        self.verify_before_load()
+        return strict_json(Path(self.document_paths_and_pins[0][0]).read_bytes())
+
+    @property
+    def attempt_root(self):
+        return Path(self.document_paths_and_pins[-1][0]).parent
+
+    def assert_output_path(self, path, *, allow_existing=False):
+        path = Path(path)
+        root = self.attempt_root
+        need(path.is_absolute() and ".." not in path.parts and path != root and root in path.parents,
+             "NATIVE_OUTPUT_MUST_BELONG_TO_PRIVATE_ATTEMPT")
+        need(not any(p.is_symlink() for p in (path, *path.parents)), "NATIVE_OUTPUT_ANCESTOR_SYMLINK")
+        need(allow_existing or not path.exists(), "NATIVE_OUTPUT_EXCLUSIVE")
+        need(root.is_dir() and (root.stat().st_mode & 0o777) == 0o700, "PRIVATE_ATTEMPT_MODE0700")
+        return path
+
+
+def validate_first_cell_clock(clock, *, run_id, native_source_pin, wrapper_source_pin):
+    closed(clock, {"schema", "run_id", "first_epoch", "first_monotonic", "capture_scope", "clock_reset_allowed",
+                   "native_source_manifest_sha256", "wrapper_source_manifest_sha256"}, "FIRST_CELL_CLOCK_SCHEMA")
+    need(clock["schema"] == "new-ps-first-notebook-code-clock/v1" and clock["run_id"] == run_id and
+         clock["capture_scope"] == "ROOT_PINNED_FIRST_CELL_BEFORE_PAYLOAD_VERIFICATION_EXTRACTION_INSTALL" and
+         clock["clock_reset_allowed"] is False and clock["native_source_manifest_sha256"] == native_source_pin and
+         clock["wrapper_source_manifest_sha256"] == wrapper_source_pin and
+         all(type(p) is str and len(p) == 64 and all(c in "0123456789abcdef" for c in p)
+             for p in (native_source_pin, wrapper_source_pin)), "FIRST_CELL_RUN_SOURCE_BINDING")
+    need(all(type(clock[k]) in (int, float) and math.isfinite(clock[k]) and clock[k] >= 0
+             for k in ("first_epoch", "first_monotonic")), "FIRST_CELL_FINITE_CLOCKS")
+    need(0 <= time.time() - clock["first_epoch"] < 7020 and
+         0 <= time.monotonic() - clock["first_monotonic"] < 7020, "FIRST_CELL_ORIGINAL_SCIENCE_7020")
+    return clock["first_epoch"] + 7020, clock["first_monotonic"] + 7020
+
+
+def validate_submission_evidence(account, *, first_epoch):
+    """Pinned external FINAL_SUBMISSION obligation, not an invented click receipt.
+
+    Root/UI must record the fresh check externally just before SaveRun. Immutable
+    offline bytes cannot contain a future click timestamp. This exact run grant
+    binds the obligation and account pins; no queue-age expiry or refresh here.
+    """
+    evidence = account.get("submission_admission")
+    closed(evidence, {"required_stage", "external_root_ui_check_required", "runtime_account_refresh_allowed"},
+           "SUBMISSION_EVIDENCE_SCHEMA")
+    need(evidence["required_stage"] == "FINAL_PROVIDER_SUBMISSION_IMMEDIATELY_BEFORE_SAVERUN" and
+         evidence["external_root_ui_check_required"] is True and evidence["runtime_account_refresh_allowed"] is False and
+         account["observed_epoch"] < account["valid_until_epoch"] <= account["observed_epoch"] + 3600 and
+         account["observed_epoch"] <= first_epoch, "PINNED_EXTERNAL_SUBMISSION_OBLIGATION_NOT_QUEUE_AGE")
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def strict_json(raw):
+    need(type(raw) is bytes and 0 < len(raw) <= 4 * 1024 * 1024, "PRIVATE_BYTES_BOUNDED")
+    def pairs(values):
+        out = {}
+        for key, value in values:
+            need(key not in out, "DUPLICATE_KEY")
+            out[key] = value
+        return out
+    def invalid(_):
+        raise ValueError("NONFINITE_JSON")
+    return json.loads(raw, object_pairs_hook=pairs, parse_constant=invalid)
+
+
+def closed(value, names, code):
+    need(type(value) is dict and set(value) == set(names), code)
+
+
+def parse_bound_private_pack(raw, *, expected_pin, public_identity, runtime_source_sha256,
+                             expected_bindings, synthetic=False):
+    """In-memory immutable pack validation; caller owns admitted private I/O.
+
+    No target read, correctness recomputation, resampling, length filtering, or
+    printing of private contents. The native exact pack identity is fixed.
+    """
+    need(type(synthetic) is bool, "EXPLICIT_PROFILE")
+    if not synthetic:
+        need(expected_pin == PRIVATE_PIN, "EXACT_ORIGINAL_NEW_PAIRPACK_PIN")
+    need(type(raw) is bytes and expected_pin == {"bytes": len(raw), "sha256": sha(raw)}, "PRIVATE_PACK_HASH")
+    doc = strict_json(raw)
+    closed(doc, {"schema", "visibility", "source_kind", "profile", "contract_sha256", "panel_sha256",
+                 "identity_sha256", "bindings", "source_arm", "source_parent_count", "selector_domain",
+                 "parent_weight", "rows"}, "PRIVATE_PACK_SCHEMA")
+    need(doc["schema"] == "new-ps-private-train-pairpack/v1" and doc["visibility"] == "SCORER_ONLY_PRIVATE"
+         and doc["source_kind"] == "NEW_RECONSTRUCTION_NOT_HISTORICAL_SCORER", "PRIVATE_PACK_KIND")
+    need(doc["profile"] == ("SYNTHETIC_ONLY" if synthetic else "NATIVE_RECONSTRUCTION"), "PRIVATE_PACK_PROFILE")
+    need(doc["source_arm"] == "diverse_G4_ONLY" and doc["source_parent_count"] == 128 and
+         type(doc["source_parent_count"]) is int and doc["selector_domain"] == "iris-train-preference-rejected/v1", "FROZEN_SELECTION")
+    need(doc["bindings"] == expected_bindings, "PRIVATE_SOURCE_BINDINGS")
+    if not synthetic:
+        need(doc["contract_sha256"] == TRAIN_CONTRACT_PIN and doc["panel_sha256"] == TRAIN_PANEL_SEMANTIC_PIN
+             and doc["identity_sha256"] == TRAIN_IDENTITY_SEMANTIC_PIN, "PRIVATE_ORIGINAL_TRAIN_BINDINGS")
+        need(expected_bindings["policy_sha256"] == ROOT_POLICY_PIN and expected_bindings["model_material_sha256"] == MATERIAL_PIN
+             and expected_bindings["tokenizer_sha256"] == DECODER_CONTRACT_PIN, "PRIVATE_FROZEN_ROOT_BINDINGS")
+    need(type(doc["rows"]) is list and 0 < len(doc["rows"]) <= 128, "PRIVATE_PAIR_COUNT")
+    n = len(doc["rows"])
+    if not synthetic:
+        need(n == NATIVE_N, "SEALED_NATIVE_PARENT_COUNT")
+    need(doc["parent_weight"] == {"numerator": 1, "denominator": n} and
+         all(type(x) is int for x in doc["parent_weight"].values()), "EQUAL_PARENT_WEIGHT")
+    pairs = []
+    for row in doc["rows"]:
+        closed(row, {"parent_id", "train_ordinal", "query_demo_ordinal", "canonical_prompt_tokens", "canonical_prompt_sha256",
+            "chosen_body_EOS", "chosen_sha256", "rejected_body_EOS", "rejected_sha256", "chosen_aliases", "rejected_aliases",
+            "all_unique_valid_draw_aliases"}, "PRIVATE_ROW_SCHEMA")
+        ordinal = row["train_ordinal"]
+        need(type(ordinal) is int and 0 <= ordinal < len(public_identity), "ORIGINAL_TRAIN_ORDINAL")
+        identity = public_identity[ordinal]
+        need(identity["train_ordinal"] == ordinal and identity["parent_id"] == row["parent_id"] and
+             type(row["query_demo_ordinal"]) is int and identity["query_demo_ordinal"] == row["query_demo_ordinal"], "ORIGINAL_TRAIN_ROLE_FOLD")
+        need(type(row["canonical_prompt_tokens"]) is list and digest(row["canonical_prompt_tokens"]) ==
+             row["canonical_prompt_sha256"] == identity["canonical_prompt_sha256"], "ORIGINAL_CANONICAL_PROMPT")
+        for side in ("chosen", "rejected"):
+            need(type(row[side + "_body_EOS"]) is list and digest(row[side + "_body_EOS"]) == row[side + "_sha256"], "PRIVATE_RESPONSE_HASH")
+        prompt = tuple(row["canonical_prompt_tokens"])
+        pairs.append(Pair(ordinal, row["parent_id"], Response(prompt, tuple(row["chosen_body_EOS"])),
+                          Response(prompt, tuple(row["rejected_body_EOS"]))))
+    pins = {"pairpack": sha(raw), "material": expected_bindings["model_material_sha256"], "model": MODEL_CONFIG_PIN,
+            "tokenizer": TOKENIZER_ARTIFACT_PIN, "root_policy": expected_bindings["policy_sha256"], "source": runtime_source_sha256}
+    return Panel(tuple(pairs), tuple((k, pins[k]) for k in PIN_KEYS), n,
+                 "synthetic_fixture" if synthetic else "isolated_verified_pairpack")
+
+
+def validate_dev_rows(rows):
+    need(type(rows) in (tuple, list) and len(rows) == 32, "ORIGINAL_DEV32_COUNT")
+    seen = set()
+    for index, row in enumerate(rows):
+        closed(row, {"parent_id", "ordinal", "query_demo_ordinal", "prompt"}, "PUBLIC_DEV_ROW_SCHEMA")
+        need(type(row["ordinal"]) is int and row["ordinal"] == index and type(row["query_demo_ordinal"]) is int
+             and row["query_demo_ordinal"] >= 0 and type(row["parent_id"]) is str and row["parent_id"] not in seen, "PUBLIC_DEV_ORDER_ID_FOLD")
+        seen.add(row["parent_id"])
+        need(type(row["prompt"]) in (tuple, list) and 0 < len(row["prompt"]) <= 2560 and
+             all(type(x) is int and 0 <= x < 16 for x in row["prompt"]), "PUBLIC_DEV_CONTEXT")
+        # Use a complete handwritten response to validate the original prompt
+        # grammar without acquiring any query answer.
+        Response(tuple(row["prompt"]), (0, 15))
+    return rows

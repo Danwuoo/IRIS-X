@@ -1,0 +1,98 @@
+"""NEW root-verified fresh-byte bootstrap; no native action on import/CLI.
+
+Root must hash-check this file against its reviewed pin before exec/compile in
+fresh Python -I -B (site packages required for actual pinned CUDA dependencies).
+Compile-only checks may use -I -S -B. No runtime flags create root authority.
+"""
+from pathlib import Path
+import hashlib
+import json
+import os
+import sys
+import types
+
+ROOT = Path(__file__).resolve().parents[1]
+MODULE_PATHS = (
+    ("training", "training/__init__.py"), ("training.contracts", "training/contracts.py"),
+    ("training.torch_ops", "training/torch_ops.py"), ("native_experiment", "native_experiment/__init__.py"),
+    ("native_experiment.source_closure", "native_experiment/source_closure.py"),
+    ("native_experiment.contracts", "native_experiment/contracts.py"), ("native_experiment.admission", "native_experiment/admission.py"),
+    ("native_experiment.physical_audit", "native_experiment/physical_audit.py"),
+    ("native_experiment.backend_load", "native_experiment/backend_load.py"),
+    ("native_experiment.backend_engine", "native_experiment/backend_engine.py"),
+    ("native_experiment.workflow", "native_experiment/workflow.py"), ("native_experiment.native_entry", "native_experiment/native_entry.py"))
+EXTRA_FILES = {"native_experiment/reviewed_bootstrap.py", "native_experiment/test_backend_engine.py",
+    "native_experiment/test_workflow.py", "native_experiment/test_physical_audit.py",
+    "native_experiment/test_admission.py", "native_experiment/test_native_entry_orchestration.py",
+    "native_experiment/NATIVE-EXPERIMENT-README.md",
+    "native_experiment/supervisor.py", "native_experiment/export_results.py",
+    "native_experiment/test_export_results.py", "native_experiment/prepare_public_inputs.py",
+    "native_experiment/NATIVE-PUBLIC-INPUTS.NEW.json", "native_experiment/WHOLE-EXPERIMENT-PHYSICAL-BOUNDS.NEW.json"}
+
+
+def need(ok, code):
+    if not ok: raise RuntimeError(code)
+
+
+def sha(raw): return hashlib.sha256(raw).hexdigest()
+
+
+def read(path):
+    need(path.is_absolute() and not any(p.is_symlink() for p in (path, *path.parents)), "BOOTSTRAP_PATH_NO_SYMLINKS")
+    need(path.is_file() and 0 < path.stat().st_size <= 2 * 1024 * 1024, "BOOTSTRAP_SOURCE_BOUND")
+    return path.read_bytes()
+
+
+def compile_reviewed_modules(manifest_raw, *, source_manifest_sha256, bootstrap_sha256):
+    need(sha(manifest_raw) == source_manifest_sha256, "BOOTSTRAP_MANIFEST_HASH")
+    manifest = json.loads(manifest_raw)
+    paths = {p for _, p in MODULE_PATHS} | EXTRA_FILES
+    need(set(manifest) == {"schema", "files"} and manifest["schema"] == "new-ps-native-source-manifest/v1"
+         and set(manifest["files"]) == paths, "BOOTSTRAP_EXACT_MANIFEST")
+    need(not any(name in sys.modules for name, _ in MODULE_PATHS), "BOOTSTRAP_FRESH_MODULE_PROCESS_REQUIRED")
+    blobs = {}
+    for rel in sorted(paths):
+        blob = read(ROOT / rel)
+        need(manifest["files"][rel] == {"bytes": len(blob), "sha256": sha(blob)}, "BOOTSTRAP_SOURCE_BYTE_PIN")
+        blobs[rel] = blob
+    need(sha(blobs["native_experiment/reviewed_bootstrap.py"]) == bootstrap_sha256, "BOOTSTRAP_SELF_PIN")
+    for name, rel in MODULE_PATHS:
+        module = types.ModuleType(name)
+        module.__file__, module.__cached__ = str(ROOT / rel), None
+        module.__package__ = name if rel.endswith("/__init__.py") else name.rpartition(".")[0]
+        if rel.endswith("/__init__.py"): module.__path__ = [str((ROOT / rel).parent)]
+        module.__reviewed_byte_bootstrap__ = {"schema": "new-ps-native-reviewed-byte-bootstrap/v1",
+            "mode": "COMPILE_PINNED_BYTES_NO_PYCACHE", "bootstrap_sha256": bootstrap_sha256,
+            "source_manifest_sha256": source_manifest_sha256, "module_sha256": sha(blobs[rel])}
+        sys.modules[name] = module
+        if "." in name:
+            parent, _, child = name.rpartition("."); setattr(sys.modules[parent], child, module)
+        exec(compile(blobs[rel], module.__file__, "exec", dont_inherit=True), module.__dict__)
+    return sys.modules["native_experiment.native_entry"]
+
+
+def run_with_root_grant(directory, root_grant):
+    trusted = globals().get("_ROOT_VERIFIED_BOOTSTRAP_SHA256")
+    need(type(trusted) is str and len(trusted) == 64 and root_grant.get("bootstrap_sha256") == trusted,
+         "ACTUAL_EXTERNAL_ROOT_BOOTSTRAP_PIN_REQUIRED")
+    need(sys.flags.isolated == 1 and sys.flags.dont_write_bytecode == 1, "FRESH_ISOLATED_PYTHON_REQUIRED")
+    os.umask(0o077)
+    directory = Path(directory)
+    need(directory.is_absolute() and directory.is_dir() and not any(p.is_symlink() for p in (directory, *directory.parents)),
+         "BOOTSTRAP_CONFIG_DIRECTORY")
+    lease = directory / "bootstrap-attempt"
+    os.mkdir(lease, 0o700)
+    raw = b'{"attempt_consumed":true,"retry_allowed":false,"model_loaded":false}\n'
+    fd = os.open(lease / "LEASE.json", os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, "wb") as stream: stream.write(raw); stream.flush(); os.fsync(stream.fileno())
+    for path in (lease, directory):
+        fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY)
+        try: os.fsync(fd)
+        finally: os.close(fd)
+    manifest_raw = read(directory / "SOURCE-MANIFEST.json")
+    entry = compile_reviewed_modules(manifest_raw, source_manifest_sha256=root_grant["files"]["SOURCE-MANIFEST.json"],
+                                     bootstrap_sha256=trusted)
+    return entry.run_root_authorized(directory, root_grant)
+
+
+if __name__ == "__main__": raise SystemExit("NATIVE_BOOTSTRAP_INERT_WITHOUT_EXPLICIT_REVIEWED_ROOT_RELEASE")

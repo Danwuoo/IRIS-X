@@ -1,0 +1,339 @@
+"""NEW finite public-support SFT adapter over unchanged recovered p4 kernels.
+
+No CLI, model loader, provider action or authorization factory. An outer reviewed
+launcher must supply an actually loaded original four-rank TPU Backend and the
+original allocation clock. CPU fixtures have a separate, native-rejected API.
+The objective is mean of per-parent response-token means, NOT a global token mean.
+"""
+from __future__ import annotations
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import time
+
+from .source_loader import Sources, CENSUS_SHA, canonical, digest, need, read_source
+
+_T = object()
+_PUBLIC_SCHEDULES = {}
+CHECKPOINT_CAP = 780*1024**2
+MATERIAL_SHA = 'ca4299fa4b43a024583858ff6db9695c6c00550ffac79911f436b7d4abf080a2'
+
+
+class PublicSchedule:
+    def __init__(self, token, payload, source_identity, native):
+        need(token is _T, 'schedule factory only')
+        self._raw = canonical(payload)
+        self.source_identity = dict(source_identity)
+        self.native = native
+        self.sha256 = hashlib.sha256(self._raw).hexdigest()
+
+    def _check(self):
+        if self.native:
+            row=_PUBLIC_SCHEDULES.get(id(self))
+            need(row is not None and row[0] is self and row[1:]==(self.sha256,digest(self.source_identity)), 'registered public schedule seal')
+        need(hashlib.sha256(self._raw).hexdigest() == self.sha256, 'schedule changed')
+        return json.loads(self._raw)
+
+    def examples(self, update):
+        need(type(update) is int and 1 <= update <= 8, 'fixed update1..8')
+        return self._check()['updates'][update-1]
+
+    def monitor(self):
+        return self._check()['monitor']
+
+    def zero_keys(self):
+        return frozenset(self._check()['zero_keys'])
+
+
+def _payload(schedule_module, parsed):
+    s = schedule_module
+    ordered = sorted(parsed,key=lambda p:(s.digest(['new-ps-public-support-monitor/v1',1729,p['parent_id']]),p['train_ordinal']))
+    monitor_ids = {p['parent_id'] for p in ordered[:16]}
+    training = [p for p in parsed if p['parent_id'] not in monitor_ids]
+    monitor = [p for p in parsed if p['parent_id'] in monitor_ids]
+    need(len(training)==112 and len(monitor)==16, 'fixed112/16 public parent roles')
+    zeros = set()
+    def make(p,index,view):
+        ex = s.example(p['supports'],index,view)
+        out = {'parent_id':p['parent_id'],'prompt':ex['prompt'],'ids':ex['prompt']+ex['response']}
+        if ex['zero_demo']:
+            zeros.add(digest([out['prompt'],out['ids']]))
+        return out
+    updates = [[make(p,(u-1)//2 % len(p['supports']),'identity' if u%2 else 'rot90') for p in training] for u in range(1,9)]
+    return {'updates':updates,'monitor':[make(p,0,'identity') for p in monitor],
+            'zero_keys':sorted(zeros),'train_ids':[p['parent_id'] for p in training],
+            'monitor_ids':[p['parent_id'] for p in monitor]}
+
+
+def materialize_public_schedule(sources, project_root, census_path):
+    """Only exact two PUBLIC projections; original query input is discarded."""
+    need(type(sources) is Sources, 'verified original source closure')
+    frozen = json.loads(read_source(census_path,CENSUS_SHA))
+    s = sources.module('public_support_schedule')
+    s.ROOT = Path(project_root)
+    need(json.loads(canonical(s.build())) == frozen, 'exact frozen aggregate/source/public-input parity')
+    panel,_ = s.read_exact_public('public_adapter/generated/NORMALIZED-PUBLIC-PANEL.json',s.PANEL_SHA)
+    identity,_ = s.read_exact_public('public_adapter/generated/ORIGINAL-TRAIN-IDENTITY.json',s.IDENTITY_SHA)
+    parsed=[]
+    for ordinal,(row,ident) in enumerate(zip(panel['parents'],identity['rows'])):
+        need(row['parent_id']==ident['parent_id'] and row['train_ordinal']==ordinal, 'exact original public identity')
+        parsed.append({'parent_id':row['parent_id'],'train_ordinal':ordinal,
+                       'supports':s.parse_public_prompt(row['canonical_prompt_tokens'])})
+    data = _payload(s,parsed)
+    for u,examples in enumerate(data['updates'],1):
+        need(sum(len(e['ids'])-len(e['prompt']) for e in examples)==frozen['training_update_schedule'][u-1]['logical_response_body_EOS_tokens'], 'exact dose target denominator')
+    result=PublicSchedule(_T,data,{**sources.identity,'census_sha256':CENSUS_SHA,
+                                    'public_input_pins':frozen['public_input_pins']},True)
+    _PUBLIC_SCHEDULES[id(result)]=(result,result.sha256,digest(result.source_identity))
+    return result
+
+
+def fixture_schedule(sources, parsed):
+    """Handwritten CPU fixture only. Never admitted by NativeRuntime."""
+    need(type(sources) is Sources and len(parsed)==128, 'explicit synthetic128')
+    need(all(p['parent_id'].startswith('synthetic-') for p in parsed), 'synthetic IDs only')
+    return PublicSchedule(_T,_payload(sources.module('public_support_schedule'),parsed),
+                          {'kind':'SYNTHETIC_CPU_ONLY'},False)
+
+
+def span_dispatcher(sources, schedule):
+    original=sources.module('query_spans').query_response_view
+    zero=sources.module('ttt_profile').zero_demo_span
+    allowed=schedule.zero_keys()
+    def span(ids,attention,*,query_prompt_ids):
+        if type(query_prompt_ids) is list and query_prompt_ids.count(14)==2:
+            need(type(attention) is list and all(type(x)is int and x in (0,1) for x in attention), 'strict attention')
+            n=sum(attention)
+            need(digest([query_prompt_ids,ids[:n]]) in allowed, 'ZERO_DEMO must be exact source-bound public fold')
+            q=zero(ids,attention,query_prompt_ids=query_prompt_ids)
+            labels=[-100]*len(ids)
+            labels[q['query_body_start']:n]=ids[q['query_body_start']:n]
+            return {**q,'aligned_labels':labels}
+        return original(ids,attention,query_prompt_ids=query_prompt_ids)
+    return span
+
+
+class Clock:
+    def __init__(self, deadline):
+        need(type(deadline) in (int,float) and math.isfinite(deadline), 'finite original science deadline')
+        remaining=deadline-time.time()
+        need(0<remaining<=9600, 'existing remaining science clock, no renewal')
+        self.deadline=deadline
+        self.monotonic_end=time.monotonic()+remaining
+    def tick(self, deadline=None):
+        need(deadline is None or deadline==self.deadline, 'same original deadline')
+        need(time.time()<self.deadline and time.monotonic()<self.monotonic_end, 'original science deadline expired')
+
+
+def safe_root(root):
+    p=Path(root)
+    need(p.is_absolute() and p.is_dir() and not any(q.is_symlink() for q in (p,*p.parents)), 'owned absolute nonsymlink output root')
+    return p
+
+
+def evaluate_monitor(teacher,backend,examples,train_ids,deadline):
+    """Only role-count delta from original evaluate_validation: train32 ->112."""
+    import torch
+    monitor_ids=[e['parent_id'] for e in examples]
+    need(len(monitor_ids)==len(set(monitor_ids))==16 and len(train_ids)==len(set(train_ids))==112 and not set(monitor_ids)&set(train_ids), 'fixed disjoint112/16 original-TRAIN roles')
+    active=teacher.selected(examples,[1]*16,'U');world=backend.world_size
+    need(world in (1,4), 'CPU fixture1 or native4')
+    teacher.tick(deadline);before=teacher.evaluation_snapshot(backend)
+    versions={n:p._version for n,p in backend.model.named_parameters()}
+    modes={n:m.training for n,m in backend.model.named_modules()}
+    need(all(p.grad is None for p in backend.model.parameters()), 'no monitor-entry gradients')
+    backend.barrier();start=time.perf_counter();total=0.;token_nll=0.;tokens=0
+    try:
+        with torch.no_grad():
+            backend.model.eval()
+            for ex in active:
+                teacher.tick(deadline)
+                if backend.mode=='tpu':value,n=teacher.static_mean_nll(backend,ex,3072)
+                else:
+                    v=teacher.lp(backend,ex);value=-v.mean();n=v.numel()
+                need(not value.requires_grad and bool(torch.isfinite(value)), 'finite no-grad public monitor')
+                val=float(value.detach());total+=val;token_nll+=val*n;tokens+=n
+            mean=backend.global_sum(total)/(16*world)
+            micro=backend.global_sum(token_nll)/(tokens*world)
+            need(backend.global_sum(tokens)==tokens*world, 'replicated monitor denominator')
+    finally:
+        for n,m in backend.model.named_modules():m.training=modes[n]
+    need(all(p._version==versions[n] and p.grad is None for n,p in backend.model.named_parameters()), 'monitor parameter/gradient mutation')
+    need(before==teacher.evaluation_snapshot(backend), 'monitor adapter/Adam/RNG mutation')
+    backend.barrier();teacher.tick(deadline)
+    return {'status':'COMPLETE_PUBLIC_MONITOR_STATE_UNCHANGED','parents':16,
+            'logical_response_EOS_targets':tokens,'physical_rank_response_EOS_visits':tokens*world,
+            'logical_static3072_positions':16*3072,'physical_static3072_positions':world*16*3072,
+            'parent_mean_response_nll':mean,'token_weighted_nll_secondary':micro,
+            'wall_seconds':time.perf_counter()-start,'clean_holdout':False,'exact_grid_quality_measured':False}
+
+
+class _Runtime:
+    def __init__(self,sources,schedule,backend,root,run_id,deadline,native):
+        need(type(sources)is Sources and type(schedule)is PublicSchedule, 'exact sources/schedule types')
+        need(type(run_id)is str and run_id and len(run_id)<=120, 'new bounded run identity')
+        self.sources,self.schedule,self.b=sources,schedule,backend
+        self.root,self.run_id=safe_root(root),run_id
+        self.clock=Clock(deadline);self.native=native;self.used=False
+        self.teacher=sources.module('global_teacher')
+        # Isolated module only: original update/loss/backward code remains exact.
+        # These are precisely the allowed data-span and immutable-clock bindings.
+        need(not hasattr(self.teacher,'_public_adapter_bound'), 'one runtime per isolated original teacher')
+        self.teacher._public_adapter_bound=True
+        self.teacher.query_response_view=span_dispatcher(sources,schedule)
+        self.teacher.tick=self.clock.tick
+        data=schedule._check();self.train_ids=data['train_ids']
+        need(len(set(self.train_ids))==112, 'fixed112 unique training parents')
+        for u in range(1,9):
+            ex=schedule.examples(u)
+            need([x['parent_id'] for x in ex]==self.train_ids, 'same original processing order every update')
+            self.teacher.selected(ex,[1]*112,'U')
+        self.teacher.selected(schedule.monitor(),[1]*16,'U')
+        self.identity={'purpose':'NEW_PUBLIC_SUPPORT_SFT8_112TRAIN_16TRAIN_MONITOR',
+                       'run_id':run_id,'original_sources':sources.identity,
+                       'schedule_sha256':schedule.sha256,'schedule_source_identity':schedule.source_identity,
+                       'objective':'mean_of_per_parent_response_token_means',
+                       'replication':'same panel on four ranks; local/(112*4), SUM',
+                       'native':native,'deadline':deadline}
+
+    def _cursor(self,u):
+        return {'schema':1,'run_id':self.run_id,'arm':'winner_sft','phase':'complete_public_support_global_panel',
+                'optimizer_updates':u,'parent_ordinal':None,'ttt_episode_updates':0}
+
+    def _write(self,name,value):
+        need(Path(name).name==name and len(canonical(value))<1024**2, 'small owned receipt')
+        return self.teacher.write(self.root/name,value)
+
+    def _save(self,u):
+        self.clock.tick();before=self.teacher.snapshot(self.b)
+        import shutil
+        short=self.b.rank==0 and shutil.disk_usage(self.root).free<CHECKPOINT_CAP
+        need(self.b.global_sum(int(short))==0, 'reserve whole four-rank checkpoint bytes before payload')
+        saved=self.b.save_checkpoint(str(self.root/f'checkpoint-{u}'),identity=self.identity,
+                                     cursor=self._cursor(u),max_total_bytes=CHECKPOINT_CAP)
+        need(saved['world_size']==self.b.world_size and saved['prewrite_all_rank_serialized_upper_bytes']<=CHECKPOINT_CAP, 'all-rank checkpoint envelope')
+        need(self.teacher.snapshot(self.b)==before, 'checkpoint cannot change trained state/RNG')
+        self.clock.tick()
+        self._write(f'CHECKPOINT-{u}.rank-{self.b.rank}.json',saved)
+        return saved
+
+    def _monitor(self,u):
+        value=evaluate_monitor(self.teacher,self.b,self.schedule.monitor(),self.train_ids,self.clock.deadline)
+        self._write(f'MONITOR-{u}.rank-{self.b.rank}.json',value)
+        return value
+
+    def _update(self,u):
+        row=self.teacher.update(self.b,self.schedule.examples(u),[1]*112,'U',u-1,self.clock.deadline)
+        need(row['optimizer_updates']==u and row['logical_selected_parents']==112, 'one full112-parent Adam commit')
+        return row
+
+    def _start(self,kind):
+        need(not self.used, 'one consumed phase per runtime')
+        self.used=True;self.clock.tick()
+        if self.native:
+            monitor=self.sources.module('hbm_monitor')
+            monitor.observe(self.root,kind+'-start',reset=True)
+
+    def produce(self):
+        rank=self.b.rank
+        try:
+            self._start('produce')
+            need(not self.b.optimizer.state, 'fresh seed1729 LoRA with empty Adam, no old p4 continuation')
+            self._monitor(0);saved7=None;before7=None
+            for u in range(1,9):
+                row=self._update(u)
+                self._write(f'UPDATE-{u}.rank-{rank}.json',row)
+                if u in (1,2,4):self._monitor(u)
+                if u in (2,4,7):
+                    saved=self._save(u)
+                    if u==7:saved7=saved;before7=self.teacher.snapshot(self.b)
+            self.clock.tick()
+            handoff={'schema':'new-public-sft8-cold-handoff/v1','producer_pid':os.getpid(),
+                     'rank':rank,'world':self.b.world_size,'identity':self.identity,
+                     'deadline':self.clock.deadline,'cursor7':self._cursor(7),'saved7':saved7,
+                     'before7':before7,'expected8':row,'study_updates':8,
+                     'native_executed':self.native,'HF_ready':False}
+            sha=self._write(f'PRODUCER.rank-{rank}.json',handoff)
+            self.b.barrier()
+            if self.native:self.sources.module('hbm_monitor').observe(self.root,'produce-after')
+            return {'status':'PRODUCER8_COMPLETE_COLD_PROOF_PENDING','producer_receipt_sha256':sha,
+                    'final_cursor':8,'native_executed':self.native}
+        except BaseException as e:
+            self._write(f'produce-FAILURE.rank-{rank}.json',{'status':'FAILED_OR_PARTIAL_NOT_COMPLETE','type':type(e).__name__,
+                        'automatic_retry':False,'native_executed':self.native})
+            raise
+
+    def consume(self,producer_receipt_sha256):
+        rank=self.b.rank
+        try:
+            self._start('consume')
+            h=json.loads(read_source(self.root/f'PRODUCER.rank-{rank}.json',producer_receipt_sha256))
+            need(h['producer_pid']!=os.getpid(), 'cold consumer must be a fresh process')
+            need(h['rank']==rank and h['world']==self.b.world_size and h['identity']==self.identity and
+                 h['deadline']==self.clock.deadline and h['cursor7']==self._cursor(7), 'same exact cold source/data/clock/rank identity')
+            need(not self.b.optimizer.state, 'freshly loaded consumer before checkpoint restore')
+            self.clock.tick()
+            self.b.load_checkpoint(h['saved7']['path'],commit_sha256=h['saved7']['commit_sha256'],
+                                   identity=self.identity,cursor=self._cursor(7))
+            need(self.teacher.snapshot(self.b)==h['before7'], 'exact adapter Adam RNG restore7')
+            actual=self._update(8)
+            keys=('loss','gradient_sha256_local','optimizer_updates','snapshot','logical_selected_parents',
+                  'logical_query_EOS_targets','physical_rank_target_visits')
+            need(self.b.global_sum(int(any(actual[k]!=h['expected8'][k] for k in keys)))==0, 'exact native cold replay8, no tolerance widening')
+            monitor=self._monitor(8);saved=self._save(8)
+            result={'status':'COMPLETE_SFT8_AND_EXACT_COLD_REPLAY8','rank':rank,'world':self.b.world_size,
+                    'producer_pid':h['producer_pid'],'consumer_pid':os.getpid(),'identity':self.identity,
+                    'actual8':actual,'monitor8':monitor,'checkpoint8':saved,'study_updates':8,
+                    'proof_extra_updates':1,'final_retained_cursor':8,'HF_ready':False,
+                    'native_executed':self.native,'quality_score':None,'single_policy_full_gradient_reference':'NOT_ESTABLISHED'}
+            self._write(f'CONSUMER.rank-{rank}.json',result);self.b.barrier()
+            if self.native:self.sources.module('hbm_monitor').observe(self.root,'consume-after')
+            return result
+        except BaseException as e:
+            self._write(f'consume-FAILURE.rank-{rank}.json',{'status':'FAILED_OR_PARTIAL_NOT_COMPLETE','type':type(e).__name__,
+                        'automatic_retry':False,'native_executed':self.native})
+            raise
+
+
+class NativeRuntime(_Runtime):
+    """Actual native adapter only; this is not an account/resource release."""
+    def __init__(self,sources,schedule,backend,root,run_id,deadline):
+        need(type(sources)is Sources and type(schedule)is PublicSchedule, 'verified source/public schedule')
+        registered=_PUBLIC_SCHEDULES.get(id(schedule))
+        need(registered is not None and registered[0] is schedule and registered[1:]==(schedule.sha256,digest(schedule.source_identity)) and schedule.native is True, 'actual public factory capability, no fixture/clone')
+        module=sources.module('model_backend')
+        need(type(backend)is module.Backend and backend.mode=='tpu' and backend.world_size==4 and backend.rank in range(4), 'actual pinned original TPU Backend, no CPU fixture')
+        need(backend.bindings.get('tiny_fixture') is False and backend.bindings.get('material')==MATERIAL_SHA and
+             backend.bindings.get('backend_source_sha256')==sources._blobs['model_backend'][2], 'exact original material/backend')
+        need(backend.device_evidence.get('status')=='PASS_ACTUAL_DEVICE_AND_COLLECTIVE', 'original actual four-device/SUM proof')
+        module.versions()
+        import torch
+        import torch.distributed as dist
+        need(dist.is_initialized() and dist.get_world_size()==4 and dist.get_rank()==backend.rank, 'actual live four-rank group')
+        params=list(backend.model.named_parameters())
+        need(len(params)==903 and all(hasattr(p,'placements') and p.device.type=='tpu' for _,p in params), 'actual TPU DTensor fullmodel, no fake backend')
+        need(sum(p.numel() for p in backend.trainable_parameters.values())==66060288, 'original full LoRA dimensions')
+        need(all(p.dtype==(torch.float32 if p.requires_grad else torch.bfloat16) for _,p in params), 'original BF16 storage/FP32 LoRA')
+        # Fail before monitor0/update1 if final8 portability would be unsupported.
+        from .portable_adapter import expected_shapes
+        shapes=expected_shapes(backend.model.config.to_dict())
+        specs=backend.bindings['parameter_specs']
+        need(set(backend.trainable_parameters)==set(specs)==set(shapes), 'pretraining exact504 portable PEFT names')
+        for name,shape in shapes.items():
+            spec=specs[name]
+            need(list(backend.trainable_parameters[name].shape)==shape and spec['global_shape']==shape and
+                 shape[0]%4==0 and spec['local_shape']==[shape[0]//4,shape[1]] and
+                 spec['dtype']=='torch.float32' and spec['mesh_shape']==[4] and spec['placements']==['S(0)'],
+                 'pretraining exact portable global/local shape and Shard0 convention')
+        super().__init__(sources,schedule,backend,root,run_id,deadline,True)
+
+
+class FixtureRuntime(_Runtime):
+    """CPU handwritten synthetic testing only, impossible native PASS label."""
+    def __init__(self,sources,schedule,backend,root,run_id,deadline):
+        need(type(schedule)is PublicSchedule and schedule.native is False and
+             backend.mode=='cpu' and backend.world_size==1 and backend.bindings.get('tiny_fixture') is True, 'explicit synthetic CPU fixture only')
+        need(all(p.device.type=='cpu' for p in backend.model.parameters()), 'CPU fixture tensors')
+        super().__init__(sources,schedule,backend,root,run_id,deadline,False)

@@ -1,0 +1,371 @@
+"""NEW target-free native192 -> frozen DEV scorer transform, in-memory only.
+
+No file reader, target loader, source-task decoder, model call or execution grant.
+Caller must separately admit/pin private prediction/journal buffers after model
+stop. Synthetic tests never load true native predictions/targets/privatepairpack.
+"""
+from collections import Counter
+import hashlib
+import math
+import re
+import dev_evaluator as de
+
+BACKEND_SHA='320f832cbbbbedab91069b3880127c7a9b34ef66a6c615e61350105ea51e5936'
+ARMS=de.ARMS
+KEYS={'predictions','journal','resets','joint_seal','model_stop','aggregate','wrapper_terminal','export_receipt','pre_setup_clock',*('seal_'+a for a in ARMS)}
+EVENTS={'model_load_intent','operation_intent','operation_complete','physical_forward_intent','physical_forward_complete',
+        'policy_replay_intent','policy_replay_complete','draw_intent','draw_complete','predictions_seal'}
+DRAW_KEYS={'arm','parent_id','ordinal','query_demo_ordinal','slot','seed','view_id','policy_adapter_sha256'}
+OP_FIELDS={'reset':{'label'},'forward':{'grad','input_positions','response_tokens'},'backward':{'tracked_graphs'},
+ 'commit':{'update_index'},'checkpoint':{'arm','extra_public_probe_forwards'},'engineering_p1':{'public_synthetic_only'},
+ 'generation':{'prompt_positions','response_cap'},'generation_replay':{'prompt_positions','synthetic_response_tokens','extra_root_calls'}}
+
+
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def pin(raw):return {'bytes':len(raw),'sha256':sha(raw)}
+def checkpin(expected,raw):
+    de.closed(expected,{'bytes','sha256'},'ADAPTER_PIN_SCHEMA')
+    de.need(type(expected['bytes']) is int and pin(raw)==expected,'ADAPTER_EXTERNAL_BYTE_PIN')
+
+def finite_sum(values,code):
+    try:result=math.fsum(values)
+    except OverflowError:raise de.AdmissionError(code) from None
+    de.need(math.isfinite(result),code);return result
+
+def phase_kind(p):
+    if p in [a+'_DEV_generate' for a in ARMS]:return 'generation'
+    if p=='reference' or p in ('CE_fixed_prefix_KL','DPO_fixed_prefix_KL') or re.fullmatch(r'(CE|DPO)_train_[1-4]',p):return 'science'
+    if p in ('CE_checkpoint_roundtrip_EXTRA_COST','DPO_checkpoint_roundtrip_EXTRA_COST'):return 'checkpoint'
+    if p=='engineering_PUBLIC_ONLY_EXTRA_COST' or p in [a+'_DEV_parent_policy_replay_EXTRA_COST' for a in ARMS]:return 'engineering'
+    if p in ('fresh_base_reset','reference_reset','CE_reset','DPO_reset','material_and_model_load'):return 'setup'
+    raise de.AdmissionError('ADAPTER_UNDECLARED_PHASE')
+
+
+def join_journal(raw,rows,*,public_prompt_lengths,native=None,run_id=None,release_sha256=None):
+    de.need(type(public_prompt_lengths) is list and len(public_prompt_lengths)==32 and all(type(n) is int and 0<n<=2560 for n in public_prompt_lengths),'EXACT_PUBLIC_PROMPT_LENGTHS')
+    de.need(type(raw) is bytes and 0<len(raw)<=256*1024**2 and raw.endswith(b'\n'),'SEALED_JSONL_BOUND')
+    events=[de.strict_json(line) for line in raw.splitlines()]
+    de.need(events and len(events)<=1000000,'JOURNAL_EVENT_BOUND')
+    stack=[];root=None;draw=None;replay=None;draw_index=0;op_id=root_id=0
+    roots=Counter();positions=Counter();ops=Counter();draw_info=[];extra_seconds=[];top_level_seconds=[];phase_events={};seal_count=0
+    last_epoch=None;science_sequence=[];replay_keys=set();science_positions=0;science_backward_tokens=0;pending_science=[]
+    for ordinal,item in enumerate(events):
+        de.closed(item,{'event','fields','epoch'},'JOURNAL_CLOSED_EVENT')
+        e,f,t=item['event'],item['fields'],item['epoch']
+        de.need(e in EVENTS and type(f) is dict and type(t) in (int,float) and math.isfinite(t),'JOURNAL_KNOWN_FINITE_EVENT')
+        # Wall time may be adjusted by the OS; source-monotonic operation elapsed
+        # is authoritative for durations, not subtraction of journal timestamps.
+        if last_epoch is None:last_epoch=t
+        if 'phase' in f:
+            kind=phase_kind(f['phase']);phase_events.setdefault(f['phase'],[]).append(ordinal)
+        if e=='model_load_intent':
+            de.closed(f,{'release_sha256','paid_or_quota_time_already_charged'},'MODEL_LOAD_SCHEMA')
+            de.need(ordinal==0 and f['paid_or_quota_time_already_charged'] is True and (release_sha256 is None or f['release_sha256']==release_sha256),'MODEL_LOAD_FIRST')
+        elif e=='draw_intent':
+            de.closed(f,DRAW_KEYS,'DRAW_INTENT_SCHEMA');de.need(draw is None and not stack and root is None and replay is None,'EXCLUSIVE_DRAW_INTENT')
+            de.need(draw_index<len(rows) and de.canonical(f)==de.canonical({k:rows[draw_index][k] for k in DRAW_KEYS}),'EXACT_SEALED_DRAW_ORDER')
+            draw={'key':f,'operation':None,'elapsed':None,'physical':0}
+        elif e=='draw_complete':
+            de.need(draw is not None and not stack and root is None and de.canonical(f)==de.canonical(rows[draw_index]) and draw['elapsed'] is not None,'EXACT_COMPLETE_DRAW_JOIN')
+            de.need(draw['physical']==len(rows[draw_index]['candidate']['sampled_logps'])+(6 if rows[draw_index]['status']=='VALID_EOS' else 5) and draw['physical']<=518,'EXACT_ORIGINAL_CHUNKED_GENERATION_PHYSICAL_CALLS')
+            draw_info.append((draw['elapsed'],draw['physical']));draw_index+=1;draw=None
+        elif e=='policy_replay_intent':
+            de.need(replay is None and draw is None and not stack,'EXCLUSIVE_POLICY_REPLAY')
+            de.closed(f,{'arm','ordinal'},'REPLAY_INTENT_SCHEMA');de.need(f['arm'] in ARMS and type(f['ordinal']) is int and 0<=f['ordinal']<32,'REPLAY_IDENTITY')
+            de.need(draw_index<192 and draw_index%2==0 and (f['arm'],f['ordinal'])==(rows[draw_index]['arm'],rows[draw_index]['ordinal']) and (f['arm'],f['ordinal']) not in replay_keys,'EXACT_ONCE_REPLAY_BEFORE_PARENT_G2')
+            replay_keys.add((f['arm'],f['ordinal']));replay=dict(f,physical=0)
+        elif e=='policy_replay_complete':
+            de.closed(f,{'arm','ordinal','receipt'},'REPLAY_COMPLETION_SCHEMA')
+            de.need(type(f['ordinal']) is int and type(f['receipt']) is dict and replay is not None and not stack and root is None and all(f.get(k)==replay[k] for k in ('arm','ordinal')) and replay['physical']==12,'REPLAY_COMPLETES_INTENT');replay=None
+        elif e=='operation_intent':
+            event=f.get('event');de.need(event in OP_FIELDS,'CLOSED_ENGINE_OPERATION')
+            de.closed(f,{'id','phase','event','native_cuda'}|OP_FIELDS[event],'OPERATION_INTENT_SCHEMA')
+            de.need(type(f['id']) is int and f['id']==op_id+1 and type(f['native_cuda']) is bool,'MONOTONIC_OPERATION_INTENT')
+            op_id+=1
+            for key in ('input_positions','response_tokens','tracked_graphs','update_index','prompt_positions','response_cap','extra_public_probe_forwards','synthetic_response_tokens','extra_root_calls'):
+                if key in f:de.need(type(f[key]) is int and f[key]>0,'OPERATION_EXACT_INTEGER_FIELDS')
+            if 'grad' in f:de.need(type(f['grad']) is bool,'OPERATION_GRAD_BOOL')
+            if 'public_synthetic_only' in f:de.need(f['public_synthetic_only'] is True,'ENGINEERING_PUBLIC_ONLY')
+            de.need(native is None or f['native_cuda'] is native,'EXACT_NATIVE_VERSUS_SYNTHETIC_JOURNAL_PROFILE')
+            if event=='forward':
+                de.need(f['input_positions']<=3072 and f['response_tokens']<=512 and f['input_positions']>=f['response_tokens'],'FORWARD_CONTEXT_RESPONSE_CAP')
+                if phase_kind(f['phase'])=='science':de.need(f['grad'] is bool(re.fullmatch(r'(CE|DPO)_train_[1-4]',f['phase'])),'SCIENCE_EXACT_GRAD_MODE')
+            if event=='backward' and phase_kind(f['phase'])=='science':de.need(f['tracked_graphs']==(1 if f['phase'].startswith('CE_') else 2),'SCIENCE_EXACT_LIVE_GRAPH_COUNT')
+            if event=='commit' and phase_kind(f['phase'])=='science':de.need(f['update_index']==int(f['phase'].rsplit('_',1)[1]),'SCIENCE_EXACT_UPDATE_INDEX')
+            if event=='generation':
+                de.need(draw is not None and draw['operation'] is None and not stack and f['phase']==draw['key']['arm']+'_DEV_generate' and f['response_cap']==512 and f['prompt_positions']==public_prompt_lengths[draw['key']['ordinal']],'ONE_GENERATION_PER_DRAW')
+                draw['operation']=op_id
+            if event=='generation_replay':de.need(replay is not None and not stack and f['extra_root_calls']==12 and f['synthetic_response_tokens']==6 and f['phase']==replay['arm']+'_DEV_parent_policy_replay_EXTRA_COST' and f['prompt_positions']==public_prompt_lengths[replay['ordinal']],'EXACT_REPLAY_OPERATION')
+            stack.append((f,0))
+        elif e=='operation_complete':
+            de.need(bool(stack),'OPERATION_COMPLETION_REQUIRES_INTENT');start,depth=stack[-1]
+            de.closed(f,set(start)|{'elapsed_seconds'},'OPERATION_COMPLETE_SCHEMA')
+            elapsed=f['elapsed_seconds'];de.need(type(elapsed) in (int,float) and math.isfinite(elapsed) and elapsed>=0,'MONOTONIC_OPERATION_ELAPSED')
+            de.need(de.canonical({k:f[k] for k in start})==de.canonical(start) and root is None,'EXACT_LIFO_OPERATION_COMPLETION')
+            if f['event']=='forward':de.need(depth==1,'EXACT_ONE_ROOT_PER_TEACHER_FORCED_FORWARD')
+            stack.pop();ops[(f['phase'],f['event'])]+=1
+            if phase_kind(f['phase'])=='science':
+                science_sequence.append((f['phase'],f['event']))
+                if f['event']=='forward':
+                    science_positions+=f['input_positions']
+                    if f['grad']:pending_science.append((f['phase'],f['response_tokens']))
+                elif f['event']=='backward':
+                    de.need(len(pending_science)==f['tracked_graphs'] and all(p==f['phase'] for p,_ in pending_science),'SCIENCE_PENDING_GRAPH_PHASE_COUNT')
+                    science_backward_tokens+=sum(n for _,n in pending_science);pending_science=[]
+                elif f['event']=='commit':de.need(not pending_science,'NO_UNBACKWARDED_SCIENCE_AT_COMMIT')
+            if f['event']=='generation':
+                de.need(draw is not None and draw['operation']==f['id'],'GENERATION_MATCHED_DRAW');draw['elapsed']=float(elapsed)
+            if not stack:
+                top_level_seconds.append(float(elapsed))
+                if phase_kind(f['phase']) in ('engineering','checkpoint'):extra_seconds.append(float(elapsed))
+        elif e=='physical_forward_intent':
+            de.closed(f,{'id','phase','input_positions','model_training','use_cache'},'PHYSICAL_INTENT_SCHEMA')
+            de.need(root is None and type(f['id']) is int and f['id']==root_id+1 and type(f['input_positions']) is int and 0<f['input_positions']<=3072,'PHYSICAL_ID_CONTEXT')
+            de.need(type(f['model_training']) is bool and type(f['use_cache']) is bool,'PHYSICAL_FLAGS')
+            de.need(bool(stack) and stack[-1][0]['phase']==f['phase'],'ROOT_IN_EXACT_OPERATION_PHASE')
+            operation,root_count=stack[-1];stack[-1]=(operation,root_count+1)
+            if operation['event']=='forward':de.need(f['input_positions']==operation['input_positions'] and f['model_training'] is operation['grad'] and f['use_cache'] is False,'FORWARD_OWN_ROOT_POSITION_FLAGS_PARITY')
+            root_id+=1;root=f
+            if replay is not None:replay['physical']+=1
+            if phase_kind(f['phase'])=='generation':
+                de.need(draw is not None and len(stack)==1 and stack[-1][0]['event']=='generation' and stack[-1][0]['phase']==f['phase'],'GENERATION_ROOT_IN_EXACT_OPERATION')
+                draw['physical']+=1
+        elif e=='physical_forward_complete':
+            de.closed(f,{'id','phase','input_positions'},'PHYSICAL_COMPLETE_SCHEMA')
+            de.need(root is not None and de.canonical(f)==de.canonical({k:root[k] for k in f}),'EXACT_PHYSICAL_COMPLETION');roots[f['phase']]+=1;positions[f['phase']]+=f['input_positions'];root=None
+        elif e=='predictions_seal':
+            de.need(ordinal==len(events)-1 and draw_index==192 and not stack and root is None and draw is None and replay is None,'ALL192_BEFORE_FINAL_JOURNAL_SEAL')
+            de.closed(f,{'run_id','prediction_count','semantic_sha256'},'JOURNAL_SEAL_SCHEMA')
+            de.need((run_id is None or f['run_id']==run_id) and type(f['prediction_count']) is int and f.get('prediction_count')==192 and f.get('semantic_sha256')==de.digest(rows),'JOURNAL_SEALED_ROWS_HASH');seal_count+=1
+    de.need(draw_index==192 and seal_count==1 and not stack and root is None and draw is None and replay is None,'COMPLETE_JOURNAL_NOT_UNKNOWN')
+    expected={('reference','forward'):74,('CE_fixed_prefix_KL','forward'):74,('DPO_fixed_prefix_KL','forward'):74}
+    for a in ('CE','DPO'):
+        for update in range(1,5):
+            p=f'{a}_train_{update}';expected[(p,'forward')]=37 if a=='CE' else 74;expected[(p,'backward')]=37;expected[(p,'commit')]=1
+    observed={k:v for k,v in ops.items() if phase_kind(k[0])=='science'}
+    de.need(observed==expected,'JOURNAL_FIXED_666_TF_296_BACKWARD_8_COMMITS')
+    ordered=[('reference','forward')]*74
+    for a in ('CE','DPO'):
+        for u in range(1,5):
+            phase=f'{a}_train_{u}'
+            ordered+=([(phase,'forward')]*(1 if a=='CE' else 2)+[(phase,'backward')])*37+[(phase,'commit')]
+        ordered +=[(a+'_fixed_prefix_KL','forward')]*74
+    de.need(science_sequence==ordered and all(roots[p]==v for (p,event),v in expected.items() if event=='forward'),'EXACT_ORDERED_SCIENCE_OPERATIONS_AND_ROOTS')
+    de.need(len(replay_keys)==96 and all(ops[(a+'_DEV_parent_policy_replay_EXTRA_COST','generation_replay')]==32 for a in ARMS),'EXACT96_ORIGINAL_REPLAY_PROBES')
+    de.need(all(ops[(a+'_DEV_generate','generation')]==64 for a in ARMS),'ALL64_GENERATION_OPERATIONS')
+    return {'draws':draw_info,'root_by_phase':dict(roots),'positions_by_phase':dict(positions),'root_total':root_id,'operation_total':op_id,
+      'science_forward_input_positions':science_positions,'science_backward_response_tokens':science_backward_tokens,'phase_event_ordinals':phase_events,'extra_seconds':finite_sum(extra_seconds,'EXTRA_SECONDS_FINITE'),'disjoint_top_level_operation_seconds':finite_sum(top_level_seconds,'ALL_DISJOINT_OPERATION_SECONDS_FINITE'),'first_epoch':events[0]['epoch'],'maximum_epoch':max(e['epoch'] for e in events)}
+
+
+def normalize(raw_docs,expected_pins,identity_document,context,*,expected_context_sha256):
+    """Target-free transform; external caller owns one-shot/private I/O admission.
+
+    Receipt fingerprints are not authority. Exact source/review/root/private-read
+    admission must be established outside this no-I/O function before calling it.
+    """
+    de.closed(raw_docs,KEYS,'ADAPTER_INPUT_BYTES');de.closed(expected_pins,KEYS,'ADAPTER_INPUT_PINS')
+    for k in KEYS:checkpin(expected_pins[k],raw_docs[k])
+    de.need(de.digest(context)==expected_context_sha256,'EXTERNAL_ADAPTER_CONTEXT_PIN')
+    de.closed(context,{'schema','run_id','native_contract_sha256','native_source_sha256','native_release_sha256',
+      'identity_sha256','bindings','wrapper_source_manifest_sha256','wrapper_contract_sha256','setup_anchor_epoch','historical_acquisition_seconds','opaque_materialization_receipt_sha256'},'ADAPTER_CONTEXT_SCHEMA')
+    de.need(context['schema']=='new-ps-native-prediction-normalization-context/v1','ADAPTER_CONTEXT_VERSION')
+    de.need(all(de.sha_ok(context[k]) for k in ('native_contract_sha256','native_source_sha256','native_release_sha256','identity_sha256','wrapper_source_manifest_sha256','wrapper_contract_sha256','opaque_materialization_receipt_sha256')),'EXACT_CONTEXT_HASH_TYPES')
+    de.need(context['bindings']['stage_source_sha256']==context['native_source_sha256'],'STAGE_SOURCE_BINDING_EQUALS_NATIVE_CLOSURE')
+    ident=de.validate_identity(identity_document,expected_sha256=context['identity_sha256'])
+    docs={k:de.strict_json(v) for k,v in raw_docs.items() if k!='journal'}
+    pred=docs['predictions'];de.closed(pred,{'schema','contract_sha256','rows'},'NATIVE_192_SCHEMA')
+    de.need(pred['schema']=='new-ps-native-192-predictions/v1' and pred['contract_sha256']==context['native_contract_sha256'],'NATIVE_PREDICTION_CONTRACT')
+    rows=pred['rows'];de.need(type(rows) is list and len(rows)==192,'EXACT_NATIVE192_NO_FILTER')
+    policies={}
+    for index,row in enumerate(rows):
+        de.closed(row,DRAW_KEYS|{'candidate','status'},'NATIVE_DRAW_SCHEMA')
+        arm=ARMS[index//64];ordinal=(index%64)//2;slot=index%2;p=identity_document['rows'][ordinal]
+        de.need(row['arm']==arm and type(row['ordinal']) is int and row['ordinal']==ordinal and type(row['slot']) is int and row['slot']==slot
+          and type(row['query_demo_ordinal']) is int and row['query_demo_ordinal']==p['query_demo_ordinal'] and row['parent_id']==p['parent_id']
+          and type(row['seed']) is int and row['seed']==1729+ordinal*4096+slot and row['view_id']=='identity','EXACT_ORIGINAL_ROW_ORDER_SEED_FOLD')
+        de.need(de.sha_ok(row['policy_adapter_sha256']),'NATIVE_ADAPTER_SHA')
+        policies.setdefault(arm,row['policy_adapter_sha256']);de.need(policies[arm]==row['policy_adapter_sha256'],'FROZEN_POLICY_PER_ARM')
+        de.closed(row['candidate'],{'grid','finished_eos','truncated','sampled_logps'},'NATIVE_CANDIDATE_SCHEMA')
+        de.need(row['status'] in ('VALID_EOS','KNOWN_INVALID_CAP'),'NATIVE_UNKNOWN_NOT_INVALID')
+    joint=docs['joint_seal'];de.closed(joint,{'schema','run_id','draws','private_predictions','aggregate','private_journal','private_resets','distinct_arm_seals',
+      'contract_sha256','source_manifest_sha256','all_physical_intents_terminal','DEV_target_reads','model_process_exit_still_required'},'JOINT_SEAL_SCHEMA')
+    de.need(joint['schema']=='new-ps-native-predictions-seal/v1' and joint['run_id']==context['run_id'] and type(joint['draws']) is int and joint['draws']==192
+      and joint['contract_sha256']==context['native_contract_sha256'] and joint['source_manifest_sha256']==context['native_source_sha256']
+      and joint['all_physical_intents_terminal'] is True and type(joint['DEV_target_reads']) is int and joint['DEV_target_reads']==0
+      and joint['model_process_exit_still_required'] is True,'JOINT_EXACT_SCOPE')
+    for key,doc in (('private_predictions','predictions'),('aggregate','aggregate'),('private_journal','journal'),('private_resets','resets')):
+        de.need(joint[key]==expected_pins[doc],'JOINT_EXACT_BYTE_EVIDENCE')
+    de.closed(joint['distinct_arm_seals'],ARMS,'THREE_ACTUAL_ARM_SEALS')
+    for a in ARMS:
+        seal=docs['seal_'+a]
+        de.closed(seal,{'schema','run_id','arm','draws','ordered_rows_semantic_sha256','joint_private_prediction_file','private_journal','private_resets',
+          'release_sha256','contract_sha256','all192_complete_before_arm_seal','DEV_target_reads'},'ARM_SEAL_SCHEMA')
+        de.need(type(seal['draws']) is int and type(seal['DEV_target_reads']) is int and seal['all192_complete_before_arm_seal'] is True,'ARM_SEAL_EXACT_TYPES')
+        de.need(seal=={'schema':'new-ps-native-arm-predictions-seal/v1','run_id':context['run_id'],'arm':a,'draws':64,
+          'ordered_rows_semantic_sha256':de.digest([r for r in rows if r['arm']==a]),'joint_private_prediction_file':expected_pins['predictions'],
+          'private_journal':expected_pins['journal'],'private_resets':expected_pins['resets'],'release_sha256':context['native_release_sha256'],
+          'contract_sha256':context['native_contract_sha256'],'all192_complete_before_arm_seal':True,'DEV_target_reads':0}
+          and joint['distinct_arm_seals'][a]==expected_pins['seal_'+a],'ACTUAL_ARM_SEAL_CROSS_BINDING')
+    stop=docs['model_stop'];de.closed(stop,{'schema','run_id','child_pid','observed_returncode','wait_returned','deadline_termination','model_process_stopped',
+      'observed_epoch','supervisor_communication_failure','supervisor_termination_signal','parent_death_guard','host_or_provider_failure_is_unknown',
+      'contract_sha256','DEV_target_reads_by_supervisor','retry_allowed','scoring_admitted','predictions_seal','status','pre_setup_clock'},'MODEL_STOP_SCHEMA')
+    de.need(stop['pre_setup_clock']==expected_pins['pre_setup_clock'],'MODEL_STOP_ORIGINAL_FIRST_CLOCK_PIN')
+    de.need(type(stop['child_pid']) is int and stop['child_pid']>0,'MODEL_STOP_PID_INTEGER')
+    de.need(stop['schema']=='new-ps-native-model-process-stopped/v1' and stop['run_id']==context['run_id'] and stop['contract_sha256']==context['native_contract_sha256']
+      and stop['predictions_seal']==expected_pins['joint_seal'] and stop['wait_returned'] is True and stop['model_process_stopped'] is True
+      and type(stop['observed_returncode']) is int and stop['observed_returncode']==0 and stop['deadline_termination'] is False and stop['scoring_admitted'] is False
+      and stop['supervisor_communication_failure'] is False and stop['supervisor_termination_signal'] is None
+      and stop['parent_death_guard']=='LINUX_PR_SET_PDEATHSIG_SIGKILL_EXPECTED_PARENT_RACECHECK' and stop['host_or_provider_failure_is_unknown'] is True
+      and stop['retry_allowed'] is False and type(stop['DEV_target_reads_by_supervisor']) is int and stop['DEV_target_reads_by_supervisor']==0
+      and stop['status']=='MODEL_STOPPED_SEALED_PREDICTIONS_AWAIT_SEPARATE_SCORER_ADMISSION','OBSERVED_SUCCESSFUL_PROCESS_EXIT_REQUIRED')
+    outer=docs['wrapper_terminal'];export=docs['export_receipt']
+    de.closed(outer,{'schema','status','run_id','setup_anchor_epoch','finished_epoch','wall_from_immutable_anchor_seconds','outer_entry_epoch',
+      'outer_elapsed_monotonic_seconds','end_boundary','native_contract_sha256','native_source_manifest_sha256','wrapper_contract_sha256',
+      'wrapper_source_manifest_sha256','native_release_sha256','actual_setup_epoch','actual_setup_monotonic','finished_monotonic',
+      'setup_to_export_monotonic_seconds','prepublication_budget_offset_seconds','budget_elapsed_seconds','pre_setup_clock_receipt',
+      'controller_exit_observed','controller_returncode','export_receipt','model_stop_receipt','retry_allowed','provider_resource_release','correctness_scoring_performed','quality_GO'},'WHOLE_WRAPPER_TERMINAL_SCHEMA')
+    de.need(outer['schema']=='new-ps-whole-wrapper-terminal/v1' and outer['status']=='COMPLETE_FIXED37_ALL192_SMALL_EXPORTS' and outer['run_id']==context['run_id'] and
+      outer['native_contract_sha256']==context['native_contract_sha256'] and outer['native_release_sha256']==context['native_release_sha256'] and outer['native_source_manifest_sha256']==context['native_source_sha256'] and
+      de.sha_ok(context['wrapper_source_manifest_sha256']) and outer['wrapper_source_manifest_sha256']==context['wrapper_source_manifest_sha256'] and
+      de.sha_ok(context['wrapper_contract_sha256']) and outer['wrapper_contract_sha256']==context['wrapper_contract_sha256'] and
+      outer['model_stop_receipt']==expected_pins['model_stop'] and outer['export_receipt']==expected_pins['export_receipt'] and
+      outer['controller_exit_observed'] is True and type(outer['controller_returncode']) is int and outer['controller_returncode']==0 and
+      outer['pre_setup_clock_receipt']==expected_pins['pre_setup_clock'] and outer['retry_allowed'] is False and outer['provider_resource_release']=='UNKNOWN' and outer['correctness_scoring_performed'] is False and outer['quality_GO'] is False,
+      'EXACT_OUTER_EXPORT_NATIVE_STOP_SOURCE_CLOSURE')
+    de.need(outer['end_boundary']=='AFTER_DURABLE_EXPORT_RECEIPT_AND_EXPORT_CHILD_EXIT_BEFORE_THIS_TERMINAL_BOOKKEEPING','FULL_SETUP_THROUGH_EXPORT_BOUNDARY')
+    clock=docs['pre_setup_clock'];de.closed(clock,{'schema','run_id','first_epoch','first_monotonic','capture_scope','clock_reset_allowed','native_source_manifest_sha256','wrapper_source_manifest_sha256'},'EXACT_FIRST_CELL_CLOCK_SCHEMA')
+    de.need(clock['native_source_manifest_sha256']==context['native_source_sha256'] and
+      clock['wrapper_source_manifest_sha256']==context['wrapper_source_manifest_sha256'],'FIRST_CLOCK_EXACT_SOURCE_BINDINGS')
+    de.need(clock['schema']=='new-ps-first-notebook-code-clock/v1' and clock['run_id']==context['run_id'] and clock['clock_reset_allowed'] is False and
+      clock['capture_scope']=='ROOT_PINNED_FIRST_CELL_BEFORE_PAYLOAD_VERIFICATION_EXTRACTION_INSTALL','ORIGINAL_FIRST_CODE_CLOCK_SCOPE')
+    for k in ('first_epoch','first_monotonic'):de.need(type(clock[k]) in (int,float) and math.isfinite(clock[k]),'FIRST_CELL_FINITE_CLOCKS')
+    for k in ('setup_anchor_epoch','finished_epoch','wall_from_immutable_anchor_seconds','outer_entry_epoch','outer_elapsed_monotonic_seconds',
+      'actual_setup_epoch','actual_setup_monotonic','finished_monotonic','setup_to_export_monotonic_seconds','prepublication_budget_offset_seconds','budget_elapsed_seconds'):
+        de.need(type(outer[k]) in (int,float) and math.isfinite(outer[k]),'OUTER_FINITE_CLOCKS')
+    de.need(outer['setup_anchor_epoch']==context['setup_anchor_epoch']==clock['first_epoch'] and outer['actual_setup_epoch']==outer['outer_entry_epoch']==clock['first_epoch'] and
+      outer['actual_setup_monotonic']==clock['first_monotonic'] and outer['finished_monotonic']>=outer['actual_setup_monotonic'] and
+      outer['setup_to_export_monotonic_seconds']==outer['outer_elapsed_monotonic_seconds']==outer['finished_monotonic']-outer['actual_setup_monotonic'] and
+      outer['prepublication_budget_offset_seconds']==0 and outer['actual_setup_epoch']==outer['setup_anchor_epoch'] and
+      outer['budget_elapsed_seconds']==outer['prepublication_budget_offset_seconds']+outer['setup_to_export_monotonic_seconds'] and 0<=outer['budget_elapsed_seconds']<7200 and
+      outer['wall_from_immutable_anchor_seconds']==outer['finished_epoch']-outer['setup_anchor_epoch'],'EXACT_MONOTONIC_SETUP_EXPORT_AND_SEPARATE_BUDGET_OFFSET')
+    de.closed(export,{'schema','status','public_aggregate_archive','PRIVATE_evaluator_archive','checkpoint_weight_archives_created','TRAIN_pairpack_included',
+      'DEV_gold_included','raw_private_logs_exposed_to_author','scoring_admitted','retry_allowed','pre_setup_clock'},'FINAL_SMALL_EXPORT_SCHEMA')
+    de.need(export['pre_setup_clock']==expected_pins['pre_setup_clock'],'EXPORT_ORIGINAL_FIRST_CLOCK_PIN')
+    de.need(export['schema']=='new-ps-small-post-stop-exports/v1' and export['status']=='PASS_NEW_EXPORTS_NOT_ORIGINAL_RECOVERY_ZIP' and
+      type(export['checkpoint_weight_archives_created']) is int and export['checkpoint_weight_archives_created']==0 and all(export[k] is False for k in
+      ('TRAIN_pairpack_included','DEV_gold_included','raw_private_logs_exposed_to_author','scoring_admitted','retry_allowed')),'EXPORT_NO_TRAIN_OR_GOLD_OR_EARLY_SCORE')
+    exported_evidence={'AGGREGATE-MODEL-STAGE.json':'aggregate','PREDICTIONS-SEALED.json':'joint_seal','MODEL-PROCESS-STOPPED.json':'model_stop',
+      'PRIVATE-PREDICTIONS-192.json':'predictions','PRIVATE-OPERATIONS-AND-PREDICTIONS.jsonl':'journal','PRIVATE-RESET-RECEIPTS.json':'resets',
+      **{'PREDICTIONS-'+a+'-SEALED.json':'seal_'+a for a in ARMS}}
+    public_members=['AGGREGATE-MODEL-STAGE.json','MODEL-STAGE-TERMINAL.json','PREDICTIONS-SEALED.json','PRELOAD-SEAL.json',
+      'PRE-PRIVATE-PAIRPACK-SEAL.json','PRE-PRIVATE-DEVICE-PROOF.json','MATERIAL-PROOF.json',
+      *['PREDICTIONS-'+a+'-SEALED.json' for a in ARMS],'MODEL-PROCESS-STOPPED.json',
+      'EXPERIMENT-CONTRACT.json','SOURCE-MANIFEST.json','INDEPENDENT-REVIEW.json','ACCOUNT-AND-BUDGET.json','DEV-SCORER-ADMISSION.json','ROOT-RELEASE.json']
+    private_members=['PRIVATE-PREDICTIONS-192.json','PRIVATE-OPERATIONS-AND-PREDICTIONS.jsonl','PRIVATE-RESET-RECEIPTS.json',
+      'PREDICTIONS-SEALED.json',*['PREDICTIONS-'+a+'-SEALED.json' for a in ARMS],'MODEL-PROCESS-STOPPED.json']
+    public_context_pins={'EXPERIMENT-CONTRACT.json':context['native_contract_sha256'],'SOURCE-MANIFEST.json':context['native_source_sha256'],'ROOT-RELEASE.json':context['native_release_sha256']}
+    for k,names in (('public_aggregate_archive',public_members),('PRIVATE_evaluator_archive',private_members)):
+        archive=export[k];de.closed(archive,{'bytes','sha256','members'},'SMALL_ARCHIVE_PIN_SCHEMA')
+        de.need(type(archive['bytes']) is int and 0<archive['bytes']<20_000_000 and de.sha_ok(archive['sha256']) and type(archive['members']) is list,'SMALL_EXPORT_PIN_BOUND')
+        de.need([member.get('name') for member in archive['members']]==names,'EXACT_ORIGINAL_EXPORT_MEMBER_ORDER_NO_GOLD')
+        for member in archive['members']:
+            de.closed(member,{'name','bytes','sha256'},'EXPORT_MEMBER_PIN_SCHEMA')
+            de.need(type(member['bytes']) is int and 0<member['bytes']<=256*1024**2 and de.sha_ok(member['sha256']),'EXPORT_MEMBER_BOUNDED_PIN')
+            if member['name'] in exported_evidence:de.need({key:member[key] for key in ('bytes','sha256')}==expected_pins[exported_evidence[member['name']]],'EXPORT_IDENTICAL_SEALED_PRIVATE_EVIDENCE')
+            if member['name'] in public_context_pins:de.need(member['sha256']==public_context_pins[member['name']],'EXPORT_IDENTICAL_NATIVE_AUTHORITY')
+    resets=docs['resets'];de.closed(resets,{'schema','run_id','receipts'},'RESET_FILE_SCHEMA')
+    de.need(resets['schema']=='new-ps-native-reset-receipts/v1' and resets['run_id']==context['run_id'] and type(resets['receipts']) is list,'RESET_FILE_BINDING')
+    expected_labels=['engineering-support','engineering-two-live-dpo','engineering-final-root','fresh_base','reference','ce','dpo']
+    de.need([r.get('label') for r in resets['receipts']]==expected_labels,'ALL_EXACT_RESET_RECEIPTS')
+    resetmap={r['label']:r for r in resets['receipts']}
+    for r in resets['receipts']:
+        de.closed(r,{'label','root_identity','adapter_digest','rng_digest','fresh_empty_adam','native_cuda','backend_reset'},'RESET_RECEIPT_SCHEMA')
+        de.need(r['root_identity']==context['bindings']['root_policy_sha256'] and r['adapter_digest']==policies['fresh_base']
+          and de.sha_ok(r['rng_digest']) and r['rng_digest']==resets['receipts'][0]['rng_digest'] and r['fresh_empty_adam'] is True
+          and r['native_cuda'] is (ident.profile=='NATIVE_UNRELEASED') and type(r['backend_reset']) is dict,'EXACT_ROOT_RNG_ADAM_RESET_PROOF')
+    audit=join_journal(raw_docs['journal'],rows,public_prompt_lengths=[len(p['canonical_prompt']) for p in identity_document['rows']],native=ident.profile=='NATIVE_UNRELEASED',run_id=context['run_id'],release_sha256=context['native_release_sha256'])
+    de.need(math.isfinite(audit['disjoint_top_level_operation_seconds']) and outer['setup_to_export_monotonic_seconds']+1e-6>=audit['disjoint_top_level_operation_seconds'],'WHOLE_MONOTONIC_COVERS_ALL_DISJOINT_SCIENCE_GENERATION_EXTRA_OPERATIONS')
+    aggregate=docs['aggregate']
+    de.closed(aggregate,{'schema','source_kind','profile','N','panel_binding','reference_cache_sha256','initial_full16_maxabs','losses','arms',
+      'experimental_training_and_KL_cost','engineering_and_checkpoint_probes_in_this_count','whole_pipeline_physical_cost','prediction_count',
+      'predictions_semantic_sha256','DEV_target_reads','quality_GO','CE_DPO_equal_adapter_is_not_filtered','engineering_aggregate',
+      'private_prediction_file','private_journal','private_resets','distinct_arm_seals'},'NATIVE_AGGREGATE_SCHEMA')
+    de.need(aggregate['source_kind']=='NEW_RECONSTRUCTION' and aggregate['N']==37 and type(aggregate['N']) is int and
+      aggregate['profile']==('NATIVE_PREDICTIONS_SEALED_AWAITING_DEV_SCORER' if ident.profile=='NATIVE_UNRELEASED' else 'SYNTHETIC_FIXTURE') and
+      aggregate['engineering_and_checkpoint_probes_in_this_count'] is False and aggregate['quality_GO'] is False and
+      type(aggregate['DEV_target_reads']) is int and aggregate['DEV_target_reads']==0 and aggregate['CE_DPO_equal_adapter_is_not_filtered'] is True,'AGGREGATE_SCIENCE_SCOPE')
+    de.need(de.sha_ok(aggregate['reference_cache_sha256']) and context['bindings']['frozen_reference_sha256']==aggregate['reference_cache_sha256'],'ACTUAL_SEALED_FROZEN_REFERENCE_CACHE_PIN')
+    ledger=aggregate['experimental_training_and_KL_cost']
+    de.closed(ledger,{'status','planned','attempted','completed','forward_calls','backward_calls','optimizer_commits','forward_input_positions','backward_response_tokens','checkpoint_recompute_cost','failure'},'SCIENCE_LEDGER_SCHEMA')
+    de.need(ledger['status']=='COMPLETE' and ledger['failure'] is None and
+      all(type(ledger[k]) is int and ledger[k]==v for k,v in {'planned':970,'attempted':970,'completed':970,'forward_calls':666,'backward_calls':296,'optimizer_commits':8}.items()),'SEALED_FULL_LOGICAL_SCIENCE_LEDGER')
+    de.need(type(ledger['forward_input_positions']) is int and ledger['forward_input_positions']==audit['science_forward_input_positions'] and type(ledger['backward_response_tokens']) is int and ledger['backward_response_tokens']==audit['science_backward_response_tokens'],'SCIENCE_LEDGER_OPERATION_TOKEN_POSITION_PARITY')
+    physical=aggregate['whole_pipeline_physical_cost']
+    de.closed(physical,{'schema','status','root_forward_intents','root_forward_completions','root_unknown','root_input_positions_reserved','root_input_positions_completed',
+      'decoder_layer_execution_intents','decoder_layer_execution_completions','decoder_layer_unknown','operation_intents','operation_completions','operation_unknown',
+      'by_phase','checkpoint_recomputation','FLOPs_claimed','retry_allowed','abrupt_process_death'},'PHYSICAL_CLOSED_SCHEMA')
+    de.need(physical['schema']=='new-ps-root-and-layer-physical-accounting/v1' and physical['status']=='RUNNING' and physical['FLOPs_claimed'] is False and physical['retry_allowed'] is False,'PHYSICAL_UNKNOWN_BLOCKS_TRANSFORM')
+    for k in ('root_forward_intents','root_forward_completions','root_unknown','root_input_positions_reserved','root_input_positions_completed',
+      'decoder_layer_execution_intents','decoder_layer_execution_completions','decoder_layer_unknown','operation_intents','operation_completions','operation_unknown'):
+        de.need(type(physical[k]) is int and physical[k]>=0,'PHYSICAL_INTEGER_COUNTERS')
+    de.need(physical['root_input_positions_reserved']==physical['root_input_positions_completed']==sum(audit['positions_by_phase'].values()),'JOURNAL_ROOT_INPUT_POSITION_PARITY')
+    de.need(type(physical['by_phase']) is dict,'PHYSICAL_PHASE_SCHEMA')
+    phase_keys={'root_reserved','root_completed','root_input_positions_reserved','root_input_positions_completed','decoder_layer_executions_reserved','decoder_layer_executions_completed'}
+    for phase,counters in physical['by_phase'].items():
+        phase_kind(phase);de.need(type(counters) is dict and set(counters)<=phase_keys and all(type(v) is int and v>=0 for v in counters.values()),'PHYSICAL_PHASE_CLOSED_COUNTERS')
+        de.need(counters.get('root_reserved',0)==counters.get('root_completed',0)==audit['root_by_phase'].get(phase,0) and
+          counters.get('root_input_positions_reserved',0)==counters.get('root_input_positions_completed',0)==audit['positions_by_phase'].get(phase,0) and
+          counters.get('decoder_layer_executions_reserved',0)==counters.get('decoder_layer_executions_completed',0),'EXACT_PHASE_CLOSED_INPUT_POSITION_LAYER_PARITY')
+    de.need(sum(c.get('decoder_layer_executions_completed',0) for c in physical['by_phase'].values())==physical['decoder_layer_execution_completions'],'LAYER_AGGREGATE_PHASE_SUM')
+    de.need(aggregate['schema']=='new-ps-fixed-paired-workflow-result/v1' and aggregate['prediction_count']==192 and aggregate['predictions_semantic_sha256']==de.digest(rows)
+      and aggregate['private_prediction_file']==expected_pins['predictions'] and aggregate['private_journal']==expected_pins['journal']
+      and aggregate['private_resets']==expected_pins['resets'] and aggregate['distinct_arm_seals']==joint['distinct_arm_seals'],'AGGREGATE_BOUND_TO_IDENTICAL_PRIVATE_EVIDENCE')
+    de.need(physical['root_forward_intents']==physical['root_forward_completions']==audit['root_total'] and
+      physical['operation_intents']==physical['operation_completions']==audit['operation_total'] and
+      physical['root_unknown']==physical['decoder_layer_unknown']==physical['operation_unknown']==0 and
+      physical['decoder_layer_execution_intents']==physical['decoder_layer_execution_completions'],'JOURNAL_MATCHES_FINAL_PHYSICAL_COUNTERS')
+    for phase,n in audit['root_by_phase'].items():
+        de.need(physical['by_phase'][phase]['root_reserved']==physical['by_phase'][phase]['root_completed']==n,'PHASE_ROOT_COUNTER_PARITY')
+    arms=[]
+    for ai,a in enumerate(ARMS):
+        outrows=[]
+        for o in range(32):
+            p=identity_document['rows'][o];draws=[]
+            for slot in (0,1):
+                i=ai*64+o*2+slot;r=rows[i];elapsed,calls=audit['draws'][i]
+                draws.append({'draw_id':str(slot),'view_id':'identity','seed':r['seed'],'call_id':f'{a}:DEV:{o}:{slot}',
+                  'status':r['status'],**r['candidate'],'actual_sampled_tokens':len(r['candidate']['sampled_logps']),'elapsed_seconds':elapsed})
+            outrows.append({k:p[k] for k in ('parent_id','dev_ordinal','query_demo_ordinal','canonical_prompt_sha256')}|{'draws':draws})
+        flat=[d for r in outrows for d in r['draws']];n=audit['root_by_phase'][a+'_DEV_generate']
+        arms.append({'name':a,'adapter_sha256':policies[a],'policy_sha256':sha((BACKEND_SHA+policies[a]).encode('ascii')),
+          'reset_receipt_sha256':de.digest(resetmap[{'fresh_base':'fresh_base','CE':'ce','DPO':'dpo'}[a]]),
+          'prediction_seal_sha256':expected_pins['seal_'+a]['sha256'],'rows':outrows,
+          'cost':{'reserved_draws':64,'completed_draws':64,'reserved_sampled_tokens':32768,
+            'actual_sampled_tokens':sum(d['actual_sampled_tokens'] for d in flat),'reserved_physical_forwards':n,'completed_physical_forwards':n,
+            'measured_draw_seconds':math.fsum(d['elapsed_seconds'] for d in flat)}})
+    def receipt(phases):return de.digest({'journal_sha256':expected_pins['journal']['sha256'],
+      'phase_event_ordinals':{p:audit['phase_event_ordinals'][p] for p in phases}})
+    phase_receipts={'initial_reference':receipt(['reference']),'CE_reset':de.digest(resetmap['ce']),'DPO_reset':de.digest(resetmap['dpo']),
+      'CE_updates':receipt([f'CE_train_{i}' for i in range(1,5)]),'DPO_updates':receipt([f'DPO_train_{i}' for i in range(1,5)]),
+      'CE_KL':receipt(['CE_fixed_prefix_KL']),'DPO_KL':receipt(['DPO_fixed_prefix_KL']),
+      'cost_journal':expected_pins['journal']['sha256'],'fresh_generation_journal':receipt([a+'_DEV_generate' for a in ARMS]),
+      'model_stop_receipt':expected_pins['model_stop']['sha256']}
+    eng=sum(n for p,n in audit['root_by_phase'].items() if phase_kind(p)=='engineering')
+    checkpoint=sum(n for p,n in audit['root_by_phase'].items() if phase_kind(p)=='checkpoint')
+    de.need(eng==1152+33 and checkpoint==4,'FIXED96_REPLAY_PLUS33_ENGINEERING_PLUS4_CHECKPOINT_ROOT_CALLS')
+    for t in (stop['observed_epoch'],context['setup_anchor_epoch']):de.need(type(t) in (int,float) and math.isfinite(t),'PUBLIC_WHOLE_WALL_FINITE')
+    de.need(context['setup_anchor_epoch']<=audit['first_epoch'] and stop['observed_epoch']>=audit['maximum_epoch'],'JOURNAL_AFTER_SETUP_BEFORE_OBSERVED_EXIT')
+    closure={'schema':'new-ps-three-policy-dev32-closure/v1','status':'COMPLETE_SEALED','run_id':context['run_id'],
+      'all_predictions_sealed_before_correctness_evaluation':True,'model_author_dev_target_accesses':0,
+      'dev_correctness_evaluations_before_all_prediction_seals':0,'opaque_goldpack_materialized_pre_run':True,
+      'opaque_materialization_receipt_sha256':context['opaque_materialization_receipt_sha256'],'model_process_stopped_before_correctness_evaluation':True,
+      'same_root_reset_reference_verified':True,'per_arm_optimizer_commits':{'fresh_base':0,'CE':4,'DPO':4},'training_parent_count':37,
+      'whole_wall_seconds':outer['setup_to_export_monotonic_seconds'],'historical_acquisition_seconds':context['historical_acquisition_seconds'],
+      'phase_receipts':phase_receipts,'science_non_generation_counts':{'reference_TF':74,'CE_training_TF':148,'DPO_training_TF':296,
+        'post_arm_KL_TF':148,'CE_backward':148,'DPO_backward':148},'engineering_probe_forward_calls':eng,
+      'checkpoint_probe_forward_calls':checkpoint,'total_non_generation_forward_calls':666+eng+checkpoint,
+      'extra_probe_authority_sha256':context['native_contract_sha256'] if eng+checkpoint else None,'engineering_checkpoint_seconds':audit['extra_seconds']}
+    bundle={'schema':'new-ps-freshbase-ce-dpo-dev32-predictions/v1','source_kind':de.SOURCE_KIND,'profile':ident.profile,
+      'role':'DEV','origin':de.ORIGIN,'run_id':context['run_id'],'identity_sha256':ident.sha256,'bindings':context['bindings'],'arms':arms,'closure':closure}
+    admitted=de.validate_predictions(bundle,ident,expected_sha256=de.digest(bundle),expected_bindings=context['bindings'],expected_closure_sha256=de.digest(closure))
+    return bundle,admitted.public_metadata()

@@ -1,0 +1,1130 @@
+"""NEW synthetic admission/closure tests, NEVER a native release or run grant.
+
+Every document/lease/journal below lives in a SYNTHETIC_* TemporaryDirectory.
+Admission's source verifier and capability constructor are mocked for its pure
+validation/lease tests: no authentic NativeRelease is created. Fresh-byte tests
+only compile NEW public source copies under Python -I -S -B; no issuer, material,
+model, provider, GPU, private pairpack, DEV target or correctness scorer is used.
+No private-pack reads or rehashes occur. Existing supply96 failure is immutable.
+"""
+from contextlib import ExitStack
+from copy import deepcopy
+import hashlib
+import json
+import os
+from pathlib import Path
+import stat
+import signal
+import subprocess
+import sys
+import tempfile
+from types import SimpleNamespace
+import unittest
+from unittest import mock
+
+from . import admission, contracts, native_entry, reviewed_bootstrap, source_closure, supervisor
+
+NOW = 100000.0
+FIXTURE_RUN = "SYNTHETIC_ADMISSION_FIXTURE_NOT_AUTHORIZED"
+BOOTSTRAP_PIN = "b" * 64
+
+
+def raw_json(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode() + b"\n"
+
+
+def pin(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def paid_account():
+    return {"fixture": FIXTURE_RUN, "platform": "PAID_EXISTING_ACCOUNT_SYNTHETIC_ONLY",
+            "observed_epoch": NOW - 60, "valid_until_epoch": NOW + 60,
+            "setup_anchor_epoch": NOW - 100, "total_cumulative_budget_usd": 150,
+            "verified_cumulative_spent_usd": 100, "other_reserved_max_usd": 20,
+            "new_run_worst_case_usd": 30, "unknown_or_pending_unbounded_charges": False,
+            "provider_denial": False, "actual_accelerator_choice_verified": True,
+            "concurrent_account_capacity_verified": True, "gpu_count": 1, "tpu_count": 0}
+
+
+def kaggle_account():
+    result = paid_account()
+    result.update(platform="KAGGLE_EXISTING_ACCOUNT_NO_INCREMENTAL_GCP_COST",
+                  new_GCP_resources_or_cost=False, verified_incremental_cash_max_usd=0,
+                  quota_and_no_incremental_charge_basis_verified=True,
+                  GPU_quota_remaining_seconds=7200,
+                  verified_cumulative_spent_usd=None, other_reserved_max_usd=None,
+                  new_run_worst_case_usd=None, unknown_or_pending_unbounded_charges=True)
+    return result
+
+
+class SyntheticAdmissionFixture:
+    """Only disposable synthetic documents; output factory is always inert."""
+    def __init__(self, root, account=None):
+        self.root = root
+        self.docs = {
+            "SOURCE-MANIFEST.json": {"schema": "SYNTHETIC_INERT_SOURCE_MANIFEST", "files": {}},
+            "EXPERIMENT-CONTRACT.json": {"fixture": FIXTURE_RUN, "run_id": FIXTURE_RUN,
+                "private_pairpack": deepcopy(contracts.PRIVATE_PIN), "verified_parent_count": 37,
+                "supply96_status": "NO_GO_P_0_0625", "exploratory_only": True,
+                "training_updates_per_arm": 4, "DEV_draws": 192, "DEV_design_seen": True,
+                "PS64_reused": False},
+            "INDEPENDENT-REVIEW.json": {"fixture": FIXTURE_RUN,
+                "status": "PASS_EXPLORATORY_EXPERIMENT_NOT_SUPPLY96_GO"},
+            "ACCOUNT-AND-BUDGET.json": deepcopy(account if account is not None else paid_account()),
+            "DEV-SCORER-ADMISSION.json": {"fixture": FIXTURE_RUN,
+                "status": "PASS_PRE_READ_OPAQUE_DEV32_LINEAGE_AND_SCORER",
+                "target_bodies_exposed_to_author": False, "panel_changed": False, "original_DEV32": True},
+            "ROOT-RELEASE.json": {"fixture": FIXTURE_RUN, "authority": "ROOT_EXPLICIT_NATIVE_ONE_RUN",
+                "run_id": FIXTURE_RUN, "retry_allowed": False},
+        }
+        frozen_dev = {key: "c" * 64 for key in admission.DEV_PIN_KEYS}
+        frozen_dev.update(scorer_manifest_sha256=admission.FROZEN_DEV_SCORER_MANIFEST,
+            public_dev_identity_semantic_sha256=admission.ORIGINAL_DEV_IDENTITY,
+            original_DEV32_lineage_map_sha256=admission.ORIGINAL_DEV_LINEAGE,
+            official_commit="f3283f727488ad98fe575ea6a5ac981e4a188e49")
+        self.docs["EXPERIMENT-CONTRACT.json"]["frozen_dev_admission"] = frozen_dev
+        self.docs["DEV-SCORER-ADMISSION.json"].update(frozen_dev)
+        self.docs["DEV-SCORER-ADMISSION.json"].update(no_correctness_before_192_and_model_stop=True,
+                                                   DEV_gold_attached_to_model=False, design_seen=True)
+        self.marker = {"mode": "COMPILE_PINNED_BYTES_NO_PYCACHE", "bootstrap_sha256": BOOTSTRAP_PIN}
+        self.inert_result = object()
+        self.reseal_synthetic_docs()
+
+    def reseal_synthetic_docs(self):
+        """Hashes SYNTHETIC PUBLIC DOCUMENTS ONLY; never the private pairpack."""
+        source_pin = pin(raw_json(self.docs["SOURCE-MANIFEST.json"]))
+        self.docs["EXPERIMENT-CONTRACT.json"]["source_manifest_sha256"] = source_pin
+        contract_pin = pin(raw_json(self.docs["EXPERIMENT-CONTRACT.json"]))
+        self.docs["INDEPENDENT-REVIEW.json"].update(source_manifest_sha256=source_pin, contract_sha256=contract_pin)
+        self.docs["ROOT-RELEASE.json"]["contract_sha256"] = contract_pin
+        self.grant = {"schema": "new-ps-explicit-native-root-grant/v1", "run_id": FIXTURE_RUN,
+                      "scope": "ONE_CHARGED_ENGINEERING_THEN_FIXED37_DPO_CE_DEV32_EXPERIMENT",
+                      "files": {}, "bootstrap_sha256": BOOTSTRAP_PIN}
+        for name in admission.NAMES:
+            raw = raw_json(self.docs[name]); (self.root / name).write_bytes(raw)
+            self.grant["files"][name] = pin(raw)
+
+    def invoke_inert(self):
+        # Both patches are mandatory: these fixture claims can never grant work.
+        with ExitStack() as stack:
+            stack.enter_context(mock.patch.object(admission.time, "time", return_value=NOW))
+            self.source_check = stack.enter_context(mock.patch.object(source_closure, "verify_loaded_source_bytes", return_value=True))
+            self.factory = stack.enter_context(mock.patch.object(admission, "NativeRelease", return_value=self.inert_result))
+            private_read = stack.enter_context(mock.patch.object(native_entry, "_read_pin", side_effect=AssertionError("PRIVATE/MODEL INPUT FORBIDDEN")))
+            model_load = stack.enter_context(mock.patch.object(native_entry, "load_native_backend", side_effect=AssertionError("MODEL LOAD FORBIDDEN")))
+            try:
+                return admission.issue_native_release(self.root, out_of_band_root_grant=self.grant,
+                                                      reviewed_byte_bootstrap=self.marker)
+            finally:
+                private_read.assert_not_called(); model_load.assert_not_called()
+
+
+class InertAdmissionTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="SYNTHETIC_ADMISSION_FIXTURE_")
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+
+    def fixture(self, account=None):
+        # Each subcase has an independent directory; never retry a consumed lease.
+        root = self.root / ("fixture_" + str(len(list(self.root.iterdir()))))
+        root.mkdir(mode=0o700)
+        return SyntheticAdmissionFixture(root, account)
+
+    def assert_denied(self, fixture, code):
+        with self.assertRaisesRegex((ValueError, RuntimeError), code): fixture.invoke_inert()
+        fixture.factory.assert_not_called()
+        self.assertFalse((fixture.root / "attempt").exists())
+
+    def test_paid_exact150_validates_only_inert_factory_and_consumes_one_lease(self):
+        f = self.fixture(); self.assertIs(f.invoke_inert(), f.inert_result)
+        f.factory.assert_called_once(); f.source_check.assert_called_once()
+        attempt = f.root / "attempt"; seal = attempt / "PRELOAD-SEAL.json"
+        self.assertEqual(stat.S_IMODE(attempt.stat().st_mode), 0o700)
+        self.assertEqual(stat.S_IMODE(seal.stat().st_mode), 0o600)
+        value = json.loads(seal.read_bytes())
+        self.assertTrue(value["attempt_consumed"]); self.assertFalse(value["retry_allowed"])
+        self.assertFalse(value["model_loaded"]); self.assertFalse(value["private_pack_opened"])
+        self.assertTrue(value["engineering_gate_still_required"])
+        pins, release_pin, expiry, deadline, _ = f.factory.call_args.args
+        self.assertEqual(len(pins), 7); self.assertEqual(release_pin, pin(seal.read_bytes()))
+        self.assertEqual(expiry, NOW + 60); self.assertEqual(deadline, NOW - 100 + 7020)
+
+    def test_paid_over150_unknown_negative_bool_and_nonfinite_rejected(self):
+        cases = [("new_run_worst_case_usd", 30.01), ("verified_cumulative_spent_usd", None),
+                 ("verified_cumulative_spent_usd", -1), ("other_reserved_max_usd", True),
+                 ("unknown_or_pending_unbounded_charges", True)]
+        for key, value in cases:
+            with self.subTest(key=key, value=value):
+                account = paid_account(); account[key] = value
+                self.assert_denied(self.fixture(account), "PAID_NATIVE_CUMULATIVE_USD150")
+        for value in (float("nan"), float("inf"), -float("inf"), True, None, -1):
+            with self.subTest(finite=value): self.assertFalse(admission._finite(value))
+
+    def test_kaggle_verified_quota_accepts_unknown_historic_spent_without_calling_it_zero(self):
+        account = kaggle_account(); f = self.fixture(account)
+        self.assertIs(f.invoke_inert(), f.inert_result)
+        self.assertIsNone(f.docs["ACCOUNT-AND-BUDGET.json"]["verified_cumulative_spent_usd"])
+        self.assertTrue(f.docs["ACCOUNT-AND-BUDGET.json"]["unknown_or_pending_unbounded_charges"])
+        self.assertFalse(f.docs["ACCOUNT-AND-BUDGET.json"]["new_GCP_resources_or_cost"])
+
+    def test_kaggle_no_incremental_GCP_verified_quota_mandatory(self):
+        cases = [("new_GCP_resources_or_cost", True), ("new_GCP_resources_or_cost", None),
+                 ("verified_incremental_cash_max_usd", .01), ("verified_incremental_cash_max_usd", False),
+                 ("quota_and_no_incremental_charge_basis_verified", False),
+                 ("GPU_quota_remaining_seconds", 7199.99), ("GPU_quota_remaining_seconds", None),
+                 ("GPU_quota_remaining_seconds", True)]
+        for key, value in cases:
+            with self.subTest(key=key, value=value):
+                account = kaggle_account(); account[key] = value
+                self.assert_denied(self.fixture(account), "KAGGLE_VERIFIED_QUOTA_NO_NEW_GCP_COST_ONLY")
+
+    def test_current_observation_expiry_and_one_hour_window(self):
+        cases = [("observed_epoch", NOW + 1), ("valid_until_epoch", NOW),
+                 ("valid_until_epoch", NOW + 3541), ("observed_epoch", None),
+                 ("setup_anchor_epoch", True)]
+        for key, value in cases:
+            with self.subTest(key=key, value=value):
+                account = paid_account(); account[key] = value
+                self.assert_denied(self.fixture(account), "NATIVE_(CURRENT_ACCOUNT_PRICING|FINITE_BUDGET_ACCOUNT)")
+
+    def test_original_setup_clock_cannot_restart_or_cross_science_deadline(self):
+        for anchor in (NOW + .001, NOW - 7020, NOW - 7200):
+            with self.subTest(anchor=anchor):
+                account = paid_account(); account["setup_anchor_epoch"] = anchor
+                self.assert_denied(self.fixture(account), "NATIVE_ORIGINAL_WHOLEWALL_7200_RESERVE180")
+
+    def test_provider_denial_and_current_capacity_are_not_assumed(self):
+        cases = [("provider_denial", True), ("provider_denial", None),
+                 ("actual_accelerator_choice_verified", False), ("concurrent_account_capacity_verified", None),
+                 ("gpu_count", 2), ("gpu_count", True), ("tpu_count", 1), ("tpu_count", False)]
+        for key, value in cases:
+            with self.subTest(key=key, value=value):
+                account = kaggle_account(); account[key] = value
+                self.assert_denied(self.fixture(account), "NATIVE_ONE_GPU_ACCOUNT_NOT_ASSUMED")
+
+    def test_cumulative150_ceiling_cannot_be_raised_or_lowered(self):
+        for budget in (149, 151, True, None):
+            with self.subTest(budget=budget):
+                account = paid_account(); account["total_cumulative_budget_usd"] = budget
+                self.assert_denied(self.fixture(account), "NATIVE_(FINITE_BUDGET_ACCOUNT|CUMULATIVE_USD150)")
+
+    def test_root_scope_bootstrap_and_exact_doc_set_fail_before_reads(self):
+        for mutation, code in ((lambda f: f.grant.update(scope="PROBE_ONLY"), "NATIVE_EXPLICIT_ROOT_SCOPE"),
+                               (lambda f: f.marker.update(mode="UNREVIEWED_IMPORT"), "REVIEWED_NATIVE_BYTE_BOOTSTRAP"),
+                               (lambda f: f.grant["files"].pop(admission.NAMES[0]), "NATIVE_ROOT_DOC_SET")):
+            f = self.fixture(); mutation(f)
+            with mock.patch.object(Path, "read_bytes", side_effect=AssertionError("NO DOCUMENT READ BEFORE OUTER AUTHORITY")):
+                self.assert_denied(f, code)
+
+    def test_doc_byte_tampering_duplicate_json_and_symlink_rejected(self):
+        f = self.fixture(); path = f.root / admission.NAMES[0]; path.write_bytes(path.read_bytes() + b" ")
+        self.assert_denied(f, "NATIVE_ROOT_DOC_PIN")
+        f = self.fixture(); raw = b'{"run_id":"SYNTHETIC","run_id":"DUPLICATE"}\n'
+        (f.root / admission.NAMES[0]).write_bytes(raw); f.grant["files"][admission.NAMES[0]] = pin(raw)
+        self.assert_denied(f, "DUPLICATE_KEY")
+        f = self.fixture(); path = f.root / admission.NAMES[0]; moved = f.root / "SYNTHETIC_MOVED_DOC"
+        path.rename(moved); path.symlink_to(moved)
+        self.assert_denied(f, "NATIVE_DOC_REGULAR_BOUND")
+
+    def test_science_scope_DEV_design_seen_and_failed_supply_gate_immutable(self):
+        cases = [("verified_parent_count", 36), ("private_pairpack", {"bytes": 1, "sha256": "0" * 64}),
+                 ("supply96_status", "GO"), ("exploratory_only", False), ("training_updates_per_arm", 5),
+                 ("DEV_draws", 64), ("DEV_design_seen", False), ("PS64_reused", True)]
+        for key, value in cases:
+            with self.subTest(key=key):
+                f = self.fixture(); f.docs[admission.NAMES[0]][key] = value; f.reseal_synthetic_docs()
+                self.assert_denied(f, "NATIVE_(FROZEN37_INPUT|UNCHANGED_SCIENCE_SCOPE)")
+
+    def test_dev_lineage_review_and_root_release_required(self):
+        cases = [(admission.NAMES[2], "status", "PASS_SUPPLY_GO", "NATIVE_INDEPENDENT_SCIENCE_SOURCE_REVIEW"),
+                 (admission.NAMES[4], "target_bodies_exposed_to_author", True, "NATIVE_DEV_SCORER_TARGET_LINEAGE_REQUIRED"),
+                 (admission.NAMES[4], "panel_changed", True, "NATIVE_DEV_SCORER_TARGET_LINEAGE_REQUIRED"),
+                 (admission.NAMES[5], "retry_allowed", True, "NATIVE_ROOT_RELEASE_REQUIRED")]
+        for name, key, value, code in cases:
+            with self.subTest(name=name, key=key):
+                f = self.fixture(); f.docs[name][key] = value; f.reseal_synthetic_docs(); self.assert_denied(f, code)
+
+    def test_DEV_exact_frozen_admission_schema_and_complete_pins_required(self):
+        mutations = [(lambda d: d.pop("materializer_manifest_sha256"), "FROZEN_EXACT_DEV_ADMISSION_SCHEMA"),
+                     (lambda d: d.update(unreviewed_extra="c" * 64), "FROZEN_EXACT_DEV_ADMISSION_SCHEMA"),
+                     (lambda d: d.update(materialization_receipt_sha256="UNKNOWN"), "FROZEN_DEV_COMPLETE_SHA256_PINS"),
+                     (lambda d: d.update(opaque_dev_goldpack_semantic_sha256=None), "FROZEN_DEV_COMPLETE_SHA256_PINS")]
+        for mutation, code in mutations:
+            with self.subTest(code=code):
+                f = self.fixture(); mutation(f.docs["EXPERIMENT-CONTRACT.json"]["frozen_dev_admission"])
+                f.reseal_synthetic_docs(); self.assert_denied(f, code)
+
+    def test_DEV_rootbound_all_pins_commit_and_nonleakage_gates_must_agree(self):
+        for key in sorted(admission.DEV_PIN_KEYS | {"official_commit"}):
+            with self.subTest(key=key):
+                f = self.fixture(); f.docs["DEV-SCORER-ADMISSION.json"][key] = "d" * 64
+                f.reseal_synthetic_docs(); self.assert_denied(f, "PRE_RUN_GOLDPACK_SCORER_TRANSFORM_EXACT_BINDING")
+        for key, value in (("no_correctness_before_192_and_model_stop", False),
+                           ("DEV_gold_attached_to_model", True), ("design_seen", False)):
+            with self.subTest(key=key):
+                f = self.fixture(); f.docs["DEV-SCORER-ADMISSION.json"][key] = value
+                f.reseal_synthetic_docs(); self.assert_denied(f, "PRE_RUN_GOLDPACK_SCORER_TRANSFORM_EXACT_BINDING")
+        for key in ("scorer_manifest_sha256", "public_dev_identity_semantic_sha256", "original_DEV32_lineage_map_sha256", "official_commit"):
+            with self.subTest(both_docs_wrong=key):
+                f = self.fixture(); f.docs["EXPERIMENT-CONTRACT.json"]["frozen_dev_admission"][key] = "d" * 64
+                f.docs["DEV-SCORER-ADMISSION.json"][key] = "d" * 64
+                f.reseal_synthetic_docs(); self.assert_denied(f, "PRE_RUN_GOLDPACK_SCORER_TRANSFORM_EXACT_BINDING")
+
+    def test_consumed_attempt_is_exclusive_never_reused_or_overwritten(self):
+        f = self.fixture(); f.invoke_inert(); seal = f.root / "attempt/PRELOAD-SEAL.json"; before = seal.read_bytes()
+        with self.assertRaises(FileExistsError): f.invoke_inert()
+        f.factory.assert_not_called(); self.assertEqual(seal.read_bytes(), before)
+
+    def test_existing_attempt_file_or_symlink_cannot_redirect_seal(self):
+        for kind in ("file", "symlink"):
+            with self.subTest(kind=kind):
+                f = self.fixture(); attempt = f.root / "attempt"
+                if kind == "file": attempt.write_bytes(b"SYNTHETIC_UNTOUCHED")
+                else:
+                    target = f.root / "SYNTHETIC_OTHER"; target.mkdir(); attempt.symlink_to(target, target_is_directory=True)
+                with self.assertRaises(FileExistsError): f.invoke_inert()
+                f.factory.assert_not_called()
+                if kind == "symlink": self.assertEqual(list(target.iterdir()), [])
+
+
+class ReleasePathAndJournalTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="SYNTHETIC_RELEASE_JOURNAL_"); self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name); self.attempt = self.root / "attempt"; self.attempt.mkdir(mode=0o700)
+        # This is a method-test dummy, NOT a NativeRelease capability.
+        self.dummy = SimpleNamespace(attempt_root=self.attempt)
+
+    def test_output_bound_to_private_attempt_no_parent_escape_or_reuse(self):
+        good = self.attempt / "SYNTHETIC_NEW.json"
+        self.assertEqual(contracts.NativeRelease.assert_output_path(self.dummy, good), good)
+        for bad in (Path("relative"), self.attempt, self.root / "outside", self.attempt / ".." / "escape"):
+            with self.subTest(path=str(bad)), self.assertRaisesRegex(ValueError, "NATIVE_OUTPUT_MUST_BELONG"):
+                contracts.NativeRelease.assert_output_path(self.dummy, bad)
+        good.write_bytes(b"SYNTHETIC")
+        with self.assertRaisesRegex(ValueError, "NATIVE_OUTPUT_EXCLUSIVE"):
+            contracts.NativeRelease.assert_output_path(self.dummy, good)
+        self.assertEqual(contracts.NativeRelease.assert_output_path(self.dummy, good, allow_existing=True), good)
+
+    def test_output_symlink_ancestor_and_wrong_attempt_permissions_rejected(self):
+        other = self.root / "SYNTHETIC_OTHER"; other.mkdir()
+        link = self.attempt / "link"; link.symlink_to(other, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, "NATIVE_OUTPUT_ANCESTOR_SYMLINK"):
+            contracts.NativeRelease.assert_output_path(self.dummy, link / "output")
+        self.attempt.chmod(0o755)
+        with self.assertRaisesRegex(ValueError, "PRIVATE_ATTEMPT_MODE0700"):
+            contracts.NativeRelease.assert_output_path(self.dummy, self.attempt / "output")
+
+    def test_release_constructor_denies_PASS_dict(self):
+        with self.assertRaisesRegex(ValueError, "ROOT_REVIEWED_NATIVE_RELEASE_FACTORY_REQUIRED"):
+            contracts.NativeRelease((), "0" * 64, NOW + 1, NOW + 1, {"PASS": True})
+
+    def _receipt_dummy(self):
+        path = self.root / "SYNTHETIC_PUBLIC_RECEIPT.json"; raw = raw_json({"fixture": FIXTURE_RUN}); path.write_bytes(raw)
+        synthetic_key = object()
+        dummy = SimpleNamespace(_key=synthetic_key, document_paths_and_pins=((str(path), len(raw), pin(raw)),),
+                                release_pin="0" * 64, valid_until_epoch=NOW + 10, science_deadline_epoch=NOW + 20)
+        return dummy, synthetic_key, path
+
+    def test_release_rechecks_expiry_before_read_and_public_byte_change(self):
+        dummy, key, path = self._receipt_dummy()
+        with mock.patch.object(contracts, "_RELEASE_KEY", key), mock.patch.object(contracts.time, "time", return_value=NOW):
+            self.assertEqual(contracts.NativeRelease.verify_before_load(dummy), "0" * 64)
+            path.write_bytes(path.read_bytes().replace(b"SYNTHETIC", b"XYNTHETIC", 1))
+            with self.assertRaisesRegex(ValueError, "NATIVE_PUBLIC_RECEIPT_CHANGED"):
+                contracts.NativeRelease.verify_before_load(dummy)
+        for now in (NOW + 10, NOW + 20, NOW + 100):
+            with mock.patch.object(contracts, "_RELEASE_KEY", key), mock.patch.object(contracts.time, "time", return_value=now), \
+                 mock.patch.object(Path, "read_bytes", side_effect=AssertionError("expired release read")):
+                with self.assertRaisesRegex(ValueError, "NATIVE_RELEASE_EXPIRED"):
+                    contracts.NativeRelease.verify_before_load(dummy)
+
+    def test_release_rejects_public_receipt_symlink_and_size_change(self):
+        dummy, key, path = self._receipt_dummy()
+        with mock.patch.object(contracts, "_RELEASE_KEY", key), mock.patch.object(contracts.time, "time", return_value=NOW):
+            path.write_bytes(path.read_bytes() + b" ")
+            with self.assertRaisesRegex(ValueError, "NATIVE_PUBLIC_RECEIPT_SIZE"):
+                contracts.NativeRelease.verify_before_load(dummy)
+            target = path.with_name("SYNTHETIC_TARGET.json"); path.rename(target); path.symlink_to(target)
+            with self.assertRaisesRegex(ValueError, "NATIVE_PUBLIC_RECEIPT_PATH"):
+                contracts.NativeRelease.verify_before_load(dummy)
+
+    def test_private_journal_exclusive0600_fsync_and_exact_bytes(self):
+        path = self.attempt / "SYNTHETIC_JOURNAL.jsonl"; journal = native_entry.PrivateJournal(path)
+        self.addCleanup(journal.close)
+        with mock.patch.object(native_entry.time, "time", return_value=NOW), mock.patch.object(native_entry.os, "fsync", wraps=os.fsync) as sync:
+            journal.emit("SYNTHETIC_EVENT", {"synthetic": True, "n": 1}); sync.assert_called_once()
+        self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+        raw = path.read_bytes(); self.assertEqual(journal.bytes, len(raw)); self.assertEqual(journal.events, 1)
+        self.assertEqual(json.loads(raw), {"event": "SYNTHETIC_EVENT", "fields": {"synthetic": True, "n": 1}, "epoch": NOW})
+        with self.assertRaises(FileExistsError): native_entry.PrivateJournal(path)
+        self.assertEqual(path.read_bytes(), raw); journal.close(); journal.close()
+
+    def test_private_journal_leaf_symlink_never_followed(self):
+        target = self.attempt / "SYNTHETIC_TARGET"; target.write_bytes(b"UNCHANGED")
+        link = self.attempt / "SYNTHETIC_LINK"; link.symlink_to(target)
+        with self.assertRaisesRegex(ValueError, "PRIVATE_JOURNAL_ABSOLUTE_NO_SYMLINKS"): native_entry.PrivateJournal(link)
+        self.assertEqual(target.read_bytes(), b"UNCHANGED")
+
+    def test_private_journal_bound_and_nonfinite_reject_before_write(self):
+        path = self.attempt / "SYNTHETIC_BOUNDED.jsonl"; journal = native_entry.PrivateJournal(path); self.addCleanup(journal.close)
+        with mock.patch.object(native_entry, "LOG_BYTES_RESERVATION", 1), \
+             mock.patch.object(native_entry.os, "write", side_effect=AssertionError("over-budget write")):
+            with self.assertRaisesRegex(ValueError, "PRIVATE_JOURNAL_DISK_RESERVATION"):
+                journal.emit("SYNTHETIC_TOO_LARGE", {})
+        self.assertEqual((journal.bytes, journal.events, path.stat().st_size), (0, 0, 0))
+        with self.assertRaises(ValueError): journal.emit("SYNTHETIC_NONFINITE", {"value": float("nan")})
+        self.assertEqual(path.stat().st_size, 0)
+
+    def test_private_journal_ancestor_relative_and_parent_mode_denied(self):
+        other = self.root / "SYNTHETIC_OTHER"; other.mkdir(mode=0o700)
+        link = self.attempt / "SYNTHETIC_PARENT_LINK"; link.symlink_to(other, target_is_directory=True)
+        for path in (link / "journal", Path("SYNTHETIC_RELATIVE_JOURNAL")):
+            with self.subTest(path=str(path)), self.assertRaisesRegex(ValueError, "PRIVATE_JOURNAL_ABSOLUTE_NO_SYMLINKS"):
+                native_entry.PrivateJournal(path)
+        self.attempt.chmod(0o755)
+        with self.assertRaisesRegex(ValueError, "PRIVATE_JOURNAL_PARENT0700"):
+            native_entry.PrivateJournal(self.attempt / "SYNTHETIC_JOURNAL")
+        self.assertEqual(list(other.iterdir()), [])
+
+    def test_private_journal_exact_bound_failure_poison_and_no_retry(self):
+        path = self.attempt / "SYNTHETIC_EXACT_BOUND.jsonl"; journal = native_entry.PrivateJournal(path); self.addCleanup(journal.close)
+        raw = raw_json({"event": "SYNTHETIC_ONE", "fields": {}, "epoch": NOW})
+        with mock.patch.object(native_entry.time, "time", return_value=NOW), mock.patch.object(native_entry, "LOG_BYTES_RESERVATION", len(raw)):
+            journal.emit("SYNTHETIC_ONE", {})
+            self.assertEqual(journal.bytes, len(raw))
+            with self.assertRaisesRegex(ValueError, "PRIVATE_JOURNAL_DISK_RESERVATION"):
+                journal.emit("SYNTHETIC_ONE", {})
+        self.assertEqual(journal.status, "UNKNOWN"); self.assertEqual(journal.events, 1)
+        self.assertEqual(path.read_bytes(), raw)
+        with mock.patch.object(native_entry.os, "write", side_effect=AssertionError("retry write")):
+            with self.assertRaisesRegex(ValueError, "PRIVATE_JOURNAL_CLOSED_OR_UNKNOWN"):
+                journal.emit("SYNTHETIC_RETRY_FORBIDDEN", {})
+
+    def test_private_journal_write_or_fsync_uncertainty_keeps_reservation_and_poison(self):
+        for mode in ("zero_write", "raised_write", "raised_fsync"):
+            with self.subTest(mode=mode):
+                path = self.attempt / ("SYNTHETIC_" + mode + ".jsonl")
+                journal = native_entry.PrivateJournal(path); self.addCleanup(journal.close)
+                if mode == "zero_write": patch = mock.patch.object(native_entry.os, "write", return_value=0)
+                elif mode == "raised_write": patch = mock.patch.object(native_entry.os, "write", side_effect=OSError("SYNTHETIC_IO_FAILURE"))
+                else: patch = mock.patch.object(native_entry.os, "fsync", side_effect=OSError("SYNTHETIC_SYNC_FAILURE"))
+                with patch, self.assertRaises((OSError, ValueError)):
+                    journal.emit("SYNTHETIC_UNCERTAIN", {})
+                self.assertEqual(journal.status, "UNKNOWN"); self.assertEqual(journal.events, 1); self.assertGreater(journal.bytes, 0)
+                self.assertEqual(path.stat().st_size, journal.bytes if mode == "raised_fsync" else 0)
+                with self.assertRaisesRegex(ValueError, "PRIVATE_JOURNAL_CLOSED_OR_UNKNOWN"):
+                    journal.emit("SYNTHETIC_NO_RETRY", {})
+
+    def test_private_journal_closed_emit_rejected(self):
+        journal = native_entry.PrivateJournal(self.attempt / "SYNTHETIC_CLOSED.jsonl"); journal.close()
+        with mock.patch.object(native_entry.os, "write", side_effect=AssertionError("closed write")):
+            with self.assertRaisesRegex(ValueError, "PRIVATE_JOURNAL_CLOSED_OR_UNKNOWN"):
+                journal.emit("SYNTHETIC_AFTER_CLOSE", {})
+
+    def test_closed_private_file_pin_synthetic_only_modes_bounds_and_no_symlink(self):
+        path = self.attempt / "SYNTHETIC_CLOSED_PIN.jsonl"
+        journal = native_entry.PrivateJournal(path); journal.emit("SYNTHETIC_CLOSED_EVENT", {}); journal.close()
+        raw = path.read_bytes()
+        self.assertEqual(native_entry._closed_private_file_pin(path, cap=len(raw)), {"bytes": len(raw), "sha256": pin(raw)})
+        with self.assertRaisesRegex(ValueError, "PRIVATE_CLOSED_FILE_MODE_BOUND"):
+            native_entry._closed_private_file_pin(path, cap=len(raw) - 1)
+        path.chmod(0o644)
+        with self.assertRaisesRegex(ValueError, "PRIVATE_CLOSED_FILE_MODE_BOUND"):
+            native_entry._closed_private_file_pin(path, cap=len(raw))
+        path.chmod(0o600); link = self.attempt / "SYNTHETIC_CLOSED_LINK"; link.symlink_to(path)
+        with self.assertRaisesRegex(ValueError, "PRIVATE_CLOSED_FILE_PATH"):
+            native_entry._closed_private_file_pin(link, cap=len(raw))
+
+    def test_closed_private_file_pin_rejects_during_hash_metadata_change(self):
+        path = self.attempt / "SYNTHETIC_CHANGED_DURING_HASH.jsonl"
+        journal = native_entry.PrivateJournal(path); journal.emit("SYNTHETIC_EVENT", {}); journal.close()
+        before = path.stat()
+        changed = SimpleNamespace(st_mode=before.st_mode, st_size=before.st_size,
+                                  st_mtime_ns=before.st_mtime_ns + 1, st_ctime_ns=before.st_ctime_ns)
+        with mock.patch.object(native_entry.os, "fstat", side_effect=[before, changed]):
+            with self.assertRaisesRegex(ValueError, "PRIVATE_CLOSED_FILE_UNCHANGED"):
+                native_entry._closed_private_file_pin(path, cap=10000)
+
+    def test_private_journal_partial_writes_are_completed_without_dropped_bytes(self):
+        path = self.attempt / "SYNTHETIC_PARTIAL.jsonl"; journal = native_entry.PrivateJournal(path); self.addCleanup(journal.close)
+        real_write = os.write
+        def short_write(fd, raw): return real_write(fd, raw[:7])
+        with mock.patch.object(native_entry.os, "write", side_effect=short_write) as write:
+            journal.emit("SYNTHETIC_CHUNKED_WRITE", {"synthetic": True})
+        self.assertGreater(write.call_count, 1); self.assertEqual(path.stat().st_size, journal.bytes)
+        self.assertEqual(json.loads(path.read_bytes())["event"], "SYNTHETIC_CHUNKED_WRITE")
+
+
+class MockOnlySupervisorTests(unittest.TestCase):
+    """No model/native child: Popen, killpg and authority/source claims are inert mocks."""
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="SYNTHETIC_SUPERVISOR_ONLY_"); self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.source_raw = b"SYNTHETIC_SUPERVISOR_SOURCE_NOT_AUTHORITY"
+        self.bootstrap_raw = b"SYNTHETIC_BOOTSTRAP_NOT_EXECUTABLE"
+        self.source_pin = pin(self.source_raw)
+        self.documents = {
+            "SOURCE-MANIFEST.json": raw_json({"files": {"native_experiment/supervisor.py": {"sha256": self.source_pin}}}),
+            "EXPERIMENT-CONTRACT.json": raw_json({"run_id": FIXTURE_RUN}),
+            "ACCOUNT-AND-BUDGET.json": raw_json({"setup_anchor_epoch": NOW - 100}),
+            "PREDICTIONS-SEALED.json": raw_json({"fixture": FIXTURE_RUN, "NOT_REAL_PREDICTIONS": True})}
+        self.grant = {"bootstrap_sha256": pin(self.bootstrap_raw), "files": {n: pin(r) for n, r in self.documents.items()}}
+        self.clock = NOW
+        self.process = mock.Mock(pid=777777, returncode=0)
+        self.process.poll.return_value = 0
+        self.process.communicate.return_value = (None, None)
+        self.process.wait.return_value = 0
+
+    def invoke_mock_only(self, executable=None):
+        def read(path, cap=2 * 1024**2):
+            if path == Path(supervisor.__file__): return self.source_raw
+            if path.name == "reviewed_bootstrap.py": return self.bootstrap_raw
+            if path.parent not in (self.root, self.root / "attempt"):
+                raise AssertionError("UNEXPECTED_NONFIXTURE_READ")
+            return self.documents[path.name]
+        with ExitStack() as stack:
+            stack.enter_context(mock.patch.dict(supervisor.__dict__, {"_ROOT_VERIFIED_SUPERVISOR_SHA256": self.source_pin}))
+            stack.enter_context(mock.patch.object(supervisor.sys, "flags", SimpleNamespace(isolated=1)))
+            stack.enter_context(mock.patch.object(supervisor.time, "time", side_effect=lambda: self.clock))
+            stack.enter_context(mock.patch.object(supervisor.os, "umask", return_value=0o077))
+            self.read = stack.enter_context(mock.patch.object(supervisor, "_read_public", side_effect=read))
+            self.spawn = stack.enter_context(mock.patch.object(supervisor.subprocess, "Popen", return_value=self.process))
+            self.kill = stack.enter_context(mock.patch.object(supervisor.os, "killpg"))
+            return supervisor.supervise_root_authorized(self.root, self.grant, python_executable=executable or sys.executable)
+
+    def test_model_stop_requires_observed_exit_and_keeps_separate_scorer_gate(self):
+        result = self.invoke_mock_only()
+        self.assertTrue(result["model_process_stopped"]); self.assertTrue(result["wait_returned"])
+        self.assertFalse(result["scoring_admitted"]); self.assertFalse(result["retry_allowed"])
+        self.assertEqual(result["status"], "MODEL_STOPPED_SEALED_PREDICTIONS_AWAIT_SEPARATE_SCORER_ADMISSION")
+        self.process.communicate.assert_called_once(); self.process.poll.assert_called(); self.kill.assert_not_called()
+        own = self.root / "supervisor-attempt"
+        for path in (own / "LEASE.json", own / "PRIVATE-CHILD.log", own / "MODEL-PROCESS-STOPPED.json"):
+            self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+        self.assertEqual(stat.S_IMODE(own.stat().st_mode), 0o700)
+        command = self.spawn.call_args.args[0]
+        self.assertEqual(command[1:4], ["-I", "-B", "-c"])
+        self.assertEqual(command[-1], str(os.getpid()))
+        self.assertLess(command[4].index("_arm_parent_death_kill(int(sys.argv[1]))"), command[4].index("sys.stdin.read()"))
+
+    def test_running_child_never_gets_model_stop_receipt(self):
+        self.process.poll.return_value = None
+        with self.assertRaisesRegex(ValueError, "OWNED_CHILD_EXIT_REQUIRED"):
+            self.invoke_mock_only()
+        self.assertFalse((self.root / "supervisor-attempt/MODEL-PROCESS-STOPPED.json").exists())
+
+    def test_failed_child_no_prediction_reads_no_scoring_no_retry(self):
+        self.process.returncode = 2; self.process.poll.return_value = 2
+        result = self.invoke_mock_only()
+        self.assertEqual(result["status"], "FAILED_OR_UNKNOWN_MODEL_STOPPED_NO_RETRY_NO_SCORING")
+        self.assertNotIn("predictions_seal", result)
+        self.assertFalse(any(call.args[0].name == "PREDICTIONS-SEALED.json" for call in self.read.call_args_list))
+
+    def test_timeout_terminates_then_observes_exit_before_receipt(self):
+        def expire(*args, **kwargs):
+            self.clock = NOW + 7000
+            raise subprocess.TimeoutExpired("SYNTHETIC_MOCK_CHILD", 1)
+        self.process.communicate.side_effect = expire
+        self.process.returncode = -15; self.process.poll.side_effect = [None, -15, -15]
+        result = self.invoke_mock_only()
+        self.assertTrue(result["deadline_termination"]); self.assertTrue(result["model_process_stopped"])
+        self.assertFalse(result["scoring_admitted"]); self.kill.assert_called_once_with(777777, supervisor.signal.SIGTERM)
+        self.process.wait.assert_called_once_with(timeout=5)
+
+    def test_timeout_escalates_to_kill_only_when_wait_expires(self):
+        def expire(*args, **kwargs):
+            self.clock = NOW + 7000
+            raise subprocess.TimeoutExpired("SYNTHETIC_MOCK_CHILD", 1)
+        self.process.communicate.side_effect = expire
+        self.process.wait.side_effect = [subprocess.TimeoutExpired("SYNTHETIC_MOCK_CHILD", 5), -9]
+        self.process.returncode = -9; self.process.poll.side_effect = [None, -9, -9]
+        result = self.invoke_mock_only()
+        self.assertTrue(result["deadline_termination"])
+        self.assertEqual(self.kill.call_args_list, [mock.call(777777, supervisor.signal.SIGTERM), mock.call(777777, supervisor.signal.SIGKILL)])
+        self.assertEqual(self.process.wait.call_args_list, [mock.call(timeout=5), mock.call(timeout=5)])
+
+    def test_unexpected_communication_failure_stops_owned_child_and_never_scores(self):
+        self.process.communicate.side_effect = OSError("SYNTHETIC_COMMUNICATION_FAILURE")
+        self.process.returncode = 0; self.process.poll.side_effect = [None, 0, 0]
+        result = self.invoke_mock_only()
+        self.assertTrue(result["supervisor_communication_failure"])
+        self.assertFalse(result["deadline_termination"]); self.assertFalse(result["scoring_admitted"])
+        self.assertEqual(result["status"], "FAILED_OR_UNKNOWN_MODEL_STOPPED_NO_RETRY_NO_SCORING")
+        self.kill.assert_called_once_with(777777, supervisor.signal.SIGTERM)
+        self.process.wait.assert_called_once_with(timeout=5)
+        self.assertFalse(any(call.args[0].name == "PREDICTIONS-SEALED.json" for call in self.read.call_args_list))
+
+    def test_owned_child_stop_processlookup_race_still_requires_wait(self):
+        process = mock.Mock(pid=777777)
+        process.poll.side_effect = [None, -15]
+        with mock.patch.object(supervisor.os, "killpg", side_effect=ProcessLookupError("SYNTHETIC_ALREADY_EXITED")) as kill:
+            supervisor._stop_owned_child(process)
+        kill.assert_called_once_with(777777, supervisor.signal.SIGTERM)
+        process.wait.assert_called_once_with(timeout=5)
+
+    def test_owned_child_already_exited_waits_without_signals(self):
+        process = mock.Mock(pid=777777); process.poll.return_value = 2
+        with mock.patch.object(supervisor.os, "killpg", side_effect=AssertionError("signal to exited child")):
+            supervisor._stop_owned_child(process)
+        process.wait.assert_called_once_with(timeout=5)
+
+    def test_owned_child_without_observed_exit_cannot_be_certified_stopped(self):
+        process = mock.Mock(pid=777777); process.poll.return_value = None
+        with mock.patch.object(supervisor.os, "killpg"):
+            with self.assertRaisesRegex(ValueError, "OWNED_CHILD_EXIT_REQUIRED"):
+                supervisor._stop_owned_child(process)
+
+    def test_log_fsync_failure_after_communicate_still_cleans_owned_child(self):
+        real_fsync = os.fsync; fail = {"once": False}
+        def communicated(*args, **kwargs): fail["once"] = True
+        def synced(fd):
+            if fail["once"]:
+                fail["once"] = False
+                raise OSError("SYNTHETIC_POST_COMMUNICATE_LOG_FSYNC_FAILURE")
+            return real_fsync(fd)
+        self.process.communicate.side_effect = communicated
+        self.process.poll.side_effect = [None, 0, 0]
+        with mock.patch.object(supervisor.os, "fsync", side_effect=synced):
+            result = self.invoke_mock_only()
+        self.kill.assert_called_once_with(777777, supervisor.signal.SIGTERM)
+        self.assertTrue(result["supervisor_communication_failure"])
+        self.assertFalse(result["scoring_admitted"])
+
+    def test_supervisor_lease_is_exclusive_before_spawn(self):
+        (self.root / "supervisor-attempt").mkdir(mode=0o700)
+        with self.assertRaises(FileExistsError): self.invoke_mock_only()
+        self.spawn.assert_not_called(); self.kill.assert_not_called()
+
+    def test_clock_and_interpreter_mismatch_denied_before_spawn(self):
+        self.documents["ACCOUNT-AND-BUDGET.json"] = raw_json({"setup_anchor_epoch": NOW - 7020})
+        self.grant["files"]["ACCOUNT-AND-BUDGET.json"] = pin(self.documents["ACCOUNT-AND-BUDGET.json"])
+        with self.assertRaisesRegex(ValueError, "SUPERVISOR_ORIGINAL_SETUP_CLOCK"):
+            self.invoke_mock_only()
+        self.spawn.assert_not_called(); self.assertFalse((self.root / "supervisor-attempt").exists())
+        with self.assertRaisesRegex(ValueError, "SAME_REVIEWED_PARENT_INTERPRETER_ONLY"):
+            self.invoke_mock_only(str(self.root / "SYNTHETIC_DIFFERENT_PYTHON"))
+        self.spawn.assert_not_called()
+
+
+class SignalAndParentDeathTests(unittest.TestCase):
+    """Synthetic stdlib children only; no bootstrap grant/model/data route."""
+    def test_flag_handlers_restore_and_ignore_repeated_cleanup_signals(self):
+        before = {s: signal.getsignal(s) for s in supervisor.TERMINATION_SIGNALS}
+        scope = supervisor._OwnedChildScope(); fake = mock.Mock()
+        def cleanup(process):
+            self.assertIs(process, fake); self.assertTrue(scope.cleaning)
+            signal.getsignal(signal.SIGHUP)(signal.SIGHUP, None)
+            self.assertEqual(scope.termination_signal, signal.SIGTERM)
+        with mock.patch.object(supervisor, '_stop_owned_child', side_effect=cleanup):
+            with scope:
+                scope.process = fake
+                signal.getsignal(signal.SIGTERM)(signal.SIGTERM, None)
+                self.assertEqual(scope.termination_signal, signal.SIGTERM)
+        self.assertEqual({s: signal.getsignal(s) for s in before}, before)
+
+    def test_handlers_restore_even_if_bounded_cleanup_cannot_observe_exit(self):
+        before = {s: signal.getsignal(s) for s in supervisor.TERMINATION_SIGNALS}
+        with mock.patch.object(supervisor, '_stop_owned_child', side_effect=RuntimeError('SYNTHETIC_UNKNOWN')):
+            with self.assertRaisesRegex(RuntimeError, 'SYNTHETIC_UNKNOWN'):
+                with supervisor._OwnedChildScope() as scope: scope.process = mock.Mock()
+        self.assertEqual({s: signal.getsignal(s) for s in before}, before)
+
+    def test_signal_during_Popen_return_cannot_lose_child_ownership(self):
+        scope = supervisor._OwnedChildScope(); fake = mock.Mock()
+        def spawned(*args, **kwargs):
+            signal.getsignal(signal.SIGTERM)(signal.SIGTERM, None)
+            return fake
+        with mock.patch.object(supervisor.subprocess, 'Popen', side_effect=spawned), mock.patch.object(supervisor, '_stop_owned_child') as cleanup:
+            with scope: self.assertIs(scope.spawn(['SYNTHETIC_NO_PROCESS']), fake)
+        cleanup.assert_called_once_with(fake)
+
+    def test_termination_requested_before_spawn_never_creates_child(self):
+        with supervisor._OwnedChildScope() as scope, mock.patch.object(supervisor.subprocess, 'Popen') as spawn:
+            scope._handle(signal.SIGHUP, None)
+            with self.assertRaisesRegex(ValueError, 'NO_SPAWN_AFTER_TERMINATION_REQUEST'): scope.spawn(['SYNTHETIC_NO_PROCESS'])
+            spawn.assert_not_called()
+
+    def test_IPC_polling_bounded_without_resending_input(self):
+        process = mock.Mock(); process.communicate.side_effect = [subprocess.TimeoutExpired('SYNTHETIC', 1), (None, None)]
+        scope = SimpleNamespace(termination_signal=None)
+        self.assertEqual(supervisor._communicate_until_exit(process, b'SYNTHETIC_INPUT', deadline=3, scope=scope, clock=lambda: 1), 'EXITED')
+        self.assertEqual(process.communicate.call_args_list, [mock.call(b'SYNTHETIC_INPUT', timeout=1.0), mock.call(None, timeout=1.0)])
+        scope.termination_signal = signal.SIGTERM; process.reset_mock()
+        self.assertEqual(supervisor._communicate_until_exit(process, b'', deadline=3, scope=scope, clock=lambda: 1), 'TERMINATION_REQUESTED')
+        process.communicate.assert_not_called()
+
+    def test_SIGKILL_wait_timeout_is_bounded_and_never_claims_stop(self):
+        process = mock.Mock(pid=777777); process.poll.return_value = None
+        process.wait.side_effect = subprocess.TimeoutExpired('SYNTHETIC_UNINTERRUPTIBLE', 5)
+        with mock.patch.object(supervisor.os, 'killpg') as kill:
+            with self.assertRaisesRegex(RuntimeError, 'OWNED_CHILD_EXIT_UNOBSERVED_PROVIDER_STATE_UNKNOWN'): supervisor._stop_owned_child(process)
+        self.assertEqual(kill.call_args_list, [mock.call(777777, signal.SIGTERM), mock.call(777777, signal.SIGKILL)])
+        self.assertEqual(process.wait.call_args_list, [mock.call(timeout=5), mock.call(timeout=5)])
+
+    def test_parentdeath_prelude_races_and_prctl_failure_without_real_signals(self):
+        import ctypes
+        namespace = {}; exec(compile(supervisor.PARENT_DEATH_GUARD_SOURCE, 'SYNTHETIC_GUARD_ONLY', 'exec'), namespace)
+        arm = namespace['_arm_parent_death_kill']; libc = SimpleNamespace(prctl=mock.Mock(return_value=0))
+        with mock.patch.object(os, 'getppid', return_value=123), mock.patch.object(ctypes, 'CDLL', return_value=libc):
+            with self.assertRaisesRegex(SystemExit, 'PARENT_CHANGED_BEFORE_PDEATHSIG'): arm(124)
+            libc.prctl.assert_not_called()
+        with mock.patch.object(os, 'getppid', side_effect=[123, 124]), mock.patch.object(ctypes, 'CDLL', return_value=libc), mock.patch.object(os, 'kill') as kill:
+            with self.assertRaisesRegex(SystemExit, 'PARENT_CHANGED_DURING_PDEATHSIG'): arm(123)
+            kill.assert_called_once_with(os.getpid(), signal.SIGKILL)
+        libc.prctl.return_value = -1
+        with mock.patch.object(os, 'getppid', return_value=123), mock.patch.object(ctypes, 'CDLL', return_value=libc), mock.patch.object(ctypes, 'get_errno', return_value=1):
+            with self.assertRaisesRegex(OSError, 'PR_SET_PDEATHSIG_FAILED'): arm(123)
+
+    @unittest.skipUnless(sys.platform.startswith('linux'), 'Linux parent-death signal required')
+    def test_actual_synthetic_TERM_HUP_cleanup_and_handler_restoration(self):
+        code = r'''
+import json,os,signal,sys
+from pathlib import Path
+p=Path(sys.argv[1]); n={'__name__':'SYNTHETIC_SIGNAL_SCOPE','__file__':str(p)}
+exec(compile(p.read_bytes(),str(p),'exec'),n)
+exec(n['PARENT_DEATH_GUARD_SOURCE'],n); n['_arm_parent_death_kill'](os.getppid())
+results=[]
+for signum in (signal.SIGTERM,signal.SIGHUP):
+    old={s:signal.getsignal(s)for s in n['TERMINATION_SIGNALS']}
+    with n['_OwnedChildScope']() as scope:
+        child_code=n['PARENT_DEATH_GUARD_SOURCE']+'\n_arm_parent_death_kill(int(sys.argv[1]))\nimport time\ntime.sleep(30)\n'
+        process=scope.spawn([sys.executable,'-I','-S','-B','-c',child_code,str(os.getpid())],start_new_session=True)
+        os.kill(os.getpid(),signum)
+        assert n['_communicate_until_exit'](process,None,deadline=n['time'].time()+4,scope=scope)=='TERMINATION_REQUESTED'
+    assert process.poll() is not None
+    assert {s:signal.getsignal(s)for s in old}==old
+    results.append({'signal':signum,'stopped':True})
+assert 'torch' not in sys.modules
+print(json.dumps({'synthetic_only':True,'results':results,'handlers_restored':True}))
+'''
+        result = subprocess.run([sys.executable, '-I', '-S', '-B', '-c', code, str(Path(supervisor.__file__).resolve())], capture_output=True, text=True, timeout=15)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        summary = json.loads(result.stdout)
+        self.assertEqual([r['signal'] for r in summary['results']], [signal.SIGTERM, signal.SIGHUP]); self.assertTrue(summary['handlers_restored'])
+
+    @unittest.skipUnless(sys.platform.startswith('linux'), 'Linux parent-death signal required')
+    def test_actual_synthetic_parent_SIGKILL_kills_and_reaps_child(self):
+        # Isolated subreaper owns and reaps its synthetic grandchild; every
+        # child/parent is PDEATHSIG protected if this bounded test is interrupted.
+        outer = r'''
+import ctypes,json,os,select,signal,subprocess,sys,time
+payload=json.loads(sys.stdin.read()); guard=payload['guard']
+libc=ctypes.CDLL(None,use_errno=True)
+if libc.prctl(36,1,0,0,0)!=0:raise OSError(ctypes.get_errno(),'SYNTHETIC_SUBREAPER_FAILED')
+parent_code=guard+'\n_arm_parent_death_kill(int(sys.argv[1]))\nimport json,subprocess\nx=json.loads(sys.stdin.read())\nchild=subprocess.Popen([sys.executable,"-I","-S","-B","-c",x["child_code"],str(os.getpid())],start_new_session=True)\nchild.wait(timeout=25)\n'
+child_code=guard+'\n_arm_parent_death_kill(int(sys.argv[1]))\nimport time\nprint("ARMED",os.getpid(),flush=True)\ntime.sleep(30)\n'
+parent=subprocess.Popen([sys.executable,'-I','-S','-B','-c',parent_code,str(os.getpid())],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+child_pid=None; reaped=False
+try:
+    parent.stdin.write(json.dumps({'child_code':child_code}));parent.stdin.close()
+    ready,_,_=select.select([parent.stdout],[],[],5)
+    if not ready:raise AssertionError('SYNTHETIC_CHILD_NOT_READY')
+    line=parent.stdout.readline().strip().split()
+    if len(line)!=2 or line[0]!='ARMED':raise AssertionError('SYNTHETIC_CHILD_ARM_FAILURE')
+    child_pid=int(line[1]);parent.kill();parent.wait(timeout=3)
+    deadline=time.monotonic()+3
+    while time.monotonic()<deadline:
+        found,status=os.waitpid(child_pid,os.WNOHANG)
+        if found:
+            reaped=True
+            assert os.WIFSIGNALED(status) and os.WTERMSIG(status)==signal.SIGKILL
+            print(json.dumps({'synthetic_only':True,'parent_killed':True,'child_killed_by_SIGKILL':True,'child_reaped':True}));break
+        time.sleep(.01)
+    else:raise AssertionError('SYNTHETIC_PDEATHSIG_DID_NOT_STOP_CHILD')
+finally:
+    if parent.poll() is None:parent.kill();parent.wait(timeout=3)
+    if child_pid is not None and not reaped:
+        try:os.kill(child_pid,signal.SIGKILL)
+        except ProcessLookupError:pass
+        deadline=time.monotonic()+2
+        while time.monotonic()<deadline:
+            try:
+                if os.waitpid(child_pid,os.WNOHANG)[0]:break
+            except ChildProcessError:break
+            time.sleep(.01)
+'''
+        result = subprocess.run([sys.executable, '-I', '-S', '-B', '-c', outer], input=json.dumps({'guard': supervisor.PARENT_DEATH_GUARD_SOURCE}), capture_output=True, text=True, timeout=15)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        summary = json.loads(result.stdout); self.assertTrue(summary['child_killed_by_SIGKILL']); self.assertTrue(summary['child_reaped'])
+
+
+class ClosedEntryAndBootstrapTests(unittest.TestCase):
+    def test_entry_denies_before_issuer_private_input_or_model_read(self):
+        with mock.patch.dict(native_entry.__dict__, {"__reviewed_byte_bootstrap__": None}), \
+             mock.patch.object(native_entry, "issue_native_release", side_effect=AssertionError("issuer called")), \
+             mock.patch.object(native_entry, "_read_pin", side_effect=AssertionError("input read")), \
+             mock.patch.object(native_entry, "load_native_backend", side_effect=AssertionError("model load")):
+            with self.assertRaisesRegex(ValueError, "REVIEWED_NATIVE_ENTRY_BYTES_REQUIRED"):
+                native_entry.run_root_authorized("/SYNTHETIC_NOT_PRESENT", {})
+
+    def test_supervisor_denies_before_public_read_or_process_spawn(self):
+        with mock.patch.dict(supervisor.__dict__, {"_ROOT_VERIFIED_SUPERVISOR_SHA256": None}), \
+             mock.patch.object(supervisor, "_read_public", return_value=b"SYNTHETIC_SOURCE") as read, \
+             mock.patch.object(supervisor.subprocess, "Popen", side_effect=AssertionError("native child spawn")):
+            with self.assertRaisesRegex(ValueError, "ROOT_VERIFIED_SUPERVISOR_ENTRY_REQUIRED"):
+                supervisor.supervise_root_authorized("/SYNTHETIC_NOT_PRESENT", {}, python_executable=sys.executable)
+            self.assertLessEqual(read.call_count, 1)  # source identity check only; no config/model read
+
+    def test_bootstrap_denies_missing_external_pin_before_lease_or_reads(self):
+        with mock.patch.dict(reviewed_bootstrap.__dict__, {"_ROOT_VERIFIED_BOOTSTRAP_SHA256": None}), \
+             mock.patch.object(reviewed_bootstrap, "read", side_effect=AssertionError("read before authority")), \
+             mock.patch.object(reviewed_bootstrap.os, "mkdir", side_effect=AssertionError("lease before authority")):
+            with self.assertRaisesRegex(RuntimeError, "ACTUAL_EXTERNAL_ROOT_BOOTSTRAP_PIN_REQUIRED"):
+                reviewed_bootstrap.run_with_root_grant("/SYNTHETIC_NOT_PRESENT", {"bootstrap_sha256": BOOTSTRAP_PIN})
+
+    def test_bootstrap_denies_nonisolated_process_before_lease(self):
+        with mock.patch.dict(reviewed_bootstrap.__dict__, {"_ROOT_VERIFIED_BOOTSTRAP_SHA256": BOOTSTRAP_PIN}), \
+             mock.patch.object(reviewed_bootstrap.sys, "flags", SimpleNamespace(isolated=0, dont_write_bytecode=1)), \
+             mock.patch.object(reviewed_bootstrap.os, "mkdir", side_effect=AssertionError("lease before isolation")):
+            with self.assertRaisesRegex(RuntimeError, "FRESH_ISOLATED_PYTHON_REQUIRED"):
+                reviewed_bootstrap.run_with_root_grant("/SYNTHETIC_NOT_PRESENT", {"bootstrap_sha256": BOOTSTRAP_PIN})
+
+    def test_compile_and_closure_manifest_hash_denied_before_source_reads(self):
+        with mock.patch.object(reviewed_bootstrap, "read", side_effect=AssertionError("source read")):
+            with self.assertRaisesRegex(RuntimeError, "BOOTSTRAP_MANIFEST_HASH"):
+                reviewed_bootstrap.compile_reviewed_modules(b"SYNTHETIC", source_manifest_sha256="0" * 64, bootstrap_sha256="0" * 64)
+        with mock.patch.object(source_closure, "bounded_public", side_effect=AssertionError("source read")):
+            with self.assertRaisesRegex(ValueError, "NEW_SOURCE_MANIFEST_PIN"):
+                source_closure.verify_loaded_source_bytes(b"SYNTHETIC", "0" * 64, "0" * 64)
+
+    def test_exact_source_set_and_fresh_process_required(self):
+        raw = raw_json({"schema": "new-ps-native-source-manifest/v1", "files": {}})
+        with self.assertRaisesRegex(RuntimeError, "BOOTSTRAP_EXACT_MANIFEST"):
+            reviewed_bootstrap.compile_reviewed_modules(raw, source_manifest_sha256=pin(raw), bootstrap_sha256=BOOTSTRAP_PIN)
+        paths = {p for _, p in reviewed_bootstrap.MODULE_PATHS} | reviewed_bootstrap.EXTRA_FILES
+        raw = raw_json({"schema": "new-ps-native-source-manifest/v1", "files": {p: {} for p in paths}})
+        with mock.patch.object(reviewed_bootstrap, "read", side_effect=AssertionError("source read in reused process")):
+            with self.assertRaisesRegex(RuntimeError, "BOOTSTRAP_FRESH_MODULE_PROCESS_REQUIRED"):
+                reviewed_bootstrap.compile_reviewed_modules(raw, source_manifest_sha256=pin(raw), bootstrap_sha256=BOOTSTRAP_PIN)
+        self.assertEqual(paths, source_closure.SOURCE_FILES)
+        self.assertEqual(dict(reviewed_bootstrap.MODULE_PATHS), source_closure.MODULE_PATHS)
+
+    def test_fresh_compile_only_closure_no_torch_model_authority_or_pycache(self):
+        # Copy NEW public executable source only. Extra metadata is deliberately
+        # synthetic, so this manifest CANNOT be mistaken for real-source review.
+        with tempfile.TemporaryDirectory(prefix="SYNTHETIC_COMPILE_ONLY_") as temp:
+            root = Path(temp); active = Path(__file__).resolve().parents[1]
+            executable = {p for _, p in reviewed_bootstrap.MODULE_PATHS} | {"native_experiment/reviewed_bootstrap.py", "native_experiment/supervisor.py"}
+            all_paths = {p for _, p in reviewed_bootstrap.MODULE_PATHS} | reviewed_bootstrap.EXTRA_FILES
+            files = {}
+            for rel in sorted(all_paths):
+                destination = root / rel; destination.parent.mkdir(parents=True, exist_ok=True)
+                raw = (active / rel).read_bytes() if rel in executable else b"SYNTHETIC_COMPILE_ONLY_NOT_REVIEW_EVIDENCE\n"
+                destination.write_bytes(raw); files[rel] = {"bytes": len(raw), "sha256": pin(raw)}
+            manifest = raw_json({"schema": "new-ps-native-source-manifest/v1", "files": files})
+            (root / "SYNTHETIC-MANIFEST.json").write_bytes(manifest)
+            code = r'''
+import hashlib,json,sys
+from pathlib import Path
+root=Path(sys.argv[1]); path=root/'native_experiment/reviewed_bootstrap.py'; raw=path.read_bytes()
+namespace={'__name__':'SYNTHETIC_COMPILE_ONLY','__file__':str(path)}
+exec(compile(raw,str(path),'exec',dont_inherit=True),namespace)
+manifest=(root/'SYNTHETIC-MANIFEST.json').read_bytes(); mp=hashlib.sha256(manifest).hexdigest(); bp=hashlib.sha256(raw).hexdigest()
+entry=namespace['compile_reviewed_modules'](manifest,source_manifest_sha256=mp,bootstrap_sha256=bp)
+closure=sys.modules['native_experiment.source_closure']
+assert closure.verify_loaded_source_bytes(manifest,mp,bp) is True
+sp=root/'native_experiment/supervisor.py'; sn={'__name__':'SYNTHETIC_REVIEWED_SUPERVISOR','__file__':str(sp)}
+exec(compile(sp.read_bytes(),str(sp),'exec'),sn)
+from types import SimpleNamespace
+assert sn['_communicate_until_exit'](None,None,deadline=1,scope=SimpleNamespace(termination_signal=15),clock=lambda:0)=='TERMINATION_REQUESTED'
+assert 'PR_SET_PDEATHSIG_FAILED' in sn['PARENT_DEATH_GUARD_SOURCE']
+assert 'torch' not in sys.modules and 'numpy' not in sys.modules
+assert all(sys.modules[name].__cached__ is None for name,_ in namespace['MODULE_PATHS'])
+assert not list(root.rglob('*.pyc')) and not (root/'attempt').exists()
+marker=entry.__reviewed_byte_bootstrap__; entry.__reviewed_byte_bootstrap__={}
+try: closure.verify_loaded_source_bytes(manifest,mp,bp)
+except ValueError as error: assert str(error)=='ACTUAL_LOADED_NEW_MODULE_NOT_REVIEWED_BYTES'
+else: raise AssertionError('unreviewed runtime marker passed')
+entry.__reviewed_byte_bootstrap__=marker
+changed=root/'native_experiment/contracts.py'; changed.write_bytes(changed.read_bytes()+b'\n# SYNTHETIC_TAMPER\n')
+try: closure.verify_loaded_source_bytes(manifest,mp,bp)
+except ValueError as error: assert str(error)=='NEW_SOURCE_FILE_HASH'
+else: raise AssertionError('changed source bytes passed')
+print(json.dumps({'synthetic_compile_only':True,'modules':len(namespace['MODULE_PATHS']),'torch_loaded':False,'native_authority_issued':False,'no_pycache':True,'mutation_denials':2}))
+'''
+            result = subprocess.run([sys.executable, "-I", "-S", "-B", "-c", code, str(root)],
+                                    capture_output=True, text=True, timeout=30, check=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            summary = json.loads(result.stdout)
+            self.assertTrue(summary["synthetic_compile_only"]); self.assertTrue(summary["no_pycache"])
+            self.assertFalse(summary["torch_loaded"]); self.assertFalse(summary["native_authority_issued"])
+            self.assertEqual(summary["mutation_denials"], 2)
+            self.assertEqual(summary["modules"], len(reviewed_bootstrap.MODULE_PATHS))
+
+
+class V5ContinuationFreshnessTests(unittest.TestCase):
+    """Ephemeral synthetic authority keys and mocked model-load boundary only.
+
+    No authentic root release or model/device/material/private I/O occurs.
+    Production factory keys are restored after each test, invalidating fixtures.
+    """
+    def setUp(self):
+        from . import backend_load
+        self.bl = backend_load
+        self.temp = tempfile.TemporaryDirectory(prefix="SYNTHETIC_V5_CONTINUATION_")
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name); self.attempt = self.root / 'attempt'; self.attempt.mkdir(mode=0o700)
+        self.stack = ExitStack(); self.addCleanup(self.stack.close)
+        self.release_key, self.binding_key, self.activation_key = object(), object(), object()
+        self.stack.enter_context(mock.patch.object(contracts, '_RELEASE_KEY', self.release_key))
+        self.stack.enter_context(mock.patch.object(self.bl, '_BINDING_SENTINEL', self.binding_key))
+        self.stack.enter_context(mock.patch.object(self.bl, '_ACTUAL_LOAD_COMPLETED_KEY', self.activation_key))
+        self.clock = NOW
+        self.stack.enter_context(mock.patch.object(contracts.time, 'time', side_effect=lambda: self.clock))
+        from training.contracts import digest
+        self.run_id = 'SYNTHETIC_V5_SAME_RUN_NO_NATIVE_AUTHORITY'
+        docs = [('EXPERIMENT-CONTRACT.json', {'run_id': self.run_id, 'fixture': True,
+                 'dev_public_panel_semantic_sha256': digest([])}),
+                ('ACCOUNT-AND-BUDGET.json', {'fixture': True, 'observed_epoch': NOW - 60,
+                 'valid_until_epoch': NOW + 60, 'setup_anchor_epoch': NOW - 100}),
+                ('attempt/PRELOAD-SEAL.json', {'run_id': self.run_id, 'fixture': True,
+                 'attempt_consumed': True, 'retry_allowed': False})]
+        pins = []; self.original_docs = {}
+        for name, doc in docs:
+            p = self.root / name; raw = raw_json(doc); p.write_bytes(raw); p.chmod(0o600)
+            pins.append((str(p), len(raw), pin(raw))); self.original_docs[p] = raw
+        self.release = contracts.NativeRelease(tuple(pins), pins[-1][2], NOW + 60, NOW - 100 + 7020, self.release_key)
+        # This object has no tensor/model/device methods. It cannot initialize
+        # NativeEngine or perform any model operation; only loader wiring tested.
+        self.backend = SimpleNamespace(mode='cuda', rank=0, world_size=1,
+            bindings={'tiny_fixture': False, 'backend_source_sha256': self.bl.BACKEND_SHA,
+                      'material': self.bl.MATERIAL_SHA, 'config': self.bl.CONFIG_SHA,
+                      'tokenizer': self.bl.RAW_TOKENIZER_SHA}, SYNTHETIC_NO_MODEL=True)
+        self.module = mock.Mock(MATERIAL_RECEIPT_SHA='SYNTHETIC_PUBLIC_RECEIPT_NOT_READ')
+        self.module.verify_material.return_value = {'material_file_records_sha256': self.bl.MATERIAL_SHA}
+        self.module.exclusive_json.return_value = 'a' * 64
+        self.module.load_backend.return_value = self.backend
+        self.sources = SimpleNamespace(module=lambda name: self.module)
+
+    def mocked_loader(self, *, load_crosses_account_expiry=False, material_crosses_account_expiry=False):
+        import random
+        import numpy as np
+        import torch
+        numpy_random = np.random  # resolve lazy stdlib import before synthetic sys.flags
+        if load_crosses_account_expiry:
+            def load(*args, **kwargs): self.clock = NOW + 3601; return self.backend
+            self.module.load_backend.side_effect = load
+        if material_crosses_account_expiry:
+            def material(*args, **kwargs): self.clock = NOW + 60; return {'material_file_records_sha256': self.bl.MATERIAL_SHA}
+            self.module.verify_material.side_effect = material
+        with mock.patch.object(self.bl.sys, 'flags', SimpleNamespace(isolated=1, dont_write_bytecode=1)), \
+             mock.patch.dict(self.bl.os.environ, {'TORCH_DEVICE_BACKEND_AUTOLOAD':'0', 'CUBLAS_WORKSPACE_CONFIG':':4096:8'}), \
+             mock.patch.object(self.bl, '_reuse_preflight_sources', return_value=self.sources) as reuse, \
+             mock.patch.object(random, 'seed'), mock.patch.object(numpy_random, 'seed'), mock.patch.object(torch, 'manual_seed'):
+            self.reuse = reuse
+            return self.bl.load_native_backend(runtime_root='SYNTHETIC_SOURCE_NOT_READ', model_dir='SYNTHETIC_MODEL_NOT_READ',
+                receipt_path='SYNTHETIC_RECEIPT_NOT_READ', proof_output=self.attempt / 'SYNTHETIC_PROOF_NOT_WRITTEN.json',
+                release=self.release, device_preflight=object(), enable_cuda_execution=True)
+
+    def test_loaded_continuation_survives_account_expiry_but_never_extends_science(self):
+        loaded = self.mocked_loader(load_crosses_account_expiry=True)
+        self.module.load_backend.assert_called_once()
+        self.assertGreater(self.clock, self.release.valid_until_epoch)
+        self.assertIs(loaded.assert_native(), loaded)
+        self.assertEqual(self.release.verify_continuation(loaded), self.release.release_pin)
+        self.assertEqual(self.release.public_contract_for_continuation(loaded)['run_id'], self.run_id)
+        self.assertEqual(self.release.valid_until_epoch, NOW + 60)
+        self.assertEqual(self.release.science_deadline_epoch, NOW - 100 + 7020)
+        for p, raw in self.original_docs.items(): self.assertEqual(p.read_bytes(), raw)
+        with self.assertRaisesRegex(ValueError, 'NATIVE_RELEASE_EXPIRED'): self.release.verify_before_load()
+        with self.assertRaisesRegex(ValueError, 'NATIVE_RELEASE_EXPIRED'): self.release.public_contract()
+
+    def test_expired_initial_load_rejected_before_source_material_or_model(self):
+        self.clock = self.release.valid_until_epoch
+        with self.assertRaisesRegex(ValueError, 'NATIVE_RELEASE_EXPIRED'): self.mocked_loader()
+        self.reuse.assert_not_called(); self.module.verify_material.assert_not_called(); self.module.load_backend.assert_not_called()
+
+    def test_account_expiry_during_material_check_rejected_immediately_before_load(self):
+        with self.assertRaisesRegex(ValueError, 'NATIVE_RELEASE_EXPIRED'):
+            self.mocked_loader(material_crosses_account_expiry=True)
+        self.module.verify_material.assert_called_once(); self.module.load_backend.assert_not_called()
+
+    def test_expired_device_preflight_still_rejects_before_sources(self):
+        self.clock = self.release.valid_until_epoch
+        with mock.patch.object(self.bl, 'verify_source_closure', side_effect=AssertionError('NO_SOURCE_READ')) as sources:
+            with self.assertRaisesRegex(ValueError, 'NATIVE_RELEASE_EXPIRED'):
+                self.bl.preflight_native_device(runtime_root='SYNTHETIC_NO_READ', release=self.release, enable_cuda_execution=True)
+            sources.assert_not_called()
+
+    def test_admitted_release_or_unactivated_bundle_cannot_mint_continuation(self):
+        self.clock = NOW + 100
+        for unactivated in (None, object(), SimpleNamespace(release=self.release)):
+            with self.subTest(kind=type(unactivated).__name__), self.assertRaisesRegex(ValueError, 'ACTUAL_LOADED_CONTINUATION_CAPABILITY_REQUIRED'):
+                self.release.verify_continuation(unactivated)
+        with self.assertRaisesRegex(ValueError, 'completion activation required'):
+            self.bl.LoadedNativeBackend(self.binding_key, self.backend, self.sources, {}, 'a'*64,
+                self.release.release_pin, self.release, admitted_run_id=self.run_id,
+                admitted_science_deadline=self.release.science_deadline_epoch)
+        forged = object.__new__(self.bl.LoadedNativeBackend); forged._seal = self.binding_key
+        with self.assertRaisesRegex(ValueError, 'ACTUAL_LOADED_CONTINUATION_CAPABILITY_REQUIRED'):
+            self.release.verify_continuation(forged)
+
+    def test_fixed_science_expiry_rejects_continuation_even_with_valid_account_flag(self):
+        loaded = self.mocked_loader()
+        for now in (self.release.science_deadline_epoch, self.release.science_deadline_epoch + 1):
+            self.clock = now
+            with self.assertRaisesRegex(ValueError, 'CONTINUATION_ORIGINAL_SCIENCE_DEADLINE'):
+                loaded.assert_native()
+
+    def test_all_immutable_public_documents_rechecked_after_account_expiry(self):
+        loaded = self.mocked_loader(load_crosses_account_expiry=True)
+        for path, raw in self.original_docs.items():
+            with self.subTest(document=path.name):
+                changed = raw.replace(b'true', b'fals', 1)
+                self.assertNotEqual(changed, raw); self.assertEqual(len(changed), len(raw)); path.write_bytes(changed)
+                with self.assertRaisesRegex(ValueError, 'NATIVE_PUBLIC_RECEIPT_CHANGED'):
+                    loaded.assert_native()
+                path.write_bytes(raw)
+        self.assertIs(loaded.assert_native(), loaded)
+
+    def test_same_run_release_backend_documents_and_science_binding_required(self):
+        loaded = self.mocked_loader(load_crosses_account_expiry=True)
+        old = loaded._admitted_run_id; loaded._admitted_run_id = 'SYNTHETIC_OTHER_RUN'
+        with self.assertRaisesRegex(ValueError, 'CONTINUATION_SAME_ADMITTED_RUN_ID'): loaded.assert_native()
+        loaded._admitted_run_id = old
+        original = loaded.backend; loaded.backend = SimpleNamespace(**vars(original))
+        with self.assertRaisesRegex(ValueError, 'CONTINUATION_EXACT_LOADED_RELEASE_RUN_BINDING'): loaded.assert_native()
+        loaded.backend = original
+        other = contracts.NativeRelease(self.release.document_paths_and_pins, self.release.release_pin,
+                                        self.release.valid_until_epoch, self.release.science_deadline_epoch, self.release_key)
+        loaded.release = other
+        with self.assertRaisesRegex(ValueError, 'CONTINUATION_EXACT_LOADED_RELEASE_RUN_BINDING'): loaded.assert_native()
+        loaded.release = self.release
+        for field, value in (('science_deadline_epoch', self.release.science_deadline_epoch + 100),
+                             ('valid_until_epoch', self.release.valid_until_epoch + 100),
+                             ('release_pin', 'f' * 64), ('document_paths_and_pins', ())):
+            old = getattr(self.release, field); object.__setattr__(self.release, field, value)
+            with self.assertRaisesRegex(ValueError, 'CONTINUATION_EXACT_LOADED_RELEASE_RUN_BINDING'): loaded.assert_native()
+            object.__setattr__(self.release, field, old)
+        self.assertIs(loaded.assert_native(), loaded)
+
+    def test_model_load_failure_never_activates_a_bundle(self):
+        self.module.load_backend.side_effect = RuntimeError('SYNTHETIC_LOAD_FAILED_NO_MODEL')
+        with mock.patch.object(self.bl, 'LoadedNativeBackend', side_effect=AssertionError('MUST_NOT_ACTIVATE')) as factory:
+            with self.assertRaisesRegex(RuntimeError, 'SYNTHETIC_LOAD_FAILED'): self.mocked_loader()
+            factory.assert_not_called()
+
+    def test_postload_workflow_uses_only_activated_same_run_continuation(self):
+        from . import backend_engine, workflow
+        loaded = self.mocked_loader(load_crosses_account_expiry=True)
+        class SyntheticNativeType:
+            def __init__(self): self._loaded = loaded; self.native_training_gate_passed = True
+        engine = SyntheticNativeType()
+        with mock.patch.object(backend_engine, 'NativeEngine', SyntheticNativeType), \
+             mock.patch.object(workflow, '_run', return_value='SYNTHETIC_NO_TRAINING') as loop:
+            self.assertEqual(workflow.run_native_workflow(engine, self.release, SimpleNamespace(n=37), [], run_id=self.run_id), 'SYNTHETIC_NO_TRAINING')
+            loop.assert_called_once(); loop.reset_mock()
+            with self.assertRaisesRegex(ValueError, 'WORKFLOW_SAME_ADMITTED_RUN_ID'):
+                workflow.run_native_workflow(engine, self.release, SimpleNamespace(n=37), [], run_id='SYNTHETIC_OTHER_RUN')
+            loop.assert_not_called()
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+class V6FirstCodeTimingTests(unittest.TestCase):
+    """Synthetic public docs only. Account ages in queue; first code owns budget."""
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix='SYNTHETIC_V6_FIRST_CLOCK_')
+        self.addCleanup(self.temp.cleanup); self.root = Path(self.temp.name)
+        self.stack = ExitStack(); self.addCleanup(self.stack.close)
+        self.epoch, self.mono = NOW, 500000.
+        self.stack.enter_context(mock.patch.object(contracts.time, 'time', side_effect=lambda: self.epoch))
+        self.stack.enter_context(mock.patch.object(contracts.time, 'monotonic', side_effect=lambda: self.mono))
+        self.wrapper = 'd' * 64
+
+    def clock_doc(self, run_id=FIXTURE_RUN, source='c'*64):
+        return {'schema':'new-ps-first-notebook-code-clock/v1','run_id':run_id,
+                'first_epoch':NOW-100,'first_monotonic':499900.,
+                'capture_scope':'ROOT_PINNED_FIRST_CELL_BEFORE_PAYLOAD_VERIFICATION_EXTRACTION_INSTALL',
+                'clock_reset_allowed':False,'native_source_manifest_sha256':source,
+                'wrapper_source_manifest_sha256':self.wrapper}
+
+    def obligation(self):
+        return {'required_stage':'FINAL_PROVIDER_SUBMISSION_IMMEDIATELY_BEFORE_SAVERUN',
+                'external_root_ui_check_required':True,'runtime_account_refresh_allowed':False}
+
+    def fixture(self):
+        f=SyntheticAdmissionFixture(self.root, kaggle_account())
+        f.docs['ACCOUNT-AND-BUDGET.json'].update(observed_epoch=NOW-20000,valid_until_epoch=NOW-16400,
+            setup_anchor_epoch=NOW-20000,submission_admission=self.obligation())
+        f.docs['ROOT-RELEASE.json']['wrapper_source_manifest_sha256']=self.wrapper
+        f.reseal_synthetic_docs()
+        c=self.clock_doc(source=f.grant['files']['SOURCE-MANIFEST.json'])
+        raw=raw_json(c);(self.root/'PRE-SETUP-CLOCK.json').write_bytes(raw)
+        (self.root/'supervisor-attempt').mkdir(mode=0o700)
+        (self.root/'supervisor-attempt/LEASE.json').write_bytes(raw_json({'run_id':FIXTURE_RUN,
+            'pre_setup_clock':{'bytes':len(raw),'sha256':pin(raw)},
+            'science_deadline_epoch':c['first_epoch']+7020,
+            'science_deadline_monotonic':c['first_monotonic']+7020}))
+        return f,c,raw
+
+    def test_queue_beyond_account_expiry_admitted_to_inert_factory_first_code_budget(self):
+        f,c,raw=self.fixture();self.assertIs(f.invoke_inert(),f.inert_result)
+        args=f.factory.call_args.args
+        self.assertEqual(args[3],c['first_epoch']+7020);self.assertEqual(args[5],c['first_monotonic']+7020)
+        self.assertIn((str(self.root/'PRE-SETUP-CLOCK.json'),len(raw),pin(raw)),args[0])
+        seal=json.loads((self.root/'attempt/PRELOAD-SEAL.json').read_bytes())
+        self.assertEqual(seal['pre_setup_clock'],{'bytes':len(raw),'sha256':pin(raw)})
+        self.assertEqual(seal['whole_deadline_epoch'],c['first_epoch']+7200)
+        self.assertEqual(seal['whole_deadline_monotonic'],c['first_monotonic']+7200)
+
+    def test_old_local_packaging_anchor_irrelevant(self):
+        f,c,_=self.fixture();f.docs['ACCOUNT-AND-BUDGET.json']['setup_anchor_epoch']=1.;f.reseal_synthetic_docs()
+        self.assertIs(f.invoke_inert(),f.inert_result)
+
+    def test_exact_science7020_monotonic_cutoff_before_factory(self):
+        f,c,_=self.fixture();self.mono=c['first_monotonic']+7020
+        with self.assertRaisesRegex(ValueError,'FIRST_CELL_ORIGINAL_SCIENCE'):f.invoke_inert()
+        f.factory.assert_not_called();self.assertFalse((self.root/'attempt').exists())
+
+    def test_changed_firstclock_bytes_rejected_before_factory(self):
+        f,c,_=self.fixture();c['first_epoch']+=1;(self.root/'PRE-SETUP-CLOCK.json').write_bytes(raw_json(c))
+        with self.assertRaisesRegex(ValueError,'SAME_SUPERVISOR_FIRST_CLOCK'):f.invoke_inert()
+        f.factory.assert_not_called()
+
+    def test_run_and_source_bindings_rejected(self):
+        for key,value in [('run_id','other'),('native_source_manifest_sha256','e'*64),
+                          ('wrapper_source_manifest_sha256','f'*64),('clock_reset_allowed',True)]:
+            c=self.clock_doc();c[key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):
+                contracts.validate_first_cell_clock(c,run_id=FIXTURE_RUN,native_source_pin='c'*64,wrapper_source_pin=self.wrapper)
+
+    def test_setup_elapsed_is_not_reset(self):
+        c=self.clock_doc();self.mono=c['first_monotonic']+7000;self.epoch=c['first_epoch']+7000
+        e,m=contracts.validate_first_cell_clock(c,run_id=FIXTURE_RUN,native_source_pin='c'*64,wrapper_source_pin=self.wrapper)
+        self.assertEqual(m-self.mono,20);self.assertEqual(e-self.epoch,20)
+
+    def test_submission_obligation_not_fabricated_click_or_runtime_refresh(self):
+        a=kaggle_account();a.update(observed_epoch=1.,valid_until_epoch=3601.,submission_admission=self.obligation())
+        contracts.validate_submission_evidence(a,first_epoch=NOW)
+        for field,value in [('runtime_account_refresh_allowed',True),('external_root_ui_check_required',False),
+                            ('required_stage','MODEL_START')]:
+            b=deepcopy(a);b['submission_admission'][field]=value
+            with self.subTest(field=field),self.assertRaises(ValueError):contracts.validate_submission_evidence(b,first_epoch=NOW)
+        a['submission_admission']['checked_epoch']=NOW
+        with self.assertRaises(ValueError):contracts.validate_submission_evidence(a,first_epoch=NOW)
+
+    def test_supervisor_same_firstclock_and_monotonic_deadline(self):
+        f,c,raw=self.fixture();clock,p=supervisor._first_clock(self.root,f.grant,FIXTURE_RUN)
+        self.assertEqual(clock,c);self.assertEqual(p,{'bytes':len(raw),'sha256':pin(raw)})
+        self.mono=c['first_monotonic']+7020
+        with self.assertRaises(ValueError):supervisor._first_clock(self.root,f.grant,FIXTURE_RUN)
+
+    def test_load_and_continuation_use_monotonic_not_account_expiry(self):
+        from . import backend_load as bl
+        key=object();binding=object();activation=object()
+        with mock.patch.object(contracts,'_RELEASE_KEY',key),mock.patch.object(bl,'_BINDING_SENTINEL',binding),mock.patch.object(bl,'_ACTUAL_LOAD_COMPLETED_KEY',activation):
+            p=self.root/'EXPERIMENT-CONTRACT.json';raw=raw_json({'run_id':FIXTURE_RUN});p.write_bytes(raw)
+            release=contracts.NativeRelease(((str(p),len(raw),pin(raw)),),'a'*64,NOW-1000,NOW+6920,key,self.mono+6920)
+            self.assertEqual(release.verify_before_load(),'a'*64)
+            loaded=bl.LoadedNativeBackend(binding,SimpleNamespace(SYNTHETIC_NO_MODEL=True),None,None,None,'a'*64,release,
+                activation_key=activation,admitted_run_id=FIXTURE_RUN,admitted_science_deadline=release.science_deadline_epoch)
+            self.assertEqual(release.verify_continuation(loaded),'a'*64)
+            p.write_bytes(raw+b' ')
+            with self.assertRaises(ValueError):release.verify_before_load()
+            p.write_bytes(raw);self.mono+=6920
+            with self.assertRaises(ValueError):release.verify_before_load()
+            with self.assertRaises(ValueError):release.verify_continuation(loaded)

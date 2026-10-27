@@ -1,0 +1,241 @@
+"""NEW bounded stage orchestration; offline CPU synthetic entry only.
+
+No CLI, model loader, data loader, scorer, generator, provider, output uploader,
+checkpoint writer or fallback device. A later native wrapper MUST retain its own
+sealed pairpack/material/budget/numerical/admission gates; this module does not
+turn historical supply96 inference readiness into training readiness.
+"""
+from __future__ import annotations
+import hashlib
+import random
+from .contracts import CostLedger, Operation, SEED, UPDATES, digest, need
+from .torch_ops import (ReferenceCache, assert_initial_equality, dpo_parent, finite,
+                        matched_ce_parent, query_response_logps, response_kl,
+                        tensor_digest, torch_module)
+
+
+class NativeAdmissionBlocked(RuntimeError):
+    pass
+
+
+def native_entry(*args, **kwargs):
+    """Deliberately inert, including when arbitrary caller claims PASS or enable."""
+    raise NativeAdmissionBlocked("BLOCKED_NEW_RECONSTRUCTION: no sealed new-stage pairpack/material/budget/admission capability; native execution is not implemented or authorized")
+
+
+class CpuFixtureEngine:
+    """Adapter-compatible engine for existing tiny backend or synthetic model.
+
+    Only supplied in-memory CPU fixtures are accepted. Nothing is acquired.
+    Frozen base is retained and guarded, not silently reloaded between arms.
+    Each reset gets exact root LoRA, a NEW empty Adam, and Python/NumPy/CPU RNG
+    seed1729. No CUDA state is touched, and CUDA reset is not claimed here.
+    """
+    def __init__(self, backend):
+        t = torch_module()
+        import numpy as np
+        need(backend.mode == "cpu" and backend.bindings.get("tiny_fixture") is True, "only explicit synthetic CPU backend")
+        self.b, self.t, self.np = backend, t, np
+        need(backend.world_size == 1 and backend.rank == 0, "one CPU fixture rank")
+        params = dict(backend.model.named_parameters())
+        need(params and all(p.device.type == "cpu" and p.dtype == t.float32 for p in params.values()), "CPU FP32 only; no hidden device/dtype fallback")
+        self.trainable = {n: p for n, p in params.items() if p.requires_grad}
+        self.frozen = {n: p for n, p in params.items() if not p.requires_grad}
+        need(self.trainable and self.frozen and set(self.trainable) == set(backend.trainable_parameters), "closed trainable and frozen parameter sets")
+        need(all("lora_" in n for n in self.trainable), "only LoRA fixture parameters trainable")
+        need(all(not isinstance(m, t.nn.Dropout) or m.p == 0 for m in backend.model.modules()), "dropout must be zero")
+        self.root = {n: p.detach().clone() for n, p in self.trainable.items()}
+        need(set(backend.initial_adapter) == set(self.root) and all(t.equal(self.root[n], backend.initial_adapter[n]) for n in self.root), "initial adapter is exact root")
+        self.frozen_versions = {n: p._version for n, p in self.frozen.items()}
+        self.frozen_pins = {n: tensor_digest(p) for n, p in self.frozen.items()}
+        self.root_digest = self.adapter_digest()
+        self.backend_binding_pin = digest(backend.bindings)
+        self.root_identity = digest({"adapter": self.root_digest, "frozen": self.frozen_pins,
+                                     "backend": self.backend_binding_pin, "torch": t.__version__,
+                                     "numerical_policy": "CPU_SYNTHETIC_FP32_FULL16"})
+        self.optimizer_objects = []
+        self.arm_updates = 0
+        self.reset_receipts = []
+        self._seed_rng()
+        self.root_rng = self.rng_digest()
+        self.check_frozen()
+
+    def _seed_rng(self):
+        random.seed(SEED)
+        self.np.random.seed(SEED)
+        self.t.manual_seed(SEED)
+
+    def rng_digest(self):
+        h = hashlib.sha256(repr(random.getstate()).encode("ascii"))
+        n = self.np.random.get_state()
+        h.update(n[0].encode("ascii")); h.update(n[1].tobytes()); h.update(repr(n[2:]).encode("ascii"))
+        h.update(self.t.get_rng_state().numpy().tobytes())
+        return h.hexdigest()
+
+    def adapter_digest(self):
+        h = hashlib.sha256()
+        for n, p in self.trainable.items():
+            finite(p, "LoRA adapter")
+            h.update(n.encode("utf-8")); h.update(tensor_digest(p).encode("ascii"))
+        return h.hexdigest()
+
+    def check_frozen(self):
+        current = dict(self.b.model.named_parameters())
+        need(digest(self.b.bindings) == self.backend_binding_pin, "backend binding identity unchanged")
+        need(set(current) == set(self.frozen) | set(self.trainable), "model parameter identities unchanged")
+        need(all(current[n] is p and p.requires_grad for n, p in self.trainable.items()), "trainable identities/flags unchanged")
+        for n, p in self.frozen.items():
+            need(current[n] is p and not p.requires_grad and p.grad is None and p._version == self.frozen_versions[n], "base identity/grad/version mutation")
+            need(tensor_digest(p) == self.frozen_pins[n], "CPU fixture base bytes unchanged")
+
+    def reset(self, label):
+        self.check_frozen()
+        self.b.model.zero_grad(set_to_none=True)
+        with self.t.no_grad():
+            for n, p in self.trainable.items():
+                p.copy_(self.root[n])
+        # Constructing fresh Adam, not merely trusting a backend reset receipt.
+        self.b.optimizer = self.t.optim.Adam(self.trainable.values(), lr=1e-5,
+                betas=(.9, .999), eps=1e-8, weight_decay=0, foreach=False)
+        self.optimizer_objects.append(self.b.optimizer)  # retain identities; no id reuse
+        self._seed_rng()
+        self.b.model.eval()
+        self.arm_updates = 0
+        need(not self.b.optimizer.state and all(p.grad is None for p in self.trainable.values()), "empty Adam and gradients after reset")
+        need(self.adapter_digest() == self.root_digest and self.rng_digest() == self.root_rng, "exact root/LoRA/Python/NumPy/CPU RNG reset")
+        self.check_frozen()
+        receipt = {"label": label, "root_adapter": self.root_digest, "rng": self.root_rng,
+                   "empty_fresh_Adam": True, "frozen_base_unchanged": True,
+                   "cuda_rng_verified": False, "scope": "CPU_SYNTHETIC_ONLY"}
+        self.reset_receipts.append(receipt)
+        return receipt
+
+    def forward(self, response, *, grad):
+        self.check_frozen()
+        self.b.model.train(grad)
+        ids = self.t.tensor([response.ids], dtype=self.t.long, device="cpu")
+        attention = self.t.tensor([response.attention], dtype=self.t.long, device="cpu")
+        with self.t.set_grad_enabled(grad):
+            logits = self.b.model(input_ids=ids, attention_mask=attention, use_cache=False).logits
+            value = query_response_logps(logits, response)
+        self.check_frozen()
+        return value
+
+    def backward(self, loss):
+        finite(loss, "parent loss")
+        need(loss.ndim == 0 and loss.requires_grad, "differentiable scalar parent contribution")
+        loss.backward()
+        self.validate_gradients()
+        self.check_frozen()
+
+    def validate_gradients(self):
+        for p in self.trainable.values():
+            need(p.grad is not None, "every LoRA parameter has a gradient")
+            finite(p.grad, "LoRA gradients")
+
+    def validate_optimizer(self, expected):
+        opt = self.b.optimizer
+        need(type(opt) is self.t.optim.Adam and len(opt.param_groups) == 1, "exact single Adam optimizer")
+        group = opt.param_groups[0]
+        need(group["lr"] == 1e-5 and tuple(group["betas"]) == (.9, .999) and group["eps"] == 1e-8 and group["weight_decay"] == 0 and group["foreach"] is False, "fixed Adam contract")
+        need({id(p) for p in group["params"]} == {id(p) for p in self.trainable.values()}, "exact Adam parameter coverage")
+        for p in self.trainable.values():
+            state = opt.state.get(p, {})
+            if expected == 0:
+                need(not state, "fresh Adam must be empty")
+            else:
+                need(set(state) == {"step", "exp_avg", "exp_avg_sq"} and float(state["step"]) == expected, "every Adam step matches full-panel commits")
+                for v in state.values():
+                    finite(v, "Adam state")
+        need(len(opt.state) == (0 if expected == 0 else len(self.trainable)), "no unexpected Adam state")
+
+    def commit(self, update_index):
+        need(update_index == self.arm_updates + 1 and 1 <= update_index <= UPDATES, "four sequential full-panel commits")
+        self.validate_gradients(); self.validate_optimizer(self.arm_updates); self.check_frozen()
+        self.b.optimizer.step()
+        self.arm_updates += 1
+        self.validate_optimizer(self.arm_updates)
+        self.adapter_digest(); self.check_frozen()
+        self.b.optimizer.zero_grad(set_to_none=True)
+        need(all(p.grad is None for p in self.trainable.values()), "clear gradients only after commit")
+
+
+def run_cpu_fixture_stage(backend, panel, observer=None):
+    """Execute fixed reference -> CE4 -> KL -> reset -> DPO4 -> KL schedule.
+
+    Caller-provided synthetic data only. Each parent contributes 1/N; losses are
+    accumulated until all N have run, then exactly one Adam step. No baseline
+    DEV generation/scoring is implemented or authorized by this CPU stage.
+    """
+    need(panel.source_kind == "synthetic_fixture", "real pairpack forbidden in offline fixture entry")
+    engine = CpuFixtureEngine(backend)
+    ledger = CostLedger(panel, observer)
+    maximum_initial_error = {}
+    losses, arms = {}, {}
+
+    def forward(phase, pair, side, update=None, grad=False):
+        response = getattr(pair, side)
+        op = Operation(phase, "forward", update, pair.ordinal, side, len(response.ids), len(response.body_eos))
+        return ledger.call(op, lambda: engine.forward(response, grad=grad))
+
+    try:
+        engine.reset("reference")
+        rows = [(forward("reference", p, "chosen"), forward("reference", p, "rejected")) for p in panel.pairs]
+        cache = ReferenceCache.create(panel, rows, engine.root_identity)
+        del rows
+        cache.assert_intact(panel, engine.root_identity)
+        for arm in ("ce", "dpo"):
+            engine.reset(arm)
+            losses[arm] = []
+            maximum_initial_error[arm] = 0.0
+            for update in range(1, UPDATES + 1):
+                parent_losses = []
+                cache.assert_intact(panel, engine.root_identity)
+                for index, pair in enumerate(panel.pairs):
+                    reference_chosen, reference_rejected = cache.values[index]
+                    chosen = forward(arm, pair, "chosen", update, grad=True)
+                    if arm == "dpo":
+                        rejected = forward(arm, pair, "rejected", update, grad=True)
+                        if update == 1:
+                            maximum_initial_error[arm] = max(maximum_initial_error[arm], assert_initial_equality((chosen, rejected), cache.values[index]))
+                        loss = dpo_parent(chosen.selected, rejected.selected, reference_chosen.selected, reference_rejected.selected, panel.n)
+                        graph_tokens = len(pair.chosen.body_eos) + len(pair.rejected.body_eos)
+                    else:
+                        if update == 1:
+                            maximum_initial_error[arm] = max(maximum_initial_error[arm], assert_initial_equality((chosen,), (reference_chosen,)))
+                        loss = matched_ce_parent(chosen.selected, panel.n)
+                        graph_tokens = len(pair.chosen.body_eos)
+                    parent_losses.append(float(loss.detach()))
+                    op = Operation(arm, "backward", update, pair.ordinal, None, graph_response_tokens=graph_tokens)
+                    ledger.call(op, lambda: engine.backward(loss))
+                    del loss, chosen
+                    if arm == "dpo":
+                        del rejected
+                need(len(parent_losses) == panel.n, "complete full-panel accumulation before Adam")
+                cache.assert_intact(panel, engine.root_identity)
+                ledger.call(Operation(arm, "update", update, None, None), lambda: engine.commit(update))
+                losses[arm].append(sum(parent_losses))
+            need(engine.arm_updates == UPDATES, "four actual commits")
+            policy = engine.adapter_digest()
+            need(policy != engine.root_digest, "final adapter must change from shared root")
+            prefix_kl = []
+            for index, pair in enumerate(panel.pairs):
+                values = [forward("kl_" + arm, pair, side) for side in ("chosen", "rejected")]
+                terms = [float(response_kl(value, ref)) for value, ref in zip(values, cache.values[index])]
+                prefix_kl.append((terms[0] + terms[1]) / 2)
+            cache.assert_intact(panel, engine.root_identity); engine.check_frozen()
+            need(policy == engine.adapter_digest(), "fixed-prefix diagnostic must not update policy")
+            arms[arm] = {"adapter_sha256": policy, "updates": engine.arm_updates,
+                         "fixed_prefix_full16_kl": sum(prefix_kl) / panel.n}
+        need(arms["ce"]["adapter_sha256"] != arms["dpo"]["adapter_sha256"], "distinct objective policy outputs required")
+        need(len({id(o) for o in engine.optimizer_objects}) == 3, "fresh empty Adam for reference/CE/DPO resets")
+        result = {"status": "PASS_CPU_SYNTHETIC_STAGE", "new_reconstruction_not_recovered_final": True,
+                  "native_ready": False, "quality_claim": False, "N": panel.n, "panel_binding": panel.binding,
+                  "root_adapter_sha256": engine.root_digest, "runtime_root_identity": engine.root_identity, "reference_cache_sha256": cache.original_digest,
+                  "initial_maxabs": maximum_initial_error, "losses": losses, "arms": arms,
+                  "resets": engine.reset_receipts, "cost": ledger.finish()}
+        return result
+    except BaseException as exc:
+        if ledger.status != "UNKNOWN":
+            ledger.unknown(None, exc)
+        raise

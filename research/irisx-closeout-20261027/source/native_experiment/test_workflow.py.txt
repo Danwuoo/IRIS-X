@@ -1,0 +1,135 @@
+import copy
+import json
+from pathlib import Path
+import tempfile
+import unittest
+import torch
+from training import fixtures
+from training.stage import CpuFixtureEngine, run_cpu_fixture_stage
+from training.contracts import digest
+from .contracts import NativeRelease, PRIVATE_PIN, parse_bound_private_pack, sha, validate_dev_rows
+from .workflow import run_fixture_workflow, _candidate
+
+
+def dev_rows():
+    return [{"parent_id": "SYNTHETIC-DEV-" + str(i), "ordinal": i, "query_demo_ordinal": 1,
+             "prompt": list(fixtures.prompt())} for i in range(32)]
+
+
+class Hooks:
+    def __init__(self): self.phases = []
+    def set_phase(self, name): self.phases.append(name)
+    def snapshot(self): return {"fixture_no_native_physical_claim": True, "phases": self.phases}
+
+
+class FixtureEngine(CpuFixtureEngine):
+    fixture_only = True
+    deadline = 10**12
+    def __init__(self):
+        super().__init__(fixtures.tiny_backend())
+        self.draws, self.checkpoints, self.replays = [], [], []
+        self.fail_draw = None
+    def generate(self, prompt, seed, cap, deadline):
+        self.draws.append(seed)
+        if len(self.draws) == self.fail_draw: raise RuntimeError("SYNTHETIC_FAILURE")
+        return {"grid": [[1]], "finished_eos": True, "truncated": False, "sampled_logps": [-1., -1.]}
+    def checkpoint_roundtrip(self, arm, cursor, identity, probe, output):
+        self.checkpoints.append((arm, copy.deepcopy(cursor)))
+        # Separate backend-engine suite tests actual synthetic serialization.
+        return {"scope": "FIXTURE_CHECKPOINT_BOUNDARY_ONLY", "arm": arm, "updates": self.arm_updates}
+    def verify_policy_replay(self, row, deadline):
+        self.replays.append(row["ordinal"])
+        return {"scope": "SYNTHETIC_ONLY_REPLAY_BOUNDARY"}
+
+
+class WorkflowTests(unittest.TestCase):
+    def run_fixture(self, engine=None):
+        engine = engine or FixtureEngine()
+        events, hooks = [], Hooks()
+        with tempfile.TemporaryDirectory() as d:
+            result, predictions = run_fixture_workflow(engine, fixtures.panel(), dev_rows(), checkpoint_root=Path(d),
+                public_probe=fixtures.panel().pairs[0].chosen, hooks=hooks, emit=lambda k, v: events.append((k, v)), run_id="synthetic-full-workflow")
+        return engine, result, predictions, events
+    def test_complete_192_fixed_seeds_no_targets(self):
+        engine, result, predictions, events = self.run_fixture()
+        self.assertEqual(len(predictions), 192)
+        seeds = [1729 + i * 4096 + s for i in range(32) for s in (0, 1)]
+        self.assertEqual(engine.draws, seeds * 3)
+        self.assertEqual(engine.replays, list(range(32)) * 3)
+        self.assertEqual([p["arm"] for p in predictions], ["fresh_base"] * 64 + ["CE"] * 64 + ["DPO"] * 64)
+        self.assertEqual(result["DEV_target_reads"], 0)
+        self.assertEqual(events[-1][0], "predictions_seal")
+        self.assertFalse(result["quality_GO"])
+    def test_full_loop_matches_separate_cpu_stage(self):
+        _, result, _, _ = self.run_fixture()
+        original = run_cpu_fixture_stage(fixtures.tiny_backend(), fixtures.panel())
+        for low, label in (("ce", "CE"), ("dpo", "DPO")):
+            self.assertEqual(result["losses"][label], original["losses"][low])
+            self.assertEqual(result["arms"][label]["policy_adapter_sha256"], original["arms"][low]["adapter_sha256"])
+        cost = result["experimental_training_and_KL_cost"]
+        self.assertEqual((cost["forward_calls"], cost["backward_calls"], cost["optimizer_commits"]), (36, 16, 8))
+    def test_failure_no_retry_or_final_seal(self):
+        engine, events = FixtureEngine(), []
+        engine.fail_draw = 3
+        with tempfile.TemporaryDirectory() as d, self.assertRaises(RuntimeError):
+            run_fixture_workflow(engine, fixtures.panel(), dev_rows(), checkpoint_root=Path(d),
+                public_probe=fixtures.panel().pairs[0].chosen, hooks=Hooks(), emit=lambda k, v: events.append((k, v)), run_id="synthetic-fail")
+        self.assertEqual(len(engine.draws), 3)
+        self.assertEqual(sum(k == "draw_unknown" for k, _ in events), 1)
+        self.assertNotIn("predictions_seal", [k for k, _ in events])
+    def test_native_pack_forbidden_in_fixture(self):
+        from dataclasses import replace
+        panel = replace(fixtures.panel(), source_kind="isolated_verified_pairpack")
+        with self.assertRaises(ValueError): run_fixture_workflow(FixtureEngine(), panel, dev_rows())
+    def test_unknown_or_malformed_candidate_denied(self):
+        valid = {"grid": [[1]], "finished_eos": True, "truncated": False, "sampled_logps": [-1., -1.]}
+        for change in ({"truncated": 0}, {"finished_eos": 1}, {"sampled_logps": [float("nan"), -1]}, {"grid": None}):
+            with self.assertRaises(ValueError): _candidate(valid | change)
+    def test_known_invalid_stays_in_denominator(self):
+        x = {"grid": None, "finished_eos": False, "truncated": True, "sampled_logps": [-1.] * 512}
+        self.assertIs(_candidate(x), x)
+    def test_dev_panel_order_duplicate_and_overlap(self):
+        for modify in (lambda rows: rows.reverse(), lambda rows: rows[0].update(parent_id=rows[1]["parent_id"]),
+                       lambda rows: rows[0].update(query_demo_ordinal=True)):
+            rows = dev_rows(); modify(rows)
+            with self.assertRaises(ValueError): validate_dev_rows(rows)
+    def test_release_cannot_be_constructed_from_pass(self):
+        with self.assertRaises(ValueError): NativeRelease((), "a" * 64, 10**12, 10**12, {"PASS": True})
+
+
+class PackTests(unittest.TestCase):
+    def make(self):
+        panel = fixtures.panel()
+        identity = [{"parent_id": "SYNTHETIC-" + str(i), "train_ordinal": i, "query_demo_ordinal": 1,
+                     "canonical_prompt_sha256": digest(list(fixtures.prompt()))} for i in range(128)]
+        rows = []
+        for p in panel.pairs:
+            identity[p.ordinal]["parent_id"] = p.parent_id
+            rows.append({"parent_id": p.parent_id, "train_ordinal": p.ordinal, "query_demo_ordinal": 1,
+                "canonical_prompt_tokens": list(p.chosen.prompt), "canonical_prompt_sha256": digest(list(p.chosen.prompt)),
+                "chosen_body_EOS": list(p.chosen.body_eos), "chosen_sha256": digest(list(p.chosen.body_eos)),
+                "rejected_body_EOS": list(p.rejected.body_eos), "rejected_sha256": digest(list(p.rejected.body_eos)),
+                "chosen_aliases": [], "rejected_aliases": [], "all_unique_valid_draw_aliases": []})
+        bindings = {"policy_sha256": "a" * 64, "model_material_sha256": "b" * 64, "tokenizer_sha256": "c" * 64}
+        doc = {"schema": "new-ps-private-train-pairpack/v1", "visibility": "SCORER_ONLY_PRIVATE",
+               "source_kind": "NEW_RECONSTRUCTION_NOT_HISTORICAL_SCORER", "profile": "SYNTHETIC_ONLY",
+               "contract_sha256": "d" * 64, "panel_sha256": "e" * 64, "identity_sha256": "f" * 64,
+               "bindings": bindings, "source_arm": "diverse_G4_ONLY", "source_parent_count": 128,
+               "selector_domain": "iris-train-preference-rejected/v1", "parent_weight": {"numerator": 1, "denominator": 2}, "rows": rows}
+        return doc, identity, bindings
+    def parse(self, doc, identity, bindings, synthetic=True):
+        raw = json.dumps(doc, sort_keys=True, separators=(",", ":")).encode()
+        return parse_bound_private_pack(raw, expected_pin={"bytes": len(raw), "sha256": sha(raw)}, public_identity=identity,
+                                        runtime_source_sha256="9" * 64, expected_bindings=bindings, synthetic=synthetic)
+    def test_synthetic_in_memory_pack_no_target_selection(self):
+        p = self.parse(*self.make()); self.assertEqual(p.n, 2); self.assertEqual([x.ordinal for x in p.pairs], [0, 7])
+    def test_no_fixture_as_native(self):
+        with self.assertRaises(ValueError): self.parse(*self.make(), synthetic=False)
+    def test_exact_folds_order_response_hashes(self):
+        for change in (lambda d: d["rows"].reverse(), lambda d: d["rows"][0].update(query_demo_ordinal=0),
+                       lambda d: d["rows"][0].update(chosen_sha256="0" * 64), lambda d: d.update(parent_weight={"numerator": True, "denominator": 2})):
+            d, i, b = self.make(); change(d)
+            with self.assertRaises(ValueError): self.parse(d, i, b)
+
+
+if __name__ == "__main__": unittest.main()

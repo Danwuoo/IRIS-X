@@ -1,0 +1,70 @@
+"""NEW explicit same/split-filesystem reservation, no model/private data.
+
+Reuses original43-wheel allocation arithmetic and16GiB/4GiB ceilings, but does
+not emit the old false assumption that /tmp runtime and working outputs share
+a filesystem. Every distinct filesystem gets its own1GiB safety margin.
+"""
+from pathlib import Path
+import os
+import shutil
+from .owned_process import write_json
+
+MiB=1024**2
+GiB=1024**3
+
+def need(ok,code):
+    if not ok:raise ValueError(code)
+
+def calculate(spec,wheel,*,temporary_block,output_block,temporary_free,output_free,same_filesystem):
+    need(spec['max_install_bytes']==16*GiB and spec['max_output_bytes']==4*GiB,'UNCHANGED_ORIGINAL_DISK_CEILINGS')
+    need(type(same_filesystem)is bool and all(type(v)is int and v>=0 for v in(temporary_free,output_free)),
+         'FINITE_FILESYSTEM_OBSERVATIONS')
+    need(all(type(v)is int and 512<=v<=MiB for v in(temporary_block,output_block)),'VALID_FILESYSTEM_BLOCKS')
+    rows=wheel['disk_wheels'];need(type(rows)is list and len(rows)==43,'EXACT_SELECTED43_DISK_ROWS')
+    allocated=[];compressed=[];member_count=0
+    for row in rows:
+        sizes=row['member_sizes'];directories=row['directory_count'];c=row['compressed_bytes']
+        need(type(sizes)is list and all(type(n)is int and n>=0 for n in sizes) and
+             type(directories)is int and directories>=0 and type(c)is int and c>=0,'CLOSED_WHEEL_ALLOCATION_NUMBERS')
+        member_count+=len(sizes);need(member_count<=150000,'ORIGINAL_WHEEL_MEMBER_LIMIT')
+        body=sum(((n+temporary_block-1)//temporary_block)*temporary_block for n in sizes)
+        allocated.append(body+(len(sizes)+directories)*temporary_block);compressed.append(c)
+    installation=sum(allocated)+max(allocated)+max(compressed)+GiB+256*MiB
+    checkpoints=3*780*MiB;small=256*MiB;caches=512*MiB
+    original_output=checkpoints+small+caches
+    need(installation<=spec['max_install_bytes'] and original_output<=spec['max_output_bytes'],
+         'DERIVED_RESERVATION_WITHIN_UNCHANGED_CAPS')
+    temporary_required=installation+caches+GiB
+    output_required=checkpoints+small+GiB
+    if same_filesystem:
+        need(temporary_block==output_block and temporary_free==output_free,'ONE_FILESYSTEM_ONE_OBSERVATION')
+        temporary_required=installation+original_output+GiB;output_required=temporary_required
+    ok=temporary_free>=temporary_required and output_free>=output_required
+    return {'schema':'new-ps-explicit-temp-output-disk-admission/v1','status':'PASS'if ok else'BLOCKED',
+      'selected_wheel_count':43,'same_filesystem_install_and_outputs':same_filesystem,
+      'temporary_allocation_block_bytes':temporary_block,'output_allocation_block_bytes':output_block,
+      'temporary_free_bytes':temporary_free,'output_free_bytes':output_free,
+      'temporary_required_bytes':temporary_required,'output_required_bytes':output_required,
+      'installation_reservation_bytes':installation,'installation_cap_bytes':spec['max_install_bytes'],
+      'original_combined_output_reservation_bytes':original_output,'output_cap_bytes':spec['max_output_bytes'],
+      'checkpoint_payload_cap_bytes':checkpoints,'small_results_logs_export_reserve_bytes':small,
+      'runtime_cache_temp_reserve_bytes':caches,'safety_margin_per_distinct_filesystem_bytes':GiB,
+      'observed_native_peak':False,'copied_model_weights':False,'filesystem_fallback':False,
+      'old_outputs_removed':False,'old_same_filesystem_receipt_reused':False}
+
+def admit_disk(spec,wheel,work,output_root):
+    temp=Path(work).parent;out=Path(output_root)
+    for path in(temp,out):
+        need(path.is_absolute() and path.is_dir() and not any(p.is_symlink()for p in(path,*path.parents)),
+             'EXPLICIT_EXISTING_TEMP_OUTPUT_ROOTS')
+    same=temp.stat().st_dev==out.stat().st_dev
+    tf=os.statvfs(temp);of=tf if same else os.statvfs(out)
+    free=shutil.disk_usage(temp).free;outfree=free if same else shutil.disk_usage(out).free
+    result=calculate(spec,wheel,temporary_block=tf.f_frsize,output_block=of.f_frsize,
+        temporary_free=free,output_free=outfree,same_filesystem=same)
+    result.update(temporary_path=str(temp),output_path=str(out),temporary_st_dev=temp.stat().st_dev,output_st_dev=out.stat().st_dev)
+    write_json(temp/'results/DISK-ADMISSION.NEW.json',result)
+    need(result['status']=='PASS','NEW_EXPLICIT_FILESYSTEM_RESERVATION_SHORTFALL')
+    return result
+
+if __name__=='__main__':raise SystemExit('DISK_ADMISSION_LIBRARY_ONLY')

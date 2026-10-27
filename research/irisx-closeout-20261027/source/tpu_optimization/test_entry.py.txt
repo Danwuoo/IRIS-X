@@ -1,0 +1,148 @@
+"""Synthetic/public-source command/bootstrap tests; no actual native entry call."""
+import argparse
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import time
+import types
+import unittest
+from unittest import mock
+from tpu_optimization import entry
+
+ROOT=Path(__file__).resolve().parent
+PROJECT=ROOT.parent
+
+
+def config():
+    t=time.time()-1
+    c={k:'/synthetic/'+k for k in entry.FIELDS if k not in
+       ('schema','run_id','allocation_epoch','science_deadline_epoch','hard_deadline_epoch',
+        'root_release_sha256','adapter_manifest_sha256','expected_accelerator_type','expected_zone','native_admitted')}
+    c.update(schema='new-ps-tpu-public-sft8-run/v1',run_id='irisx-ps-public-sft8-synthetic',
+             allocation_epoch=t,science_deadline_epoch=t+9600,hard_deadline_epoch=t+10800,
+             root_release_sha256='a'*64,adapter_manifest_sha256='b'*64,
+             expected_accelerator_type='v5litepod-4',expected_zone='us-west4-a',native_admitted=True)
+    return c
+
+
+class EntryTests(unittest.TestCase):
+    def test_closed_new_config_rejects_target_and_old_schema(self):
+        c=config();self.assertIs(entry.validate_config(c),c)
+        for key,value in [('train_targets',{'path':'NEVER_READ'}),('native_admitted',False),
+                          ('schema','ps-tpu-global-u4-validation/v1'),('expected_accelerator_type','v5p-8')]:
+            d={**c,key:value}
+            with self.assertRaises(ValueError):entry.validate_config(d)
+
+    def test_original_allocation_deadlines_not_refreshed(self):
+        c=config()
+        for key in ('science_deadline_epoch','hard_deadline_epoch'):
+            d={**c,key:c[key]+1}
+            with self.assertRaises(ValueError):entry.validate_config(d)
+        d={**c,'allocation_epoch':float('nan')}
+        with self.assertRaises(ValueError):entry.validate_config(d)
+
+    def test_disabled_entry_fails_before_any_input_read(self):
+        with mock.patch.object(entry,'read_exact',side_effect=AssertionError('must not read')):
+            with self.assertRaisesRegex(ValueError,'DEFAULT_DISABLED'):
+                entry.main(['--mode','pipeline','--config','/no','--config-sha','0'*64])
+
+    def test_cpu_host_never_native(self):
+        with self.assertRaises(ValueError):entry.native_host_guard()
+
+    def test_exact_torchrun_command(self):
+        a=argparse.Namespace(config='/synthetic/config.json',config_sha='c'*64,material_proof_sha='d'*64,
+                             handoff_sha='e'*64,phase='consume')
+        argv=entry.rank_argv(a)
+        self.assertEqual(argv[:5],[sys.executable,'-I','-B','-m','torch.distributed.run'])
+        for part in ('--standalone','--nnodes=1','--nproc-per-node=4','--max-restarts=0','--run-path','--start-method=spawn'):
+            self.assertEqual(argv.count(part),1)
+        self.assertEqual(argv[argv.index('--mode')+1],'rank')
+        self.assertEqual(argv[argv.index('--phase')+1],'consume')
+        self.assertEqual(argv[argv.index('--handoff-sha')+1],'e'*64)
+        self.assertNotIn('native_phase.py',' '.join(argv))
+
+    def test_import_entry_is_inert_fresh_process(self):
+        env={**os.environ,'PYTHONPATH':str(PROJECT)}
+        p=subprocess.run([sys.executable,'-c','import sys; import tpu_optimization.entry; assert "torch" not in sys.modules'],
+                         env=env,capture_output=True,text=True,timeout=20)
+        self.assertEqual(p.returncode,0,p.stderr)
+
+    def _copy(self,root):
+        rows={}
+        for name in entry.FILES:
+            raw=(ROOT/name).read_bytes();(root/name).write_bytes(raw)
+            rows[name]={'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+        raw=json.dumps(rows,sort_keys=True).encode();mp=root/'MANIFEST.json';mp.write_bytes(raw)
+        spec=importlib.util.spec_from_file_location('_synthetic_copy_entry',root/'entry.py')
+        m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+        return m,{'adapter_manifest_path':str(mp),'adapter_manifest_sha256':hashlib.sha256(raw).hexdigest()}
+
+    def test_bootstrap_exact_four_byte_sources(self):
+        with tempfile.TemporaryDirectory() as t:
+            m,c=self._copy(Path(t));modules=m.bootstrap(c)
+            self.assertEqual(set(modules),{'source_loader','runtime','portable_adapter'})
+            self.assertTrue(modules['runtime'].__name__.startswith('_verified_public_tpu_'))
+            with self.assertRaises(ValueError):m.bootstrap(c)
+            prefix='_verified_public_tpu_'+c['adapter_manifest_sha256'][:16]
+            for key in list(sys.modules):
+                if key==prefix or key.startswith(prefix+'.'):sys.modules.pop(key)
+
+    def test_bootstrap_tampered_source_denied_before_import(self):
+        with tempfile.TemporaryDirectory() as t:
+            root=Path(t);m,c=self._copy(root)
+            (root/'runtime.py').write_text('raise AssertionError("UNVERIFIED MUST NOT RUN")\n')
+            with self.assertRaisesRegex(ValueError,'pin'):m.bootstrap(c)
+
+    def test_ancestor_symlink_denied(self):
+        with tempfile.TemporaryDirectory() as t:
+            root=Path(t);actual=root/'actual';actual.mkdir();(actual/'x').write_bytes(b'x')
+            (root/'alias').symlink_to(actual,target_is_directory=True)
+            with self.assertRaises(ValueError):entry.read_exact(root/'alias/x',hashlib.sha256(b'x').hexdigest())
+
+    def test_whole_pipeline_synthetic_orchestration(self):
+        """Mocked orchestration only, NOT native/model/device evidence."""
+        from tpu_optimization.runtime import Clock
+        with tempfile.TemporaryDirectory() as t:
+            c=config();c['output_root']=str(Path(t)/'new-run')
+            a=argparse.Namespace(config='/synthetic/config',config_sha='c'*64,material_proof_sha=None,handoff_sha=None)
+            calls=[]
+            def supervise(argv,out,**kw):
+                phase=argv[argv.index('--phase')+1];calls.append((phase,argv,kw))
+                self.assertNotIn('--mode rank', ' '.join(argv))
+                state=Path(c['output_root'])/'state'
+                for i in range(4):
+                    if phase=='produce':row={'rank':i,'world':4,'study_updates':8,'native_executed':True}
+                    else:row={'rank':i,'world':4,'status':'COMPLETE_SFT8_AND_EXACT_COLD_REPLAY8',
+                              'native_executed':True,'final_retained_cursor':8,'consumer_pid':100+i,
+                              'checkpoint8':{'commit_sha256':'d'*64}}
+                    (state/f'{"PRODUCER" if phase=="produce" else "CONSUMER"}.rank-{i}.json').write_text(json.dumps(row))
+                return {'returncode':0,'reason':None,'SYNTHETIC_ONLY':True}
+            mb=types.SimpleNamespace(versions=lambda:None,MATERIAL_RECEIPT_SHA='a'*64,
+                    verify_material=lambda *args:{'SYNTHETIC':True},exclusive_json=lambda p,v:entry.write(p,v))
+            modules={'model_backend':mb,'native_supervisor':types.SimpleNamespace(supervise=supervise),
+                     'launch_four_rank':types.SimpleNamespace(configure_vmem_environment=lambda:{'synthetic':True})}
+            def portable(*args):
+                self.assertEqual([x[0] for x in calls],['produce','consume'])
+                self.assertEqual(args[0],Path(c['output_root'])/'state/checkpoint-8')
+                self.assertEqual(args[1],'d'*64)
+                return {'SYNTHETIC_ONLY':True,'optimizer_updates':8}
+            fake_sources=types.SimpleNamespace(module=lambda n:modules[n])
+            fake_torch=types.SimpleNamespace(tpu=object(),accelerator=types.SimpleNamespace(device_count=lambda:4))
+            with mock.patch.dict(sys.modules,{'torch':fake_torch}):
+                result=entry.pipeline(a,c,fake_sources,{'runtime':types.SimpleNamespace(Clock=Clock),
+                    'portable_adapter':types.SimpleNamespace(export_checkpoint8=portable)})
+            self.assertEqual([x[0] for x in calls],['produce','consume'])
+            self.assertIsNotNone(a.material_proof_sha);self.assertIsNotNone(a.handoff_sha)
+            self.assertIn('--handoff-sha',calls[1][1]);self.assertNotIn('--handoff-sha',calls[0][1])
+            self.assertTrue(all(0<x[2]['max_seconds']<=9600 for x in calls))
+            self.assertFalse(result['provider_resources_deleted']);self.assertFalse(result['automatic_upload'])
+            self.assertEqual(result['full_checkpoint_cursors'],[2,4,7,8])
+            with self.assertRaises(FileExistsError):entry.pipeline(a,c,fake_sources,{'runtime':types.SimpleNamespace(Clock=Clock)})
+
+
+if __name__=='__main__':unittest.main()

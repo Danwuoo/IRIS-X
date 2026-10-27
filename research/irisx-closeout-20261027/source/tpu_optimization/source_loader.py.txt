@@ -1,0 +1,115 @@
+"""NEW bounded original-p4 byte loader. No model/device/provider calls on import.
+
+Only source bytes are read. Original modules execute in a private namespace;
+recovered imports never consult ambient names, sys.path or stale pycache.
+"""
+from __future__ import annotations
+import builtins
+import hashlib
+import itertools
+import json
+import os
+from pathlib import Path
+import stat
+import sys
+import types
+
+MANIFEST_SHA = '206c301dffd26af8db946d92646f96a609902c9b16bb3d6d4e4ebed712f27804'
+SCHEDULE_SHA = '0d54ffdceff2544c19d8290d1ae759a3cca33355a7d56e8ed2fdd3d5599375c1'
+CENSUS_SHA = 'c41ece2a00848753186bcdc1790c49c96264e97c161ad0170ad5fd495bdfe627'
+ZERO_SHA = '8d05d5c17f95d842bf1d868ec62018a675f37e345c870ce699751ba478897158'
+MODULES = {'global_teacher':'runtime/global_teacher.py', 'objectives':'runtime/objectives.py',
+           'query_spans':'runtime/query_spans.py', 'roundtrip_gate':'runtime/roundtrip_gate.py',
+           'model_backend':'runtime/backend/model_backend.py',
+           'simple_fsdp':'runtime/backend/vendor/simple_fsdp.py',
+           'device_contract':'runtime/backend/device_contract.py',
+           'hbm_monitor':'runtime/hbm_monitor.py',
+           'launch_four_rank':'runtime/launch_four_rank.py',
+           'native_supervisor':'runtime/native_supervisor.py'}
+_TOKEN = object()
+_IMPORT_SERIAL = itertools.count()
+
+
+def need(ok, message):
+    if not ok:
+        raise ValueError(message)
+
+
+def canonical(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
+
+
+def digest(value):
+    return hashlib.sha256(canonical(value)).hexdigest()
+
+
+def read_source(path, expected, cap=2*1024**2):
+    p = Path(path)
+    need(p.is_absolute(), 'absolute source path')
+    need(not any(q.is_symlink() for q in (p, *p.parents)), 'no source ancestor symlink')
+    with p.open('rb') as f:
+        before = os.fstat(f.fileno())
+        need(stat.S_ISREG(before.st_mode) and before.st_size <= cap, 'bounded regular source')
+        raw = f.read(cap+1)
+        after = os.fstat(f.fileno())
+    need((before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns,before.st_ctime_ns) ==
+         (after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns,after.st_ctime_ns), 'source changed')
+    need(hashlib.sha256(raw).hexdigest() == expected, 'source pin mismatch')
+    return raw
+
+
+class Sources:
+    def __init__(self, token, blobs, identity):
+        need(token is _TOKEN, 'verified source factory only')
+        self._blobs = dict(blobs)
+        self._modules = {}
+        self.identity = identity
+        self._namespace = '_new_tpu_public_'+digest(identity)[:16]+'_'+str(next(_IMPORT_SERIAL))+'_'
+
+    def module(self, name):
+        need(name in self._blobs, 'closed original module set')
+        if name in self._modules:
+            return self._modules[name]
+        path, raw, sha = self._blobs[name]
+        need(hashlib.sha256(raw).hexdigest() == sha, 'retained source bytes changed')
+        module = types.ModuleType(self._namespace+name)
+        module.__file__, module.__package__, module.__cached__ = path, '', None
+        builtins_map = vars(builtins).copy()
+        ordinary = builtins.__import__
+        def imported(n, globals=None, locals=None, fromlist=(), level=0):
+            if level == 0 and n in self._blobs:
+                return self.module(n)
+            return ordinary(n, globals, locals, fromlist, level)
+        builtins_map['__import__'] = imported
+        module.__dict__['__builtins__'] = builtins_map
+        need(module.__name__ not in sys.modules, 'private module occupied')
+        self._modules[name] = module
+        sys.modules[module.__name__] = module
+        try:
+            exec(compile(raw, path, 'exec', dont_inherit=True), module.__dict__)
+        except BaseException:
+            del self._modules[name]
+            del sys.modules[module.__name__]
+            raise
+        return module
+
+
+def load_sources(science_root, schedule_path, zero_demo_path):
+    """Exact public source closure only; does not instantiate/load a model."""
+    root = Path(science_root)
+    manifest = json.loads(read_source(root/'SOURCE-PINS.json', MANIFEST_SHA))
+    need(len(manifest) == 24, 'original p4 public manifest count')
+    verified = {}
+    for relative, row in manifest.items():
+        need(not Path(relative).is_absolute() and '..' not in Path(relative).parts, 'source relative name')
+        raw = read_source(root/relative, row['sha256'])
+        need(len(raw) == row['bytes'], 'source byte count')
+        verified[relative] = raw
+    blobs = {name:(str(root/relative),verified[relative],manifest[relative]['sha256'])
+             for name,relative in MODULES.items()}
+    for name,path,sha in [('public_support_schedule',Path(schedule_path),SCHEDULE_SHA),
+                          ('ttt_profile',Path(zero_demo_path),ZERO_SHA)]:
+        blobs[name] = (str(path),read_source(path,sha),sha)
+    return Sources(_TOKEN,blobs,{'original_manifest_sha256':MANIFEST_SHA,
+                                'schedule_source_sha256':SCHEDULE_SHA,
+                                'zero_demo_source_sha256':ZERO_SHA})

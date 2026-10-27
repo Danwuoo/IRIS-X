@@ -1,0 +1,142 @@
+"""Synthetic file-admission/gold-loader tests; no native target/prediction reads."""
+from pathlib import Path
+import copy,json,sys,tempfile,unittest,subprocess
+from unittest.mock import patch
+sys.path.insert(0,str(Path(__file__).resolve().parent.parent/'dev_evaluator'))
+import dev_evaluator as de
+import synthetic_fixtures as sf
+import prediction_join as pj
+import isolated_score as sc
+from test_prediction_join import fixture as prediction_fixture
+
+
+def fixture(root):
+    docs,pins,identity,ctx=prediction_fixture()
+    gold=sf.documents()[2];gold_raw=de.canonical(gold)+b'\n'
+    sources={n:('synthetic reviewed source '+n).encode() for n in sc.SOURCE_NAMES}
+    manifest={'schema':'new-ps-native-prediction-transform-source-manifest/v1','files':{n:sc.pin(v) for n,v in sources.items()}}
+    identity_raw=de.canonical(identity);context_raw=de.canonical(ctx)
+    contract={'schema':'new-ps-isolated-dev-score-contract/v1','mode':'SYNTHETIC_ONLY','run_id':ctx['run_id'],
+      'source_manifest_sha256':sc.sha(de.canonical(manifest)),'core_manifest_sha256':sc.sha(sources['dev_evaluator/SCORER-MANIFEST.PREPARED.json']),
+      'native_source_manifest_sha256':ctx['native_source_sha256'],'identity':sc.pin(identity_raw),'identity_semantic_sha256':de.digest(identity),
+      'context':sc.pin(context_raw),'evidence':{k:{'path':str(root/sc.EVIDENCE_NAMES[k]),'pin':pins[k]} for k in pj.KEYS},
+      'goldpack_path':str(root/'PRIVATE-DEV32-GOLDPACK.json'),'goldpack_sha256':sc.sha(gold_raw),'goldpack_semantic_sha256':de.digest(gold),
+      'output_scope':'AGGREGATE_ONLY_NO_PER_PARENT_LABELS_OR_CORRECTNESS','max_score_seconds':60,'pre_model_source_review_sha256':de.digest('synthetic-source-review-before-model')}
+    review={'schema':'new-ps-independent-isolated-dev-score-review/v1','status':'PASS_POST_MODEL_EXACT_INPUT_CLOSURE','pre_model_source_review_sha256':contract['pre_model_source_review_sha256'],'independent_of_author':True,
+      'contract_sha256':sc.sha(de.canonical(contract)),'source_manifest_sha256':contract['source_manifest_sha256'],'real_gold_reads':0}
+    release={'schema':'new-ps-isolated-dev-score-release/v1','authority':'SYNTHETIC_FIXTURE','run_id':ctx['run_id'],
+      'contract_sha256':review['contract_sha256'],'review_sha256':sc.sha(de.canonical(review)),
+      'action_sha256':de.digest(sc.action(contract)),'authorized_once':True,'goldpack_opens_max':1,'model_or_provider_execution_authorized':False}
+    bundle={'contract':de.canonical(contract),'manifest':de.canonical(manifest),'review':de.canonical(review),'release':de.canonical(release),
+      'identity':identity_raw,'context':context_raw,'sources':sources}
+    return bundle,docs,gold_raw
+
+class ScoreTests(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory(prefix='synthetic-score-');self.addCleanup(self.temp.cleanup)
+        self.root=Path(self.temp.name);self.attempt=self.root/'attempt';self.b,self.docs,self.gold=fixture(self.root)
+        self.opens=0;self.evidence_reads=0
+    def run_fixture(self,loader=None):
+        def evidence(k,_pin):self.evidence_reads+=1;return self.docs[k]
+        def gold(_p):
+            self.assertTrue((self.attempt/'PRE-GOLD-SEAL.json').is_file());self.assertTrue((self.attempt/'GOLD-READ-INTENT.json').is_file())
+            self.opens+=1;return self.gold if loader is None else loader()
+        return sc.score_synthetic_once(self.attempt,lambda:self.b,evidence,gold)
+    def test_complete_exactone_goldopen_afterseal_aggregate_only(self):
+        r=self.run_fixture();self.assertEqual(r['status'],'COMPLETE_AGGREGATE_ONLY_NEW_RECONSTRUCTION');self.assertEqual(self.opens,1)
+        self.assertEqual(r['goldpack_open_attempts'],1);self.assertFalse(r['quality_GO'])
+        self.assertEqual(self.attempt.stat().st_mode&0o777,0o700)
+        self.assertTrue(all(p.stat().st_mode&0o777==0o600 for p in self.attempt.iterdir()))
+        aggregate=de.strict_json((self.attempt/'AGGREGATE-DEV32.json').read_bytes())
+        self.assertNotIn('grid',aggregate);self.assertNotIn('rows',aggregate)
+    def test_all_public_preflight_failures_zero_gold_evidenceopens(self):
+        for key in ('contract','manifest','review','release','identity','context'):
+            with self.subTest(key=key):
+                self.attempt=self.root/key;old=self.b[key];self.b[key]=b'not JSON'
+                r=self.run_fixture();self.assertEqual(r['status'],'FAILED_OR_UNKNOWN_ATTEMPT_CONSUMED_NO_RETRY')
+                self.assertEqual(self.opens,0);self.assertEqual(self.evidence_reads,0);self.b[key]=old
+    def test_source_mutation_zero_opens(self):
+        self.b['sources']['dev_native_adapter/prediction_join.py']=b'changed'
+        self.run_fixture();self.assertEqual(self.opens,0);self.assertEqual(self.evidence_reads,0)
+    def test_mismatched_pred_bytes_zero_gold(self):
+        self.docs['predictions']+=b' '
+        self.run_fixture();self.assertEqual(self.opens,0)
+    def test_missing_model_stop_zero_gold(self):
+        self.docs['model_stop']=b'{}';self.run_fixture();self.assertEqual(self.opens,0)
+    def test_incomplete_journal_zero_gold(self):
+        self.docs['journal']=self.docs['journal'][:-20];self.run_fixture();self.assertEqual(self.opens,0)
+    def test_wrong_gold_hash_oneattempt_no_result(self):
+        self.gold=b'PRIVATE_SENTINEL';r=self.run_fixture();self.assertEqual(self.opens,1);self.assertNotIn('PRIVATE_SENTINEL',json.dumps(r))
+        self.assertFalse((self.attempt/'AGGREGATE-DEV32.json').exists())
+    def test_failure_consumes_no_retry(self):
+        self.docs['journal']=b'{}\n';self.run_fixture()
+        with self.assertRaises(FileExistsError):self.run_fixture()
+        self.assertEqual(self.opens,0)
+    def test_success_consumes_no_second_goldopen(self):
+        self.run_fixture()
+        with self.assertRaises(FileExistsError):self.run_fixture()
+        self.assertEqual(self.opens,1)
+    def test_loader_arbitrary_private_exception_suppressed(self):
+        def failed():raise RuntimeError('PRIVATE_SENTINEL')
+        r=self.run_fixture(failed);self.assertEqual(self.opens,1);self.assertNotIn('PRIVATE_SENTINEL',json.dumps(r))
+    def test_failure_receipt_write_error_suppresses_chain(self):
+        original=sc.write_once
+        def write(p,v):
+            if p.name=='ATTEMPT-RESULT.json':raise OSError('PRIVATE_SENTINEL')
+            return original(p,v)
+        with patch.object(sc,'write_once',side_effect=write):
+            r=self.run_fixture(lambda:(_ for _ in ()).throw(RuntimeError('PRIVATE_SENTINEL')))
+        self.assertEqual(self.opens,1);self.assertNotIn('PRIVATE_SENTINEL',json.dumps(r))
+    def test_gold_path_is_not_any_other_private_file(self):
+        c=de.strict_json(self.b['contract']);c['goldpack_path']=str(self.root/'PRIVATE-PREDICTIONS-192.json');self.b['contract']=de.canonical(c)
+        with self.assertRaisesRegex(de.AdmissionError,'GOLD_PIN_SCOPE'):sc.preflight(self.b,'SYNTHETIC_ONLY')
+    def test_unknown_evidence_field_rejected_before_read(self):
+        c=de.strict_json(self.b['contract']);c['evidence']['other']={'path':str(self.root/'unknown'),'pin':{'bytes':1,'sha256':'f'*64}};self.b['contract']=de.canonical(c)
+        self.run_fixture();self.assertEqual(self.opens,0);self.assertEqual(self.evidence_reads,0)
+    def test_native_default_no_grant_before_private_reads(self):
+        with self.assertRaisesRegex(de.AdmissionError,'EXPLICIT_ROOT'):sc.score_native_once({})
+    def test_review_bool_in_place_of_zero_rejected(self):
+        r=de.strict_json(self.b['review']);r['real_gold_reads']=False;self.b['review']=de.canonical(r)
+        with self.assertRaisesRegex(de.AdmissionError,'REVIEW_EXACT_TYPES'):sc.preflight(self.b,'SYNTHETIC_ONLY')
+    def test_native_profile_cannot_use_synthetic_identity(self):
+        c=de.strict_json(self.b['contract']);c['mode']='NATIVE_POST_MODEL_SCORE';self.b['contract']=de.canonical(c)
+        with self.assertRaisesRegex(de.AdmissionError,'IDENTITY_PROFILE'):sc.preflight(self.b,'NATIVE_POST_MODEL_SCORE')
+    def test_native_exact_known_identity_gold_and_successful_materialization_pins(self):
+        c={'identity':{'sha256':sc.NATIVE_IDENTITY_FILE_SHA},'identity_semantic_sha256':sc.NATIVE_IDENTITY_SEMANTIC_SHA,
+          'goldpack_sha256':sc.NATIVE_GOLD_FILE_SHA,'goldpack_semantic_sha256':sc.NATIVE_GOLD_SEMANTIC_SHA}
+        ctx={'opaque_materialization_receipt_sha256':sc.NATIVE_MATERIALIZATION_RECEIPT_SHA}
+        sc.native_scope_pins(c,ctx)
+        for key in ('identity_semantic_sha256','goldpack_sha256','goldpack_semantic_sha256'):
+            bad=copy.deepcopy(c);bad[key]='e'*64
+            with self.assertRaises(de.AdmissionError):sc.native_scope_pins(bad,ctx)
+        bad=copy.deepcopy(c);bad['identity']['sha256']='e'*64
+        with self.assertRaises(de.AdmissionError):sc.native_scope_pins(bad,ctx)
+        with self.assertRaisesRegex(de.AdmissionError,'SUCCESSFUL_V2'):sc.native_scope_pins(c,{'opaque_materialization_receipt_sha256':'afb49f12e76787276a7e690bf5149e7426e75137793a7aa3722b3b76b872d68f'})
+    def test_symlink_private_path_fail_before_gold(self):
+        link=self.root/'symlink';link.symlink_to(self.root,target_is_directory=True)
+        c=de.strict_json(self.b['contract']);c['goldpack_path']=str(link/'PRIVATE-DEV32-GOLDPACK.json');self.b['contract']=de.canonical(c)
+        self.run_fixture();self.assertEqual(self.opens,0)
+
+class BootstrapTests(unittest.TestCase):
+    def test_fresh_isolated_exact_byte_compile_no_native_entry(self):
+        work=Path(__file__).resolve().parent.parent
+        code="""from pathlib import Path
+import types,sys
+w=Path(sys.argv[1]);p=w/'dev_native_adapter/score_bootstrap.py'
+m=types.ModuleType('bootstrap');m.__file__=str(p)
+exec(compile(p.read_bytes(),str(p),'exec',dont_inherit=True),m.__dict__)
+names=['dev_evaluator/dev_evaluator.py','dev_native_adapter/prediction_join.py','dev_native_adapter/isolated_score.py']
+mods=m.compile_modules({n:(w/n).read_bytes() for n in names},'a'*64)
+assert all(x._REVIEWED_TRANSFORM_MANIFEST_SHA256=='a'*64 for x in mods)
+assert all(x.__file__.startswith(str(w)) for x in mods)
+print('PASS_PUBLIC_SOURCE_COMPILE_NO_NATIVE_ENTRY')
+"""
+        r=subprocess.run([sys.executable,'-I','-S','-B','-c',code,str(work)],capture_output=True,text=True,timeout=10)
+        self.assertEqual(r.returncode,0);self.assertEqual(r.stdout.strip(),'PASS_PUBLIC_SOURCE_COMPILE_NO_NATIVE_ENTRY')
+    def test_root_loader_inert_and_private_exception_fixed(self):
+        import score_root_loader as loader
+        result=loader.run_with_root_grant({'private':'SYNTHETIC_SECRET'})
+        self.assertEqual(result['status'],'FAILED_OR_UNKNOWN_NO_RETRY_NO_PRIVATE_ERROR_OUTPUT')
+        self.assertNotIn('SYNTHETIC_SECRET',json.dumps(result))
+
+if __name__=='__main__':unittest.main()

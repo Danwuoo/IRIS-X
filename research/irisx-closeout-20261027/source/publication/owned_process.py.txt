@@ -1,0 +1,122 @@
+"""NEW setup/export owned-process adapter. No subprocess on import.
+
+Reuses exact reviewed native supervisor guard bytes; gives EVERY explicitly
+launched stage an expected-parent/PDEATHSIG edge. No global process/provider
+kill, inherited credentials, model work or standalone probe is authorized here.
+"""
+from pathlib import Path
+import hashlib
+import json
+import math
+import os
+import signal
+import subprocess
+import sys
+import time
+import types
+
+SUPERVISOR_SHA = "8fe82a26c79c681fc1a249195a31f4a06c4c8dfd04856c089325a6d5623b5813"
+
+
+def need(ok, code):
+    if not ok: raise ValueError(code)
+
+
+def load_guard(path):
+    path=Path(path)
+    need(path.is_absolute() and not any(p.is_symlink() for p in(path,*path.parents)),"OWNED_GUARD_PATH")
+    raw=path.read_bytes();need(len(raw)<=65536 and hashlib.sha256(raw).hexdigest()==SUPERVISOR_SHA,"OWNED_GUARD_EXACT_SOURCE")
+    m=types.ModuleType("new_ps_verified_owned_guard");m.__file__=str(path)
+    exec(compile(raw,str(path),"exec",dont_inherit=True),m.__dict__)
+    return m
+
+
+def write_json(path,value):
+    raw=json.dumps(value,sort_keys=True,separators=(",",":"),allow_nan=False).encode()+b"\n"
+    fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    with os.fdopen(fd,"wb")as f:f.write(raw);f.flush();os.fsync(f.fileno())
+    fd=os.open(Path(path).parent,os.O_RDONLY|os.O_DIRECTORY)
+    try:os.fsync(fd)
+    finally:os.close(fd)
+    return {"bytes":len(raw),"sha256":hashlib.sha256(raw).hexdigest()}
+
+
+def run_owned(argv, output_root, *, deadline, child_env, guard, launcher_python=None,
+              stdin_payload=None, log_cap=8*1024**2, monotonic_deadline=None):
+    """One stage/no retry. Tests use only explicit handwritten stdlib fixtures.
+
+    The source-reviewed caller supplies the SAME original absolute deadline.
+    Ten seconds are reserved for TERM/KILL cleanup, never added to the budget.
+    Internal pip/venv descendants must stay in the owned group; separately
+    launched stages each get their own parent-death guard. Host/provider failures
+    and any unobserved child exit remain UNKNOWN, not resource-release proof.
+    """
+    need(type(argv)is list and argv and all(type(x)is str and x for x in argv),"OWNED_ARGV")
+    need(type(child_env)is dict and all(type(k)is str and type(v)is str for k,v in child_env.items()),"OWNED_CLOSED_ENV")
+    need(type(deadline)in(int,float) and math.isfinite(deadline) and time.time()<deadline-10,"OWNED_ORIGINAL_DEADLINE_CLEANUP_RESERVE")
+    if monotonic_deadline is None:
+        monotonic_deadline=time.monotonic()+max(0,deadline-time.time())
+    need(type(monotonic_deadline)in(int,float) and math.isfinite(monotonic_deadline) and time.monotonic()<monotonic_deadline-10,
+         "OWNED_NONEXTENDABLE_MONOTONIC_DEADLINE")
+    need(type(log_cap)is int and 0<log_cap<=64*1024**2,"OWNED_LOG_BOUND")
+    root=Path(output_root)
+    need(root.is_absolute() and not any(p.is_symlink()for p in(root,*root.parents)),"OWNED_OUTPUT_PATH")
+    root.mkdir(mode=0o700,parents=False,exist_ok=False)
+    started=time.monotonic(); reason=None; process=None
+    # Generic exec guard does not interpret the requested command or its input.
+    # stdin_payload is PUBLIC authority metadata here, never task/target bodies.
+    launcher=str(Path(launcher_python or sys.executable).resolve())
+    need(Path(launcher).is_file(),"OWNED_LAUNCHER_EXISTS")
+    # For commands needing their own stdin, a private pipe carries a single
+    # JSON control line followed by their already-public payload. The exec guard
+    # must not prebuffer the payload: unbuffered os.read below is deliberate.
+    code=guard.PARENT_DEATH_GUARD_SOURCE+"\n_arm_parent_death_kill(int(sys.argv[1]))\n"+(
+      "import json,os,sys\nb=bytearray()\n"
+      "while True:\n c=os.read(0,1)\n if c==b'\\n':break\n if not c or len(b)>1048576:raise SystemExit('CONTROL_LINE_BOUND')\n b.extend(c)\n"
+      "x=json.loads(bytes(b));os.execve(x['argv'][0],x['argv'],x['env'])\n")
+    payload=json.dumps({"argv":argv,"env":child_env},sort_keys=True,separators=(",",":")).encode()+b"\n"
+    if stdin_payload is not None:
+        need(type(stdin_payload)is bytes and len(stdin_payload)<=4*1024**2,"OWNED_PUBLIC_STDIN_BOUND")
+        payload+=stdin_payload
+    log_path=root/"PRIVATE-stdout.log"
+    with guard._OwnedChildScope()as scope:
+        fd=os.open(log_path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+        with os.fdopen(fd,"wb")as log:
+            try:
+                process=scope.spawn([launcher,"-I","-S","-B","-c",code,str(os.getpid())],
+                    stdin=subprocess.PIPE,stdout=log,stderr=subprocess.STDOUT,
+                    env=child_env,start_new_session=True)
+                while True:
+                    if scope.termination_signal is not None:reason="OWNED_TERMINATION_REQUESTED";break
+                    remaining=min(deadline-time.time(),monotonic_deadline-time.monotonic())-10
+                    if remaining<=0:reason="OWNED_ORIGINAL_DEADLINE";break
+                    if os.fstat(log.fileno()).st_size>log_cap:reason="OWNED_LOG_CAP";break
+                    try:
+                        process.communicate(payload,timeout=min(1,max(.001,remaining)))
+                        break
+                    except subprocess.TimeoutExpired:payload=None
+            except BaseException:
+                reason="OWNED_STAGE_UNKNOWN"
+            finally:
+                # The exact owned group may include pip/ensurepip descendants.
+                # Never target other groups or infer provider runtime teardown.
+                if process is not None:
+                    try:os.killpg(process.pid,signal.SIGTERM)
+                    except ProcessLookupError:pass
+                    guard._stop_owned_child(process)
+                    try:os.killpg(process.pid,signal.SIGKILL)
+                    except ProcessLookupError:pass
+                log.flush();os.fsync(log.fileno())
+    need(process is not None and process.poll()is not None,"OWNED_CHILD_EXIT_UNOBSERVED")
+    count=log_path.stat().st_size
+    if count>log_cap:reason="OWNED_LOG_CAP"
+    receipt={"schema":"new-ps-owned-stage/v1","returncode":process.returncode,"reason":reason,
+       "wall_seconds":time.monotonic()-started,"log_bytes":count,"original_deadline_epoch":deadline,
+       "original_monotonic_deadline":monotonic_deadline,
+       "wait_returned":True,"parent_death_guard":"LINUX_PDEATHSIG_SIGKILL_EXPECTED_PARENT",
+       "provider_runtime_limit_proven":False,"resource_released_claimed":False,"retry_allowed":False}
+    write_json(root/"SUPERVISOR.json",receipt)
+    return receipt
+
+
+if __name__=="__main__":raise SystemExit("OWNED_PROCESS_LIBRARY_ONLY")

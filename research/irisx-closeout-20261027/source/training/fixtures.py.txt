@@ -1,0 +1,45 @@
+"""Handwritten synthetic integers only. Never loads a task, target or model."""
+from types import SimpleNamespace
+from .contracts import Pair, Panel, PIN_KEYS, Response, SEED, digest
+
+
+def prompt():
+    # One 1x1 public support pair, one 1x1 query, final assistant header.
+    return (14, 11, 10, 0, 15, 14, 12, 10, 1, 15,
+            14, 11, 10, 2, 15, 14, 12, 10)
+
+
+def panel():
+    p = prompt()
+    pairs = (Pair(0, "SYNTHETIC-A", Response(p, (1, 15)), Response(p, (2, 15))),
+             Pair(7, "SYNTHETIC-B", Response(p, (1, 2, 15)), Response(p, (3, 4, 15))))
+    return Panel(pairs, tuple((k, digest("SYNTHETIC-" + k)) for k in PIN_KEYS), 2)
+
+
+def tiny_backend():
+    """Toy causal rank32 LoRA algebra, not a pretrained/PEFT/native model gate."""
+    import torch
+    torch.manual_seed(SEED)
+
+    class TinyCausal(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.embedding = torch.nn.Parameter(torch.randn(16, 8) * .2, requires_grad=False)
+            self.head = torch.nn.Parameter(torch.randn(8, 16) * .2, requires_grad=False)
+            self.lora_A = torch.nn.Parameter(torch.randn(8, 32) * .03)
+            self.lora_B = torch.nn.Parameter(torch.zeros(32, 16))
+
+        def forward(self, input_ids, attention_mask, use_cache=False):
+            assert not use_cache
+            x = self.embedding[input_ids] * attention_mask[:, :, None]
+            lengths = torch.arange(1, x.shape[1] + 1, dtype=torch.float32)[None, :, None]
+            x = x.cumsum(1) / lengths
+            return SimpleNamespace(logits=x @ self.head + (x @ self.lora_A) @ self.lora_B)
+
+    model = TinyCausal()
+    trainable = {n: p for n, p in model.named_parameters() if p.requires_grad}
+    return SimpleNamespace(model=model, mode="cpu", world_size=1, rank=0,
+                           bindings={"tiny_fixture": True, "NOT_NATIVE_ARCHITECTURE": True},
+                           trainable_parameters=trainable,
+                           initial_adapter={n: p.detach().clone() for n, p in trainable.items()},
+                           optimizer=None)

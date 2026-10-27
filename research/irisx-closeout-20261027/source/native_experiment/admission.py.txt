@@ -1,0 +1,144 @@
+"""NEW future native release admission. No target/model/provider reads or calls.
+
+No authentic native release documents currently exist. Development/test PASS is
+not a run grant. Actual runtime creation additionally requires a reviewed fresh
+byte bootstrap, out-of-band root pins, current budget/account evidence, a sealed
+DEV scorer/opaque-target lineage, and an exclusive durable attempt lease.
+"""
+from pathlib import Path
+import math
+import os
+import time
+from .contracts import NativeRelease, _RELEASE_KEY, PRIVATE_PIN, strict_json, sha, closed, need, validate_first_cell_clock, validate_submission_evidence
+
+NAMES = ("EXPERIMENT-CONTRACT.json", "SOURCE-MANIFEST.json", "INDEPENDENT-REVIEW.json",
+         "ACCOUNT-AND-BUDGET.json", "DEV-SCORER-ADMISSION.json", "ROOT-RELEASE.json")
+DEV_PIN_KEYS = {"scorer_manifest_sha256", "materializer_manifest_sha256",
+    "materialization_receipt_sha256", "opaque_dev_goldpack_semantic_sha256",
+    "prediction_transform_manifest_sha256", "public_dev_identity_semantic_sha256",
+    "original_DEV32_lineage_map_sha256"}
+ORIGINAL_DEV_IDENTITY = "a6c563a8467c34301ba81785e465f7a9b29679b16398e95c681651a73bf8dcec"
+ORIGINAL_DEV_LINEAGE = "c04cd8713db0cec005e288f1eb66018d499e5d1c2dbfd112fa9ba78665d75658"
+FROZEN_DEV_SCORER_MANIFEST = "987034c206a5600f47e53a9f0a9e6ebcad7c2e15f689b9f273447dbb52864754"
+
+
+def _finite(value):
+    return type(value) in (float, int) and math.isfinite(value) and value >= 0
+
+
+def issue_native_release(directory, *, out_of_band_root_grant, reviewed_byte_bootstrap):
+    """Future explicit root-authorized factory. Never call during development.
+
+    Root grants a full meaningful fixed experiment, not free-standing probes.
+    The model may be loaded for charged engineering, but the workflow must still
+    require actual gate receipts from the very same loaded engine before use.
+    """
+    root = Path(directory)
+    need(root.is_absolute() and root.is_dir() and not any(p.is_symlink() for p in (root, *root.parents)), "NATIVE_ADMISSION_DIRECTORY")
+    closed(out_of_band_root_grant, {"schema", "run_id", "scope", "files", "bootstrap_sha256"}, "NATIVE_ROOT_GRANT_SCHEMA")
+    need(out_of_band_root_grant["schema"] == "new-ps-explicit-native-root-grant/v1" and
+         out_of_band_root_grant["scope"] == "ONE_CHARGED_ENGINEERING_THEN_FIXED37_DPO_CE_DEV32_EXPERIMENT", "NATIVE_EXPLICIT_ROOT_SCOPE")
+    need(type(reviewed_byte_bootstrap) is dict and reviewed_byte_bootstrap.get("mode") == "COMPILE_PINNED_BYTES_NO_PYCACHE"
+         and reviewed_byte_bootstrap.get("bootstrap_sha256") == out_of_band_root_grant["bootstrap_sha256"], "REVIEWED_NATIVE_BYTE_BOOTSTRAP")
+    closed(out_of_band_root_grant["files"], NAMES, "NATIVE_ROOT_DOC_SET")
+    documents, pins = {}, []
+    for name in NAMES:
+        path = root / name
+        need(not path.is_symlink() and path.is_file() and 0 < path.stat().st_size <= 4 * 1024 * 1024, "NATIVE_DOC_REGULAR_BOUND")
+        raw = path.read_bytes()
+        need(sha(raw) == out_of_band_root_grant["files"][name], "NATIVE_ROOT_DOC_PIN")
+        documents[name] = strict_json(raw)
+        pins.append((str(path), len(raw), sha(raw)))
+    contract, review = documents[NAMES[0]], documents[NAMES[2]]
+    from .source_closure import verify_loaded_source_bytes
+    verify_loaded_source_bytes((root / "SOURCE-MANIFEST.json").read_bytes(),
+        out_of_band_root_grant["files"]["SOURCE-MANIFEST.json"], out_of_band_root_grant["bootstrap_sha256"])
+    need(contract.get("run_id") == out_of_band_root_grant["run_id"] and contract.get("private_pairpack") == PRIVATE_PIN
+         and contract.get("verified_parent_count") == 37 and type(contract.get("verified_parent_count")) is int, "NATIVE_FROZEN37_INPUT")
+    need(contract.get("source_manifest_sha256") == out_of_band_root_grant["files"][NAMES[1]]
+         and review.get("source_manifest_sha256") == contract["source_manifest_sha256"]
+         and review.get("contract_sha256") == out_of_band_root_grant["files"][NAMES[0]]
+         and review.get("status") == "PASS_EXPLORATORY_EXPERIMENT_NOT_SUPPLY96_GO", "NATIVE_INDEPENDENT_SCIENCE_SOURCE_REVIEW")
+    need(contract.get("supply96_status") == "NO_GO_P_0_0625" and contract.get("exploratory_only") is True
+         and contract.get("training_updates_per_arm") == 4 and contract.get("DEV_draws") == 192
+         and contract.get("DEV_design_seen") is True and contract.get("PS64_reused") is False, "NATIVE_UNCHANGED_SCIENCE_SCOPE")
+    dev = documents[NAMES[4]]
+    need(dev.get("status") == "PASS_PRE_READ_OPAQUE_DEV32_LINEAGE_AND_SCORER" and dev.get("target_bodies_exposed_to_author") is False
+         and dev.get("panel_changed") is False and dev.get("original_DEV32") is True, "NATIVE_DEV_SCORER_TARGET_LINEAGE_REQUIRED")
+    frozen_dev = contract.get("frozen_dev_admission")
+    closed(frozen_dev, DEV_PIN_KEYS | {"official_commit"}, "FROZEN_EXACT_DEV_ADMISSION_SCHEMA")
+    need(all(type(frozen_dev[k]) is str and len(frozen_dev[k]) == 64 and
+             all(c in "0123456789abcdef" for c in frozen_dev[k]) for k in DEV_PIN_KEYS),
+         "FROZEN_DEV_COMPLETE_SHA256_PINS")
+    need(all(dev.get(k) == frozen_dev[k] for k in frozen_dev) and
+         frozen_dev["scorer_manifest_sha256"] == FROZEN_DEV_SCORER_MANIFEST and
+         frozen_dev["public_dev_identity_semantic_sha256"] == ORIGINAL_DEV_IDENTITY and
+         frozen_dev["original_DEV32_lineage_map_sha256"] == ORIGINAL_DEV_LINEAGE and
+         frozen_dev["official_commit"] == "f3283f727488ad98fe575ea6a5ac981e4a188e49" and
+         dev.get("no_correctness_before_192_and_model_stop") is True and
+         dev.get("DEV_gold_attached_to_model") is False and dev.get("design_seen") is True,
+         "PRE_RUN_GOLDPACK_SCORER_TRANSFORM_EXACT_BINDING")
+    account = documents[NAMES[3]]
+    now = time.time()
+    numeric = ("observed_epoch", "valid_until_epoch", "setup_anchor_epoch", "total_cumulative_budget_usd")
+    need(all(_finite(account.get(k)) for k in numeric), "NATIVE_FINITE_BUDGET_ACCOUNT")
+    clock_path = root / "PRE-SETUP-CLOCK.json"
+    need(clock_path.is_file() and not clock_path.is_symlink() and 0 < clock_path.stat().st_size <= 4096,
+         "NATIVE_FIRST_CLOCK_REGULAR_BOUND")
+    clock_raw = clock_path.read_bytes(); clock = strict_json(clock_raw)
+    release = documents[NAMES[5]]
+    science_epoch, science_mono = validate_first_cell_clock(clock, run_id=contract["run_id"],
+        native_source_pin=out_of_band_root_grant["files"][NAMES[1]],
+        wrapper_source_pin=release.get("wrapper_source_manifest_sha256"))
+    validate_submission_evidence(account, first_epoch=clock["first_epoch"])
+    lease_path = root / "supervisor-attempt/LEASE.json"
+    need(lease_path.is_file() and not any(p.is_symlink() for p in (lease_path, *lease_path.parents)) and
+         0 < lease_path.stat().st_size <= 4096, "SUPERVISOR_FIRST_CLOCK_LEASE")
+    lease = strict_json(lease_path.read_bytes())
+    need(lease.get("run_id") == contract["run_id"] and lease.get("pre_setup_clock") ==
+         {"bytes": len(clock_raw), "sha256": sha(clock_raw)} and
+         lease.get("science_deadline_epoch") == science_epoch and
+         lease.get("science_deadline_monotonic") == science_mono, "SAME_SUPERVISOR_FIRST_CLOCK")
+    pins.append((str(clock_path), len(clock_raw), sha(clock_raw)))
+    need(account["total_cumulative_budget_usd"] == 150, "NATIVE_CUMULATIVE_USD150_CEILING_UNCHANGED")
+    if account.get("platform") == "KAGGLE_EXISTING_ACCOUNT_NO_INCREMENTAL_GCP_COST":
+        need(account.get("new_GCP_resources_or_cost") is False and account.get("verified_incremental_cash_max_usd") == 0
+             and type(account.get("verified_incremental_cash_max_usd")) in (int, float)
+             and account.get("quota_and_no_incremental_charge_basis_verified") is True
+             and _finite(account.get("GPU_quota_remaining_seconds")) and account["GPU_quota_remaining_seconds"] >= 7200,
+             "KAGGLE_VERIFIED_QUOTA_NO_NEW_GCP_COST_ONLY")
+        # Unknown historical GCP spend is not called zero/cleared. Root's
+        # prospective no-incremental-GCP-cost Kaggle branch does not need a paid
+        # GCP budget grant and authorizes no new GCP resource or cost.
+    else:
+        keys = ("verified_cumulative_spent_usd", "other_reserved_max_usd", "new_run_worst_case_usd")
+        need(all(_finite(account.get(k)) for k in keys) and sum(account[k] for k in keys) <= 150
+             and account.get("unknown_or_pending_unbounded_charges") is False, "PAID_NATIVE_CUMULATIVE_USD150")
+    need(account.get("provider_denial") is False and account.get("actual_accelerator_choice_verified") is True
+         and account.get("concurrent_account_capacity_verified") is True
+         and account.get("gpu_count") == 1 and type(account.get("gpu_count")) is int and account.get("tpu_count") == 0
+         and type(account.get("tpu_count")) is int, "NATIVE_ONE_GPU_ACCOUNT_NOT_ASSUMED")
+    release = documents[NAMES[5]]
+    need(release.get("authority") == "ROOT_EXPLICIT_NATIVE_ONE_RUN" and release.get("run_id") == contract["run_id"]
+         and release.get("retry_allowed") is False and release.get("contract_sha256") == out_of_band_root_grant["files"][NAMES[0]], "NATIVE_ROOT_RELEASE_REQUIRED")
+    # No process may materialize a second attempt or overwrite this lease.
+    attempt = root / "attempt"
+    os.mkdir(attempt, 0o700)
+    seal = {"schema": "new-ps-native-preload-seal/v1", "run_id": contract["run_id"], "files": out_of_band_root_grant["files"],
+            "attempt_consumed": True, "retry_allowed": False, "model_loaded": False, "private_pack_opened": False,
+            "engineering_gate_still_required": True, "created_epoch": now,
+            "pre_setup_clock": {"bytes": len(clock_raw), "sha256": sha(clock_raw)},
+            "science_deadline_epoch": science_epoch, "science_deadline_monotonic": science_mono,
+            "whole_deadline_epoch": clock["first_epoch"] + 7200,
+            "whole_deadline_monotonic": clock["first_monotonic"] + 7200}
+    import json
+    raw = json.dumps(seal, sort_keys=True, separators=(",", ":"), allow_nan=False).encode() + b"\n"
+    fd = os.open(attempt / "PRELOAD-SEAL.json", os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, "wb") as stream:
+        stream.write(raw); stream.flush(); os.fsync(stream.fileno())
+    for p in (attempt, root):
+        fd = os.open(p, os.O_RDONLY | os.O_DIRECTORY)
+        try: os.fsync(fd)
+        finally: os.close(fd)
+    pins.append((str(attempt / "PRELOAD-SEAL.json"), len(raw), sha(raw)))
+    return NativeRelease(tuple(pins), sha(raw), account["valid_until_epoch"], science_epoch, _RELEASE_KEY, science_mono)

@@ -1,5 +1,14 @@
 # IRIS-X Repository Governance
 
+## Owner-stopped IRIS closeout (2026-10-27 UTC)
+
+The owner stopped all IRIS development and experiments. The only remaining
+IRIS work is safe resource cleanup and preservation through this source commit.
+Do not resume research, training, notebook execution or automatic monitoring
+from older instructions below. A new explicit owner direction is required.
+SB is a separate continuing project and is not stopped or modified here.
+See `research/irisx-closeout-20261027/README.md` for final status and exclusions.
+
 ## Current reviewed-source wrap-up (2026-10-17 UTC)
 
 This checkpoint consolidates completed, reviewed source, tests and technical
